@@ -2,19 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static CameraControl;
+using static TerrainGeneration;
+using GameManagerSystem;
 
 public class GamePlayer : MonoBehaviour
 {
+    public Player entity => GetComponent<Player>();
     #region Variáveis obrigatórias
     public static GamePlayer player;
     [Header("Variáveis Obrigatórias", order = 0)]
-    public float speed = 1f;
-    public float jumpForce = 1f;
+    private float maxJumpSpeed = 7f;
+    [SerializeField]
+    private float _speed = 1f;
+    public float Speed => entity.player.speed * 100;
+    [SerializeField]
+    private float _jumpForce = 1f;
+    public float JumpForce => Mathf.Sqrt(_jumpForce);
     public Animater animater;
 
     public Sprite[] idleFrames;
     public Sprite[] walkFrames;
     public Sprite[] jumpFrames;
+    public Sprite[] landFrames;
     #endregion
 
     #region Status
@@ -41,39 +50,58 @@ public class GamePlayer : MonoBehaviour
 
     void Start()
     {
+        /*if(manager == null)
+        {
+            Debug.LogError("Anexa o game manager no player prr");
+            return;
+        }*/
+        entity.player.maxHealth = GameManager.CalculateHealth(entity.player);
+        entity.player.maxMana = GameManager.CalculateMana(entity.player);
+        entity.player.maxStamina = GameManager.CalculateStamina(entity.player);
+
+        entity.player.currentHealth = entity.player.maxHealth;
+        entity.player.currentMana = entity.player.maxStamina;
+        entity.player.currentStamina = entity.player.maxStamina;
+
         animater = new Animater(SpriteRenderer);
+        animater.Animate(this, new Anime("Idle", idleFrames, true, 12));
         player = this;
         transform.Find("ShadowObject").GetComponent<ShadowSeek>().shadowCastObject = gameObject;
 
         MainCameraControl.focusObject = gameObject;
-        MainCameraControl.moveToFocus = true;
+        MainCameraControl.focusMode = FocusMode.moveToFocusXYZ;
     }
     void FixedUpdate()
     {
-
         XZInput = new Vector2(Input.GetAxis("Vertical"), Input.GetAxis("Horizontal"));
-        RB.velocity = new Vector3(XZInput.y * speed * Time.fixedDeltaTime, RB.velocity.y, XZInput.x * speed * Time.fixedDeltaTime);
+        RB.velocity = new Vector3(XZInput.y * Speed * Time.fixedDeltaTime, RB.velocity.y, XZInput.x * Speed * Time.fixedDeltaTime);
 
         OnGround = GroundDetector.TriggerIsActive && (GroundDetector.TriggerContact != null ? (GroundDetector.TriggerContact.layer == 6 ? true : false) : true);
         if (Input.GetButton("Jump") && OnGround)
         {
-            RB.AddForce(0, jumpForce * 0.1f, 0, ForceMode.Impulse);
+            RB.AddForce(0, JumpForce, 0, ForceMode.Impulse);
         }
+        if (RB.velocity.y > maxJumpSpeed)
+            RB.velocity = new Vector3(RB.velocity.x, maxJumpSpeed, RB.velocity.z);
         velocity = RB.velocity;
     }
     private void Update()
     {
-        transform.rotation = XZInput.y < 0 ? Quaternion.Euler(transform.rotation.x, 0, 
-            transform.rotation.z) :
-            Quaternion.Euler(transform.rotation.x, 180, 
-            transform.rotation.z);
-        //SpriteObj.transform.localRotation = Quaternion.Euler((Mathf.Atan2(Cam.transform.position.z - SpriteObj.transform.position.z, Cam.transform.position.y - SpriteObj.transform.position.y) * (180 / Mathf.PI)) + 90, SpriteObj.transform.localRotation.y, SpriteObj.transform.localRotation.z);
-        if (!OnGround)
+        //Debug.Log(RB.velocity.magnitude);
+
+        if (RB.velocity.x > 0.1f || RB.velocity.x < -0.1f)
+            SpriteObj.transform.localScale = XZInput.y < 0 ?
+                new Vector3(1, 1, 1) :
+                new Vector3(-1, 1, 1);
+        if (!OnGround && animater.currentAnimation.name != "Jump")
         {
-            animater.Animate(this, new Anime("Jump", jumpFrames, false, 12));
-            goto jumpGroundAnimations;
+            animater.Animate(this, new Anime("Jump", jumpFrames, false, 12, true));
         }
-        if (XZInput.y != 0 || XZInput.x != 0 && OnGround)
+        else if (OnGround && animater.currentAnimation.name == "Jump")
+        {
+            animater.Animate(this, new Anime("Land", landFrames, false, 12, true));
+        }
+        if ((XZInput.y != 0 || XZInput.x != 0) && OnGround)
         {
             animater.Animate(this, new Anime("Walk", walkFrames, true, 12));
         }
@@ -81,7 +109,6 @@ public class GamePlayer : MonoBehaviour
         {
             animater.Animate(this, new Anime("Idle", idleFrames, true, 12));
         }
-        jumpGroundAnimations:
         if (Input.GetKeyDown(KeyCode.L))
         {
             string a = "";
@@ -94,6 +121,10 @@ public class GamePlayer : MonoBehaviour
                 Destroy(AttackArea.GetComponent<ColliderNutshell>().GetColliders()[i].gameObject);
             }
             Debug.Log(a);
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            animater.freezeAnimation = !animater.freezeAnimation;
         }
     }
 }

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockName: Teste
   mesh: {fileID: 0}
-  material: {fileID: 0}
+  material: {fileID: 2100000, guid: a00251c2ebd815c49bbdaf97a4691fc7, type: 2}
   blockSize: {x: 1, y: 1, z: 1}
   isBlock: 1
   hasCollider: 1

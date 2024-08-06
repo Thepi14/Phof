@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f063e5d0bfe3a8a499ebac198ff177b3
+guid: f3348adcb6e2ed942b85dd4d880a1d8f
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -39,7 +39,7 @@ TextureImporter:
     mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: 1
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -81,7 +81,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
-    buildTarget: Standalone
+    buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -94,11 +94,11 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
-    buildTarget: WebGL
+    buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -110,7 +110,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Guerreiro_IdleFB_0
+      name: Guerreio_JumpFB_0
       rect:
         serializedVersion: 2
         x: 0
@@ -124,14 +124,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 12c04d029f7d86947a47de91af7eb362
-      internalID: 1352407677
+      spriteID: ea84f7ab298d3f24cb90cb5bd2596ec2
+      internalID: -1608097787
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Guerreiro_IdleFB_1
+      name: Guerreio_JumpFB_1
       rect:
         serializedVersion: 2
         x: 24
@@ -145,14 +145,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cbc8319e73705034c9d8555ea1c31a46
-      internalID: -1886699107
+      spriteID: d094acbdbfb89a9418a8a6f7f53d7c15
+      internalID: 1091469552
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Guerreiro_IdleFB_2
+      name: Guerreio_JumpFB_2
       rect:
         serializedVersion: 2
         x: 48
@@ -166,14 +166,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 26a25ec794f1d69489110c95936d82e2
-      internalID: 1275811706
+      spriteID: a1dea17c9c72ba14aa81624a3cc361f7
+      internalID: 2095392050
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Guerreiro_IdleFB_3
+      name: Guerreio_JumpFB_3
       rect:
         serializedVersion: 2
         x: 72
@@ -187,14 +187,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0ffd0ef779264064592f8fb4f8d118ab
-      internalID: -9201127
+      spriteID: f291bd876e895804a83ec38367b1de73
+      internalID: 1814210617
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Guerreiro_IdleFB_4
+      name: Guerreio_JumpFB_4
       rect:
         serializedVersion: 2
         x: 96
@@ -208,14 +208,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ad0fb9868131a1442afb77ee1f8f888f
-      internalID: -970649519
+      spriteID: e5af0bbeca9fa7d4da307419e6a2e052
+      internalID: -1015023507
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Guerreiro_IdleFB_5
+      name: Guerreio_JumpFB_5
       rect:
         serializedVersion: 2
         x: 120
@@ -229,14 +229,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a05946c2b63d9d64f9e646511768c3b7
-      internalID: -1318844109
+      spriteID: 7d146956a6b9d5c458594f63c408b0ee
+      internalID: -1050744028
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Guerreiro_IdleFB_6
+      name: Guerreio_JumpFB_6
       rect:
         serializedVersion: 2
         x: 144
@@ -250,8 +250,113 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8cdfa65bb804b594584d9d3aaf7e448c
-      internalID: -28314976
+      spriteID: d7aa873b9d4643f4a83603e3be453b45
+      internalID: 469203689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreio_JumpFB_7
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 0
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6dd0fba043e60146a78aa290ce36afb
+      internalID: -798388126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreio_JumpFB_8
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c2e251f0dc49fb4a84ea3350cb31242
+      internalID: 250344555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreio_JumpFB_9
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 0
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6137c410fd7698641bdb03a30951afa8
+      internalID: -1828964516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreio_JumpFB_10
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 0
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7da63d4043974a488360275b067d3e9
+      internalID: -962264539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Guerreio_JumpFB_11
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 0
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85f624f41cfb15e448b7bb85e45dad09
+      internalID: -1465889245
       vertices: []
       indices: 
       edges: []
@@ -267,13 +372,18 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Guerreiro_IdleFB_0: 1352407677
-      Guerreiro_IdleFB_1: -1886699107
-      Guerreiro_IdleFB_2: 1275811706
-      Guerreiro_IdleFB_3: -9201127
-      Guerreiro_IdleFB_4: -970649519
-      Guerreiro_IdleFB_5: -1318844109
-      Guerreiro_IdleFB_6: -28314976
+      Guerreio_JumpFB_0: -1608097787
+      Guerreio_JumpFB_1: 1091469552
+      Guerreio_JumpFB_10: -962264539
+      Guerreio_JumpFB_11: -1465889245
+      Guerreio_JumpFB_2: 2095392050
+      Guerreio_JumpFB_3: 1814210617
+      Guerreio_JumpFB_4: -1015023507
+      Guerreio_JumpFB_5: -1050744028
+      Guerreio_JumpFB_6: 469203689
+      Guerreio_JumpFB_7: -798388126
+      Guerreio_JumpFB_8: 250344555
+      Guerreio_JumpFB_9: -1828964516
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

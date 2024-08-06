@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static TextureFunction;
+using Pathfindingsystem;
 
 public class TerrainGeneration : MonoBehaviour
 {
@@ -8,11 +10,20 @@ public class TerrainGeneration : MonoBehaviour
 
     public BlockClass teste;
 
-    public Texture2D map;
+    public Texture2D dotMap;
+    public Texture2D physicalMap;
+    public Texture2D roomsMap;
+    public Texture2D testMap;
 
     public Mesh DEFAULT_MESH;
     public Material DEFAULT_MATERIAL;
 
+    public int seed; public float frequency, limit, scattering;
+
+    public int minRoomSize = 3;
+    public int maxRoomSize = 6;
+
+    #region Vari�veis pr� definidas e constantes
     [SerializeField]
     private int _mapWidth, _mapHeight;
     public int MapWidth
@@ -26,27 +37,77 @@ public class TerrainGeneration : MonoBehaviour
         private set { _mapHeight = value; }
     }
 
-    public GameObject[,] blocks;
+    public Pathfinding pathfinding;
 
+    public int corridorSize = 1;
+    public int minimumDistanceBetweenRooms = 12;
+    #endregion
+    public GameObject[,] blocks;
 
     void Start()
     {
         Instance = this;
 
+        Random.InitState(seed);
+
+        pathfinding = new Pathfinding(MapWidth, MapHeight);
+
         blocks = new GameObject[MapWidth, MapHeight];
 
-        map = new Texture2D(MapWidth, MapHeight);
+        dotMap = new Texture2D(MapWidth, MapHeight);
+        physicalMap = new Texture2D(MapWidth, MapHeight);
+        physicalMap.name = "Physical";
 
-        map = GenerateNoiseTexture(MapWidth, MapHeight, 87654, 0.1f, 0.5f, 0.01f);
+        dotMap = GenerateNoiseTexture(MapWidth, MapHeight, seed, frequency, limit, scattering, true);
 
+        dotMap = SeparateWhiteDots(dotMap, minimumDistanceBetweenRooms, 8);
+
+        dotMap = GeneratePathsOnMap(dotMap);
+
+        physicalMap = GetTexture(dotMap);
+        dotMap = DefineColorListForPaths(dotMap);
+        roomsMap = ExpandWhiteDotsRandomly(dotMap, minRoomSize, minRoomSize, maxRoomSize, maxRoomSize, 1);
+        physicalMap = OtherColorsToTwo(physicalMap, true);
+        testMap = ResizeTextureUp(physicalMap, 3, 3);
+        physicalMap = ExpandWhiteSquare(physicalMap, corridorSize);
+
+        dotMap.name = "Dungeons";
+        GeneratePng(dotMap);
+        testMap.name = "Test";
+        GeneratePng(testMap);   
+
+        Texture2D[] list = new Texture2D[2];
+        list[0] = physicalMap;
+        list[1] = roomsMap;
+
+        physicalMap = MergeWhite(list);
+
+        Color[,] colors = new Color[MapWidth, MapHeight];
+        //X = X, Z = Y
         for (int x = 0; x < MapWidth; x++)
         {
             for (int z = 0; z < MapHeight; z++)
             {
-                PlaceBlock(x, 0, z, teste);
+                if (physicalMap.GetPixel(x, z) == Color.white)
+                    PlaceBlock(x, 0, z, teste);
+                else
+                {
+                    bool generateWall = false;
+                    for (int i = -1; i <= 1; i++)
+                    {
+                        for (int j = -1; j <= 1; j++)
+                        {
+                            if ((j == 0 && i == 0) || !IsInside2DArray(x + i, z + j, colors))
+                                continue;
+                            if (physicalMap.GetPixel(x + i, z + j) == Color.white)
+                                generateWall = true;
+                        }
+                    }
+                    if (generateWall)
+                        PlaceBlock(x, 1.5f, z, teste);
+                }
             }
         }
-
         transform.parent.Find("Player").position = new Vector3(MapWidth / 2, 10, MapHeight / 2);
     }
     #region medo
@@ -55,13 +116,13 @@ public class TerrainGeneration : MonoBehaviour
         
     }
     #endregion
-    public void PlaceBlock(int x, int y, int z, BlockClass type)
+    public void PlaceBlock(int x, float y, int z, BlockClass type)
     {
         //GameObject block = new GameObject(type.blockName);
         GameObject block = new GameObject(type.blockName + " " + x + " " + y + " " + z, typeof(MeshFilter), typeof(MeshRenderer));
         block.layer = 6;
 
-        block.transform.position = new Vector3(x + 0.5f, y + 0.5f, z + 0.5f);
+        block.transform.position = new Vector3(x + 0.5f, y, z + 0.5f);
 
         block.GetComponent<MeshFilter>().mesh = type.mesh == null ? DEFAULT_MESH : type.mesh;
 
@@ -74,7 +135,7 @@ public class TerrainGeneration : MonoBehaviour
             if (type.isBlock)
             {
                 block.AddComponent<BoxCollider>();
-                block.GetComponent<BoxCollider>().size = new Vector3(1.05f, 1, 1.05f);
+                block.GetComponent<BoxCollider>().size += new Vector3(0.1f, 0, 0.1f);
             }
             else
             {
@@ -94,29 +155,9 @@ public class TerrainGeneration : MonoBehaviour
 
         return entity;
     }
-    public bool IsInsideArray(int x, int y, dynamic[,] a) => x >= 0 && y >= 0 && x < a.GetLength(0) && y < a.GetLength(1);
     public void PlaceBlock(Vector3Int coord, BlockClass type)
     {
         PlaceBlock(coord.x, coord.y, coord.z, type);
     }
     public GameObject GetBlockObj(int x, int y) => blocks[x, y];
-    public Texture2D GenerateNoiseTexture(int width, int height, float seed, float frequency, float limit, float scattering)
-    {
-        Texture2D noiseTexture = new Texture2D(width, height);
-        for (int x = 0; x < noiseTexture.width; x++)
-        {
-            for (int y = 0; y < noiseTexture.height; y++)
-            {
-                float v = Mathf.PerlinNoise((x + seed) * frequency, (y + seed) * frequency);
-                noiseTexture.SetPixel(x, y, new Color(v, v, v, 1));
-
-                /*if (v + UnityEngine.Random.Range(-scattering, scattering) > limit)
-                    noiseTexture.SetPixel(x, y, Color.white);
-                else
-                    noiseTexture.SetPixel(x, y, Color.black);*/
-            }
-        }
-        noiseTexture.Apply();
-        return noiseTexture;
-    }
 }

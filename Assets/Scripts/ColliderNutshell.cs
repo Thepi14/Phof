@@ -1,15 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
+[AddComponentMenu("Physics/Collider Nutshell", 0)]
+[RequireComponent(typeof(Collider))]
 public class ColliderNutshell : MonoBehaviour
 {
     #region Variáveis
 
     //Mostrar status para depuração
+    /// <summary>
+    /// Mostra mensagens de depuração.
+    /// </summary>
     [Header("Debug", order = 0)]
     public bool showDebugMessages = false;
-    public bool showOnCollsionMessages = false;
+    /// <summary>
+    /// Mostra mensagens de depuração em tempo real.
+    /// </summary>
+    public bool showOnCollisionMessages = false;
+    /// <summary>
+    /// Mostra os colisores.
+    /// </summary>
+    public bool showDebugColliders = false;
 
     private bool _enteredCollision,
         _onCollision,
@@ -60,17 +73,17 @@ public class ColliderNutshell : MonoBehaviour
     [SerializeField]
     private GameObject colliderContact;
     [SerializeField]
-    private GameObject lastTriggerObject;
+    private GameObject lastTriggerContact;
     [SerializeField]
-    private GameObject lastColliderObject;
+    private GameObject lastColliderContact;
 
     //variáveis somente leitura para providenciar o bloco em colisão atual
     public GameObject TriggerContact { get => triggerContact; private set => triggerContact = value; }
     public GameObject ColliderContact { get => colliderContact; private set => colliderContact = value; }
 
     //variáveis somente leitura para providenciar o bloco da colisão passada
-    public GameObject LastTriggerObject { get => lastTriggerObject; private set => lastTriggerObject = value; }
-    public GameObject LastColliderObject { get => lastColliderObject; private set => lastColliderObject = value; }
+    public GameObject LastTriggerContact { get => lastTriggerContact; private set => lastTriggerContact = value; }
+    public GameObject LastColliderContact { get => lastColliderContact; private set => lastColliderContact = value; }
 
     //variáveis privadas
     /*private GameObject afterActualCol;
@@ -81,8 +94,8 @@ public class ColliderNutshell : MonoBehaviour
     #region Resolução de variáveis
     public void Start()
     {
-        lastColliderObject = null;
-        lastTriggerObject = null;
+        lastColliderContact = null;
+        lastTriggerContact = null;
         colliderContact = null;
         triggerContact = null;
 
@@ -130,7 +143,7 @@ public class ColliderNutshell : MonoBehaviour
         _onCollision = true;
         OnCollision = true;
         //ColliderContact = collision.gameObject;
-        if (showDebugMessages && showOnCollsionMessages)
+        if (showDebugMessages && showOnCollisionMessages)
             Debug.Log("Exited Trigger with " + collision.gameObject.name);
     }
     public void OnCollisionExit(Collision collision)
@@ -158,7 +171,7 @@ public class ColliderNutshell : MonoBehaviour
         _onCollision = true;
         OnCollision = true;
         //ColliderContact = collision.gameObject;
-        if (showDebugMessages && showOnCollsionMessages)
+        if (showDebugMessages && showOnCollisionMessages)
             Debug.Log("Exited Trigger with " + collision.gameObject.name);
     }
     public void OnCollisionExit2D(UnityEngine.Collision2D collision)
@@ -186,7 +199,7 @@ public class ColliderNutshell : MonoBehaviour
         _onTrigger = true;
         OnTrigger = true;
         //TriggerContact = collision.gameObject;
-        if (showDebugMessages && showOnCollsionMessages)
+        if (showDebugMessages && showOnCollisionMessages)
             Debug.Log("Is on Trigger with " + collision.gameObject.name);
     }
     public void OnTriggerExit(Collider collision)
@@ -214,7 +227,7 @@ public class ColliderNutshell : MonoBehaviour
         _onTrigger = true;
         OnTrigger = true;
         //TriggerContact = collision.gameObject;
-        if (showDebugMessages && showOnCollsionMessages)
+        if (showDebugMessages && showOnCollisionMessages)
             Debug.Log("Is on Trigger with " + collision.gameObject.name);
     }
     public void OnTriggerExit2D(UnityEngine.Collider2D collision)
@@ -231,20 +244,25 @@ public class ColliderNutshell : MonoBehaviour
 
     private void SetActualObjectColliding(GameObject obj)
     {
-        LastColliderObject = (ColliderContact != null && ColliderContact != LastColliderObject) || (LastColliderObject == null && ColliderContact != null) ? ColliderContact : LastColliderObject;
+        LastColliderContact = (ColliderContact != null && ColliderContact != LastColliderContact) || (LastColliderContact == null && ColliderContact != null) ? ColliderContact : LastColliderContact;
         ColliderContact = obj;
     }
     private void SetActualObjectTriggering(GameObject obj)
     {
-        LastTriggerObject = (TriggerContact != null && TriggerContact != LastTriggerObject) || (LastColliderObject == null && TriggerContact != null) ? TriggerContact : LastTriggerObject;
+        LastTriggerContact = (TriggerContact != null && TriggerContact != LastTriggerContact) || (LastColliderContact == null && TriggerContact != null) ? TriggerContact : LastTriggerContact;
         TriggerContact = obj;
     }
 
     #endregion
 
     #region Intersecções
-
-    public Collider[] GetColliders()
+    /// <summary>
+    /// Usado para conseguir uma lista de colisores que interseccionem com o colisor criado, usando o colisor atual do <b>GameObject</b>.
+    /// </summary>
+    /// <param name="size">Tamanho opcional para colisores em formato de caixa. (BoxCollider)</param>
+    /// <returns>Uma lista dos colisores detectados.</returns>
+    /// <exception cref="System.NullReferenceException"></exception>
+    public Collider[] GetColliders(Vector3? size = null)
     {
         if (ColliderComponent is Collider)
         {
@@ -255,7 +273,9 @@ public class ColliderNutshell : MonoBehaviour
         if (ColliderComponent is BoxCollider)
         {
             BoxCollider collider = ColliderComponent as BoxCollider;
-            return Physics.OverlapBox(collider.center + transform.position, collider.size, transform.rotation);
+            if (showDebugColliders)
+                GetCollidersDebug(size == null ? collider.size : (Vector3)size);
+            return Physics.OverlapBox(collider.center + transform.position, size == null ? collider.size : (Vector3)size, transform.rotation);
         }
         else if (ColliderComponent is SphereCollider)
         {
@@ -273,7 +293,78 @@ public class ColliderNutshell : MonoBehaviour
             return Physics.OverlapCapsule(dir + transform.position, (dir * -1) + transform.position, collider.radius);
         }
 
+        throw new System.NullReferenceException("Não foi achado nenhum collider bro.");
         return null;
+    }
+    /// <summary>
+    /// Usado para conseguir uma lista de colisores que interseccionem com o colisor criado, usando o colisor atual do <b>GameObject</b>
+    /// </summary>
+    /// <param name="radius">Raio opcional para a esfera ou a cápsula.</param>
+    /// <returns>Uma lista dos colisores detectados.</returns>
+    /// <exception cref="System.NullReferenceException"></exception>
+    public Collider[] GetColliders(int radius)
+    {
+        if (ColliderComponent is Collider)
+        {
+            Collider a = ColliderComponent as Collider;
+            if (!a.isTrigger)
+                return null;
+        }
+        if (showDebugColliders)
+            GetCollidersDebug(Vector3.one * radius);
+        if (ColliderComponent is BoxCollider)
+        {
+            BoxCollider collider = ColliderComponent as BoxCollider;
+            return Physics.OverlapBox(collider.center + transform.position, Vector3.one * radius, transform.rotation);
+        }
+        else if (ColliderComponent is SphereCollider)
+        {
+            SphereCollider collider = ColliderComponent as SphereCollider;
+            return Physics.OverlapSphere(collider.center + transform.position, radius);
+        }
+        else if (ColliderComponent is CapsuleCollider)
+        {
+            CapsuleCollider collider = ColliderComponent as CapsuleCollider;
+            Vector3 dir =
+                collider.direction == 0 ? new Vector3((collider.height / 2), 0, 0) :
+                collider.direction == 1 ? new Vector3(0, (collider.height / 2), 0) :
+                collider.direction == 2 ? new Vector3(0, 0, (collider.height / 2)) :
+                Vector3.zero;
+            return Physics.OverlapCapsule(dir + transform.position, (dir * -1) + transform.position, radius);
+        }
+
+        throw new System.NullReferenceException("Não foi achado nenhum collider bro.");
+        return null;
+    }
+    private void GetCollidersDebug(Vector3 vector)
+    {
+        if (ColliderComponent is Collider)
+        {
+            Collider a = ColliderComponent as Collider;
+            if (!a.isTrigger)
+                return;
+        }
+        if (ColliderComponent is BoxCollider)
+        {
+            BoxCollider collider = ColliderComponent as BoxCollider;
+            Gizmos.color = Color.red;
+            if (showDebugColliders)
+                Gizmos.DrawWireCube(collider.center + transform.position, vector);
+        }
+        else if (ColliderComponent is SphereCollider)
+        {
+            SphereCollider collider = ColliderComponent as SphereCollider;
+            Gizmos.color = Color.red;
+            if (showDebugColliders)
+                Gizmos.DrawSphere(collider.center + transform.position, vector.x);
+        }
+        else if (ColliderComponent is CapsuleCollider)
+        {
+            CapsuleCollider collider = ColliderComponent as CapsuleCollider;
+            Gizmos.color = Color.yellow;
+            if (showDebugColliders)
+                Gizmos.DrawSphere(collider.center + transform.position, vector.x);
+        }
     }
     #endregion
 }
