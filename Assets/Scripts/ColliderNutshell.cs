@@ -286,9 +286,9 @@ public class ColliderNutshell : MonoBehaviour
         {
             CapsuleCollider collider = ColliderComponent as CapsuleCollider;
             Vector3 dir = 
-                collider.direction == 0 ? new Vector3((collider.height / 2), 0, 0) : 
-                collider.direction == 1 ? new Vector3(0, (collider.height / 2), 0) : 
-                collider.direction == 2 ? new Vector3(0, 0, (collider.height / 2)) : 
+                collider.direction == 0 ? new Vector3(((Vector3)size).x * (collider.height / 2), 0, 0) : 
+                collider.direction == 1 ? new Vector3(0, ((Vector3)size).y * (collider.height / 2), 0) : 
+                collider.direction == 2 ? new Vector3(0, 0, ((Vector3)size).z * (collider.height / 2)) : 
                 Vector3.zero;
             return Physics.OverlapCapsule(dir + transform.position, (dir * -1) + transform.position, collider.radius);
         }

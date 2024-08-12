@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -251,6 +251,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90513e67b13a85b419122969380fc31e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entity:
+    name: 
+    level: 1
+    currentHealth: 0
+    maxHealth: 0
+    currentStamina: 0
+    maxStamina: 0
+    currentMana: 0
+    maxMana: 0
+    strength: 1
+    resistence: 1
+    intelligence: 1
+    damage: 1
+    defense: 1
+    speed: 2
+    attackDistance: 0.5
+    attackTimer: 1
+    multiAtaque: 0
+    cooldown: 2
+    inCombat: 0
+    target: {fileID: 0}
+    combatCoroutine: 0
+    dead: 0
   _speed: 2
   _jumpForce: 2
   idleFrames:
@@ -402,7 +425,7 @@ MonoBehaviour:
     strength: 1
     resistence: 1
     intelligence: 1
-    demage: 1
+    damage: 1
     defense: 1
     speed: 1
     attackDistance: 0.5
@@ -1128,21 +1151,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5662c6cebb781c4084c0b1064d1df08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teste: {fileID: 11400000, guid: c63a92eb23088ea4fb867dd87a3a37ef, type: 2}
+  biome: {fileID: 11400000, guid: 43971da0980b3f7448d635ff7e2ad48f, type: 2}
   dotMap: {fileID: 0}
   physicalMap: {fileID: 0}
   roomsMap: {fileID: 0}
-  testMap: {fileID: 0}
-  DEFAULT_MESH: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  DEFAULT_MESH: {fileID: 5159557868297216081, guid: 73c1ae02814fb3842b1e2ab98c7b6dd0, type: 3}
   DEFAULT_MATERIAL: {fileID: 2100000, guid: a00251c2ebd815c49bbdaf97a4691fc7, type: 2}
-  seed: 24552
+  seed: 24556
   frequency: 0.2
   limit: 0.9
   scattering: 0
   minRoomSize: 3
   maxRoomSize: 8
-  _mapWidth: 200
-  _mapHeight: 200
+  _mapWidth: 100
+  _mapHeight: 100
   corridorSize: 1
   minimumDistanceBetweenRooms: 12
 --- !u!1 &2055591378

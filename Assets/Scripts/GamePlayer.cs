@@ -7,14 +7,14 @@ using GameManagerSystem;
 
 public class GamePlayer : MonoBehaviour
 {
-    public Player entity => GetComponent<Player>();
+    public EntityData entity;
     #region Variáveis obrigatórias
     public static GamePlayer player;
     [Header("Variáveis Obrigatórias", order = 0)]
     private float maxJumpSpeed = 7f;
     [SerializeField]
     private float _speed = 1f;
-    public float Speed => entity.player.speed * 100;
+    public float Speed => entity.speed * 100;
     [SerializeField]
     private float _jumpForce = 1f;
     public float JumpForce => Mathf.Sqrt(_jumpForce);
@@ -50,18 +50,13 @@ public class GamePlayer : MonoBehaviour
 
     void Start()
     {
-        /*if(manager == null)
-        {
-            Debug.LogError("Anexa o game manager no player prr");
-            return;
-        }*/
-        entity.player.maxHealth = GameManager.CalculateHealth(entity.player);
-        entity.player.maxMana = GameManager.CalculateMana(entity.player);
-        entity.player.maxStamina = GameManager.CalculateStamina(entity.player);
+        entity.maxHealth = GameManager.CalculateHealth(entity);
+        entity.maxMana = GameManager.CalculateMana(entity);
+        entity.maxStamina = GameManager.CalculateStamina(entity);
 
-        entity.player.currentHealth = entity.player.maxHealth;
-        entity.player.currentMana = entity.player.maxStamina;
-        entity.player.currentStamina = entity.player.maxStamina;
+        entity.currentHealth = entity.maxHealth;
+        entity.currentMana = entity.maxStamina;
+        entity.currentStamina = entity.maxStamina;
 
         animater = new Animater(SpriteRenderer);
         animater.Animate(this, new Anime("Idle", idleFrames, true, 12));
