@@ -9,6 +9,7 @@ using UnityEditor;
 public class TerrainGeneration : MonoBehaviour
 {
     public static TerrainGeneration Instance;
+    [SerializeField] private GameObject wallParent, floorParent;
 
     public Biome biome;
 
@@ -277,9 +278,15 @@ public class TerrainGeneration : MonoBehaviour
         }
 
         if (!wall)
+        {
             floors[x, z] = block;
-        if (wall)
+            block.transform.parent = floorParent.transform;
+        }
+        else
+        {
             walls[x, z] = block;
+            block.transform.parent = wallParent.transform;
+        }
     }
     public GameObject SpawnEntity(float x, float z, string tag)
     {
