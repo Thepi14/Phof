@@ -17,6 +17,8 @@ public class TerrainGeneration : MonoBehaviour
     public Texture2D dotMap;
     public Texture2D physicalMap;
     public Texture2D roomsMap;
+    private Texture2D roomsMapDoorVerification;
+    public Texture2D lol;
 
     public Mesh DEFAULT_MESH;
     public Material DEFAULT_MATERIAL;
@@ -45,7 +47,8 @@ public class TerrainGeneration : MonoBehaviour
     public int corridorSize = 1;
     public int minimumDistanceBetweenRooms = 12;
     #endregion
-    public GameObject[,] blocks;
+    public GameObject[,] walls;
+    public GameObject[,] floors;
 
     void Start()
     {
@@ -63,10 +66,13 @@ public class TerrainGeneration : MonoBehaviour
 
         pathfinding = new Pathfinding(MapWidth, MapHeight);
 
-        blocks = new GameObject[MapWidth, MapHeight];
+        walls = new GameObject[MapWidth, MapHeight];
+        floors = new GameObject[MapWidth, MapHeight];
 
         dotMap = new Texture2D(MapWidth, MapHeight);
         physicalMap = new Texture2D(MapWidth, MapHeight);
+        lol = new Texture2D(MapWidth, MapHeight);
+
         physicalMap.name = "Physical";
 
         dotMap = GenerateNoiseTexture(MapWidth, MapHeight, seed, frequency, limit, scattering, true);
@@ -80,6 +86,7 @@ public class TerrainGeneration : MonoBehaviour
         //dotMap = ExpandBlackOnNonWhite(dotMap, 2);
 
         roomsMap = ExpandWhiteDotsRandomly(dotMap, minRoomSize, minRoomSize, maxRoomSize, maxRoomSize, 3);
+        roomsMapDoorVerification = ExpandWhiteSquare(roomsMap, 1);
 
         physicalMap = OtherColorsToTwo(roomsMap, true);
         physicalMap = ExpandWhiteSquare(physicalMap, corridorSize);
@@ -95,17 +102,81 @@ public class TerrainGeneration : MonoBehaviour
 
         Color[,] colors = new Color[MapWidth, MapHeight];
 
+        bool DetectCorner(int x, int y, int ex, int ey) => !PixelIsBW(roomsMap, x + ex, y) && !PixelIsBW(roomsMap, x, y + ey);
+
         foreach (RoomNode room in rooms)
         {
-            PlaceBlock(new Vector3(room.LeftDownCornerPosition.x, 0, room.LeftDownCornerPosition.y), biome.groundBlocks[0]);
-            PlaceBlock(new Vector3(room.RightUpCornerPosition.x, 0, room.RightUpCornerPosition.y), biome.groundBlocks[0]);
-            PlaceBlock(new Vector3(room.LeftDownCornerPosition.x, 0, room.RightUpCornerPosition.y), biome.groundBlocks[0]);
-            PlaceBlock(new Vector3(room.RightUpCornerPosition.x, 0, room.LeftDownCornerPosition.y), biome.groundBlocks[0]);
+            PlaceBlock(new Vector3(room.LeftDownCornerPosition.x, 1.5f, room.LeftDownCornerPosition.y), biome.pillarBlocks[0], true, null, null);
+            PlaceBlock(new Vector3(room.RightUpCornerPosition.x, 1.5f, room.RightUpCornerPosition.y), biome.pillarBlocks[0], true, null, null);
+            PlaceBlock(new Vector3(room.LeftDownCornerPosition.x, 1.5f, room.RightUpCornerPosition.y), biome.pillarBlocks[0], true, null, null);
+            PlaceBlock(new Vector3(room.RightUpCornerPosition.x, 1.5f, room.LeftDownCornerPosition.y), biome.pillarBlocks[0], true, null, null);
 
-            PlaceBlock(new Vector3(room.LeftDownCornerPosition.x, 1.5f, room.LeftDownCornerPosition.y), biome.pillarBlocks[0]);
-            PlaceBlock(new Vector3(room.RightUpCornerPosition.x, 1.5f, room.RightUpCornerPosition.y), biome.pillarBlocks[0]);
-            PlaceBlock(new Vector3(room.LeftDownCornerPosition.x, 1.5f, room.RightUpCornerPosition.y), biome.pillarBlocks[0]);
-            PlaceBlock(new Vector3(room.RightUpCornerPosition.x, 1.5f, room.LeftDownCornerPosition.y), biome.pillarBlocks[0]);
+            for (int x = room.LeftDownCornerPosition.x; x <= room.RightUpCornerPosition.x; x++)
+            {
+                for (int y = room.LeftDownCornerPosition.y; y <= room.RightUpCornerPosition.y; y++)
+                {
+                    if (roomsMapDoorVerification.GetPixel(x, y) == Color.white || roomsMapDoorVerification.GetPixel(x, y) == Color.black)
+                        continue;
+                    room.doors.Add(new Door(new Vector2Int(x, y), x == room.LeftDownCornerPosition.x ? new Vector2Int(-1, 0) : x == room.RightUpCornerPosition.x ? new Vector2Int(1, 0) : y == room.LeftDownCornerPosition.y ? new Vector2Int(0, -1) : new Vector2Int(0, 1)));
+                }
+            }
+
+            foreach (Door door in room.doors)
+            {
+                if (door.facing.x == 1 || door.facing.x == -1)
+                {
+                    //PlaceBlock(new Vector3(door.position.x, 3f, door.position.y), biome.pillarBlocks[0], true, null, null);
+                    PlaceBlock(new Vector3(door.position.x, 1.5f, door.position.y + 2), biome.pillarBlocks[0], true, null, null);
+                    PlaceBlock(new Vector3(door.position.x, 1.5f, door.position.y - 2), biome.pillarBlocks[0], true, null, null);
+                }
+                else if (door.facing.y == 1 || door.facing.y == -1)
+                {
+                    //PlaceBlock(new Vector3(door.position.x, 3f, door.position.y), biome.pillarBlocks[0], true, null, null);
+                    PlaceBlock(new Vector3(door.position.x - 2, 1.5f, door.position.y), biome.pillarBlocks[0], true, null, null);
+                    PlaceBlock(new Vector3(door.position.x + 2, 1.5f, door.position.y), biome.pillarBlocks[0], true, null, null);
+                }
+            }
+            /*if (dotMap.GetPixel(room.position.x + 1, room.position.y) != Color.black)
+            {
+                PlaceBlock(new Vector3(room.RightUpCornerPosition.x, 1.5f, room.position.y + 2), biome.pillarBlocks[0], true, null, null);
+                PlaceBlock(new Vector3(room.RightUpCornerPosition.x, 1.5f, room.position.y - 2), biome.pillarBlocks[0], true, null, null);
+            }
+            if (dotMap.GetPixel(room.position.x - 1, room.position.y) != Color.black)
+            {
+                PlaceBlock(new Vector3(room.LeftDownCornerPosition.x, 1.5f, room.position.y + 2), biome.pillarBlocks[0], true, null, null);
+                PlaceBlock(new Vector3(room.LeftDownCornerPosition.x, 1.5f, room.position.y - 2), biome.pillarBlocks[0], true, null, null);
+            }
+            if (dotMap.GetPixel(room.position.x, room.position.y + 1) != Color.black)
+            {
+                PlaceBlock(new Vector3(room.position.x + 2, 1.5f, room.RightUpCornerPosition.y), biome.pillarBlocks[0], true, null, null);
+                PlaceBlock(new Vector3(room.position.x - 2, 1.5f, room.RightUpCornerPosition.y), biome.pillarBlocks[0], true, null, null);
+            }
+            if (dotMap.GetPixel(room.position.x, room.position.y - 1) != Color.black)
+            {
+                PlaceBlock(new Vector3(room.position.x + 2, 1.5f, room.LeftDownCornerPosition.y), biome.pillarBlocks[0], true, null, null);
+                PlaceBlock(new Vector3(room.position.x - 2, 1.5f, room.LeftDownCornerPosition.y), biome.pillarBlocks[0], true, null, null);
+            }*/
+        }
+
+        //X = X, Z = Y
+        for (int x = 0; x < MapWidth; x++)
+        {
+            for (int z = 0; z < MapHeight; z++)
+            {
+                if (dotMap.GetPixel(x, z) == Color.white || dotMap.GetPixel(x, z) == Color.black)
+                    continue;
+                Debug.Log(physicalMap.GetPixel(x, z));
+                if (DetectCorner(x, z, 1, 1) || DetectCorner(x, z, -1, -1))
+                {
+                    PlaceBlock(x + 2, 1.5f, z + 2, biome.pillarBlocks[0], true, null, null);
+                    PlaceBlock(x - 2, 1.5f, z - 2, biome.pillarBlocks[0], true, null, null);
+                }
+                if (DetectCorner(x, z, 1, -1) || DetectCorner(x, z, -1, 1))
+                {
+                    PlaceBlock(x + 2, 1.5f, z - 2, biome.pillarBlocks[0], true, null, null);
+                    PlaceBlock(x - 2, 1.5f, z + 2, biome.pillarBlocks[0], true, null, null);
+                }
+            }
         }
 
         //X = X, Z = Y
@@ -115,7 +186,8 @@ public class TerrainGeneration : MonoBehaviour
             {
                 if (physicalMap.GetPixel(x, z) == Color.white)
                     PlaceBlock(x, 0, z, biome.groundBlocks[0]);
-                else
+
+                if (physicalMap.GetPixel(x, z) == Color.black)
                 {
                     bool generateWall = false;
 
@@ -132,34 +204,43 @@ public class TerrainGeneration : MonoBehaviour
                             }
                         }
                     }
-                    if (generateWall && blocks[x, z] == null)
+                    if (generateWall && walls[x, z] == null)
                     {
                         PlaceBlock(x, 0, z, biome.groundBlocks[0]);
                         if (physicalMap.GetPixel(x - 1, z) == Color.white)
                         {
-                            PlaceBlock(x, 1.5f, z, biome.wallBlocks[0], new Vector3(0, 0, -90));
+                            PlaceBlock(x, 1.5f, z, biome.wallBlocks[0], true, new Vector3(0, 0, -90), null);
                         }
                         else if (physicalMap.GetPixel(x + 1, z) == Color.white)
                         {
-                            PlaceBlock(x, 1.5f, z, biome.wallBlocks[0], new Vector3(0, 0, 90));
+                            PlaceBlock(x, 1.5f, z, biome.wallBlocks[0], true, new Vector3(0, 0, 90), null);
                         }
                         else
                         {
-                            PlaceBlock(x, 1.5f, z, biome.wallBlocks[0]);
+                            PlaceBlock(x, 1.5f, z, biome.wallBlocks[0], true, null, null);
                         }
+                    }
+                    else if (generateWall && floors[x, z] == null)
+                    {
+                        PlaceBlock(x, 0, z, biome.groundBlocks[0]);
                     }
                 }
             }
         }
     }
+    public
     #region medo
     void Update()
     {
         
     }
     #endregion
-    public void PlaceBlock(int x, float y, int z, BlockClass type, Vector3? rotation = null, Vector3? scale = null)
+    public void PlaceBlock(int x, float y, int z, BlockClass type, bool wall = false, Vector3? rotation = null, Vector3? scale = null)
     {
+        if (floors[x, z] != null && !wall)
+            return;
+        if (walls[x, z] != null && wall)
+            return;
         if (rotation == null)
             rotation = Vector3.zero;
         if (scale == null)
@@ -195,7 +276,10 @@ public class TerrainGeneration : MonoBehaviour
             block.GetComponent<Rigidbody>().isKinematic = true;
         }
 
-        blocks[x, z] = block;
+        if (!wall)
+            floors[x, z] = block;
+        if (wall)
+            walls[x, z] = block;
     }
     public GameObject SpawnEntity(float x, float z, string tag)
     {
@@ -203,8 +287,9 @@ public class TerrainGeneration : MonoBehaviour
 
         return entity;
     }
-    public void PlaceBlock(Vector3 coord, BlockClass type, Vector3? rotation = null, Vector3? scale = null) => PlaceBlock((int)coord.x, coord.y, (int)coord.z, type, rotation, scale);
-    public GameObject GetBlockObj(int x, int y) => blocks[x, y];
+    public void PlaceBlock(Vector3 coord, BlockClass type, bool wall = false, Vector3? rotation = null, Vector3? scale = null) => PlaceBlock((int)coord.x, coord.y, (int)coord.z, type, wall, rotation, scale);
+    public GameObject GetWallObj(int x, int y) => walls[x, y];
+    public GameObject GetFloorObj(int x, int y) => floors[x, y];
     /// <summary>
     /// Script que aumenta pontos brancos únicos para quadrados/retângulos maiores que oscilam entre os tamanhos mínimos e máximos de x e y, definindo também um espaço máximo entre esses retângulos.
     /// </summary>

@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace RoomSystem
 {
+    [Serializable]
     public class RoomNode
     {
         public int id;
@@ -17,6 +19,7 @@ namespace RoomSystem
         public int height;
 
         public List<Door> doors;
+        [SerializeReference]
         public List<RoomNode> roomChildren;
 
         public RoomNode(int id, Vector2Int position, int width, int height)
@@ -32,6 +35,7 @@ namespace RoomSystem
             return "Room ID: " + id + ", X: " + position.x + ", Y: " + position.y + ", W: " + width + ", H: " + height;
         }
     }
+    [Serializable]
     public class Door
     {
         public List<GameObject> doorBlocks;

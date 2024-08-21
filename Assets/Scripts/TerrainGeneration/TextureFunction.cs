@@ -1301,4 +1301,6 @@ public class TextureFunction
         newTex.Apply();
         return newTex;
     }
+    public static bool PixelIsBW(Texture2D texture, int x, int y) => texture.GetPixel(x, y) == Color.white || texture.GetPixel(x, y) == Color.black;
+    public static bool PixelIsB(Texture2D texture, int x, int y) => texture.GetPixel(x, y) == Color.black;
 }

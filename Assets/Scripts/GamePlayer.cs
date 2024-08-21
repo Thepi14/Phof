@@ -86,8 +86,8 @@ public class GamePlayer : MonoBehaviour
 
         if (RB.velocity.x > 0.1f || RB.velocity.x < -0.1f)
             SpriteObj.transform.localScale = XZInput.y < 0 ?
-                new Vector3(1, 1, 1) :
-                new Vector3(-1, 1, 1);
+                new Vector3(-1, 1, 1) :
+                new Vector3(1, 1, 1);
         if (!OnGround && animater.currentAnimation.name != "Jump")
         {
             animater.Animate(this, new Anime("Jump", jumpFrames, false, 12, true));

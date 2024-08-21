@@ -277,31 +277,27 @@ MonoBehaviour:
   _speed: 2
   _jumpForce: 2
   idleFrames:
-  - {fileID: 1352407677, guid: f063e5d0bfe3a8a499ebac198ff177b3, type: 3}
-  - {fileID: -1886699107, guid: f063e5d0bfe3a8a499ebac198ff177b3, type: 3}
-  - {fileID: 1275811706, guid: f063e5d0bfe3a8a499ebac198ff177b3, type: 3}
-  - {fileID: -9201127, guid: f063e5d0bfe3a8a499ebac198ff177b3, type: 3}
-  - {fileID: -970649519, guid: f063e5d0bfe3a8a499ebac198ff177b3, type: 3}
-  - {fileID: -1318844109, guid: f063e5d0bfe3a8a499ebac198ff177b3, type: 3}
-  - {fileID: -28314976, guid: f063e5d0bfe3a8a499ebac198ff177b3, type: 3}
+  - {fileID: -2098278483, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
   walkFrames:
-  - {fileID: -1506420292, guid: 06742c0d624fb0e48a812ea80e2c7f74, type: 3}
-  - {fileID: -215857031, guid: 06742c0d624fb0e48a812ea80e2c7f74, type: 3}
-  - {fileID: 872398495, guid: 06742c0d624fb0e48a812ea80e2c7f74, type: 3}
-  - {fileID: -1290981998, guid: 06742c0d624fb0e48a812ea80e2c7f74, type: 3}
-  - {fileID: 1425740018, guid: 06742c0d624fb0e48a812ea80e2c7f74, type: 3}
-  - {fileID: 1037014903, guid: 06742c0d624fb0e48a812ea80e2c7f74, type: 3}
-  - {fileID: -281858593, guid: 06742c0d624fb0e48a812ea80e2c7f74, type: 3}
-  - {fileID: -2057634831, guid: 06742c0d624fb0e48a812ea80e2c7f74, type: 3}
+  - {fileID: -2098278483, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
+  - {fileID: 233256431, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
+  - {fileID: -1229161404, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
+  - {fileID: 1422825581, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
+  - {fileID: -2125730265, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
+  - {fileID: -239275784, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
+  - {fileID: -2070077776, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
+  - {fileID: 744283135, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
+  - {fileID: -548851791, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
+  - {fileID: -1367044595, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
+  - {fileID: -1248569088, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
+  - {fileID: 169012655, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
+  - {fileID: -8051670, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
   jumpFrames:
-  - {fileID: -1050744028, guid: f3348adcb6e2ed942b85dd4d880a1d8f, type: 3}
-  - {fileID: 469203689, guid: f3348adcb6e2ed942b85dd4d880a1d8f, type: 3}
-  - {fileID: -798388126, guid: f3348adcb6e2ed942b85dd4d880a1d8f, type: 3}
-  - {fileID: 250344555, guid: f3348adcb6e2ed942b85dd4d880a1d8f, type: 3}
+  - {fileID: -548851791, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
+  - {fileID: -1367044595, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
   landFrames:
-  - {fileID: -1828964516, guid: f3348adcb6e2ed942b85dd4d880a1d8f, type: 3}
-  - {fileID: -962264539, guid: f3348adcb6e2ed942b85dd4d880a1d8f, type: 3}
-  - {fileID: -1465889245, guid: f3348adcb6e2ed942b85dd4d880a1d8f, type: 3}
+  - {fileID: -1248569088, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
+  - {fileID: 169012655, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
   _onGround: 0
   velocity: {x: 0, y: 0, z: 0}
   XZInput: {x: 0, y: 0}
@@ -1152,9 +1148,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   biome: {fileID: 11400000, guid: 43971da0980b3f7448d635ff7e2ad48f, type: 2}
+  rooms: []
   dotMap: {fileID: 0}
   physicalMap: {fileID: 0}
   roomsMap: {fileID: 0}
+  lol: {fileID: 0}
   DEFAULT_MESH: {fileID: 5159557868297216081, guid: 73c1ae02814fb3842b1e2ab98c7b6dd0, type: 3}
   DEFAULT_MATERIAL: {fileID: 2100000, guid: a00251c2ebd815c49bbdaf97a4691fc7, type: 2}
   seed: 24556
@@ -1167,6 +1165,9 @@ MonoBehaviour:
   _mapHeight: 100
   corridorSize: 1
   minimumDistanceBetweenRooms: 12
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &2055591378
 GameObject:
   m_ObjectHideFlags: 0

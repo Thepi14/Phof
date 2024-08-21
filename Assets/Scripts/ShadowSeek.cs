@@ -15,7 +15,7 @@ public class ShadowSeek : MonoBehaviour
         transform.localScale = Scale;
         var t = shadowCastObject.transform.position;
 
-        if (!IsInside2DArray((int)t.x, (int)t.z, Instance.blocks))
+        if (!IsInside2DArray((int)t.x, (int)t.z, Instance.floors))
         {
             transform.localPosition = new Vector3(0, -1000, 0); // :O omagaaaaaa 
             return;
@@ -25,8 +25,8 @@ public class ShadowSeek : MonoBehaviour
         {
             transform.localPosition = new Vector3(
                 0 + Displacement.x,
-                Instance.GetBlockObj((int)t.x, (int)t.z) != null ? 
-                (Instance.GetBlockObj((int)t.x, (int)t.z).transform.position.y - shadowCastObject.transform.position.y) + 0.55f : -1000,
+                Instance.GetFloorObj((int)t.x, (int)t.z) != null ? 
+                (Instance.GetFloorObj((int)t.x, (int)t.z).transform.position.y - shadowCastObject.transform.position.y) + 0.55f : -1000,
                 0 + Displacement.y);
         }
     }
