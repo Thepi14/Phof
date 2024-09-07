@@ -5,6 +5,7 @@ using static TextureFunction;
 using Pathfindingsystem;
 using RoomSystem;
 using UnityEditor;
+using static NavMeshUpdate;
 
 public class TerrainGeneration : MonoBehaviour
 {
@@ -166,7 +167,7 @@ public class TerrainGeneration : MonoBehaviour
             {
                 if (dotMap.GetPixel(x, z) == Color.white || dotMap.GetPixel(x, z) == Color.black)
                     continue;
-                Debug.Log(physicalMap.GetPixel(x, z));
+                //Debug.Log(physicalMap.GetPixel(x, z));
                 if (DetectCorner(x, z, 1, 1) || DetectCorner(x, z, -1, -1))
                 {
                     PlaceBlock(x + 2, 1.5f, z + 2, biome.pillarBlocks[0], true, null, null);
@@ -228,6 +229,8 @@ public class TerrainGeneration : MonoBehaviour
                 }
             }
         }
+
+        navMeshUpdateInstance.BuildNavMesh();
     }
     public
     #region medo
