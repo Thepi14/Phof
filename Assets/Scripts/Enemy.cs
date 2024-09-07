@@ -36,6 +36,7 @@ public class Enemy : MonoBehaviour
         entityData.currentStamina = entityData.maxStamina;
 
         entityData.damage = GameManager.CalculateDamage(entityData);
+        entityData.damage =  GameManager.CalculateDamage(entityData);
         entityData.defense = GameManager.CalculateDefense(entityData);
 
         agent = GetComponent<NavMeshAgent>();
