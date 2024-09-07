@@ -8,6 +8,13 @@ public class NavMeshUpdate : MonoBehaviour
 {
     [SerializeField]
     private NavMeshSurface surface;
+    public static NavMeshUpdate navMeshUpdateInstance;
+
+    private void Start()
+    {
+        navMeshUpdateInstance = this;
+    }
+    public void BuildNavMesh()
     {
         surface.BuildNavMesh();
     }
