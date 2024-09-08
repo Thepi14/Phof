@@ -251,7 +251,6 @@ public class TerrainGeneration : MonoBehaviour
             scale = type.blockSize;
         //GameObject block = new GameObject(type.blockName);
         GameObject block = new GameObject(type.blockName + " " + x + " " + y + " " + z, typeof(MeshFilter), typeof(MeshRenderer));
-        block.layer = 6;
 
         block.transform.position = new Vector3(x + 0.5f, y, z + 0.5f);
         block.transform.localScale = (Vector3)scale;
@@ -284,11 +283,13 @@ public class TerrainGeneration : MonoBehaviour
         {
             floors[x, z] = block;
             block.transform.parent = floorParent.transform;
+            block.layer = 7;
         }
         else
         {
             walls[x, z] = block;
             block.transform.parent = wallParent.transform;
+            block.layer = 6;
         }
     }
     public GameObject SpawnEntity(float x, float z, string tag)
