@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using EntityDataSystem;
 
 namespace GameManagerSystem
 {
@@ -46,7 +47,7 @@ namespace GameManagerSystem
         /// <param name="entity">Entidade.</param>
         /// <param name="weaponDamage">Dano da arma.</param>
         /// <returns>A quantidade de dano.</returns>
-        public static Int32 CalculateDamage(EntityData entity, int weaponDamage = 1)
+        public static Int32 CalculateDamage(EntityData entity, int weaponDamage = 0)
         {
             System.Random random = new System.Random();
             Int32 result = (entity.strength * 2) + (weaponDamage * 2) + (entity.level * 3) + random.Next(1, 20);
@@ -58,7 +59,7 @@ namespace GameManagerSystem
         /// <param name="entity"></param>
         /// <param name="armorDefense"></param>
         /// <returns>O valor da defesa.</returns>
-        public static Int32 CalculateDefense(EntityData entity, int armorDefense = 1)
+        public static Int32 CalculateDefense(EntityData entity, int armorDefense = 0)
         {
             Int32 result = (entity.resistence * 2) + (entity.level * 3) + armorDefense;
             return result;

@@ -7,8 +7,13 @@ public class CheckAttack : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        
         if (other.gameObject.CompareTag("GamePlayer"))
-           gameObject.GetComponentInParent<Enemy>().entityData.inCombat = true;
+        {
+            gameObject.GetComponentInParent<Enemy>().entityData.inCombat = true;
+            Debug.Log("Player detectado");
+        }
+
     }
 
     private void OnTriggerExit(Collider other)
@@ -16,6 +21,7 @@ public class CheckAttack : MonoBehaviour
         if(other.gameObject.CompareTag("GamePlayer"))
         {
            gameObject.GetComponentInParent<Enemy>().entityData.inCombat = false;
+            Debug.Log("Player não detectado");
         }
     }
 }

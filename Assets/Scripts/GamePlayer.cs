@@ -4,6 +4,7 @@ using UnityEngine;
 using static CameraControl;
 using static TerrainGeneration;
 using GameManagerSystem;
+using EntityDataSystem;
 
 public class GamePlayer : MonoBehaviour
 {
@@ -34,7 +35,7 @@ public class GamePlayer : MonoBehaviour
 
     [SerializeField]
     private Vector3 velocity;
-    public Vector2 XZInput; //X vector (vertical) = Z input, Y vector (horizontal) = X input.
+    public Vector2 XZInput; //X vector (vertical) = Z input, Y vector (horizontal) = X inpu
     #endregion
 
     #region Variáveis pré-definidas
@@ -48,6 +49,7 @@ public class GamePlayer : MonoBehaviour
     public GameObject AttackArea => transform.Find("AttackArea").gameObject;
     #endregion
 
+    private float time;
     void Start()
     {
         entity.maxHealth = GameManager.CalculateHealth(entity);
@@ -62,6 +64,7 @@ public class GamePlayer : MonoBehaviour
         animater.Animate(this, new Anime("Idle", idleFrames, true, 12));
         player = this;
         transform.Find("ShadowObject").GetComponent<ShadowSeek>().shadowCastObject = gameObject;
+        entity.canMove = true;
 
         MainCameraControl.focusObject = gameObject;
         MainCameraControl.focusMode = FocusMode.moveToFocusXYZ;
@@ -69,7 +72,9 @@ public class GamePlayer : MonoBehaviour
     void FixedUpdate()
     {
         XZInput = new Vector2(Input.GetAxis("Vertical"), Input.GetAxis("Horizontal"));
-        RB.velocity = new Vector3(XZInput.y * Speed * Time.fixedDeltaTime, RB.velocity.y, XZInput.x * Speed * Time.fixedDeltaTime);
+
+        if(entity.canMove && XZInput != new Vector2(0,0))
+            RB.velocity = new Vector3(XZInput.y * Speed * Time.fixedDeltaTime, RB.velocity.y, XZInput.x * Speed * Time.fixedDeltaTime);
 
         OnGround = GroundDetector.TriggerIsActive && (GroundDetector.TriggerContact != null ? (GroundDetector.TriggerContact.layer == 6 ? true : false) : true);
         if (Input.GetButton("Jump") && OnGround)
@@ -122,4 +127,5 @@ public class GamePlayer : MonoBehaviour
             animater.freezeAnimation = !animater.freezeAnimation;
         }
     }
+    
 }
