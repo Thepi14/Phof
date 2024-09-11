@@ -5,6 +5,7 @@ using static TextureFunction;
 using Pathfindingsystem;
 using RoomSystem;
 using UnityEditor;
+using static NavMeshUpdate;
 
 public class TerrainGeneration : MonoBehaviour
 {
@@ -166,7 +167,7 @@ public class TerrainGeneration : MonoBehaviour
             {
                 if (dotMap.GetPixel(x, z) == Color.white || dotMap.GetPixel(x, z) == Color.black)
                     continue;
-                Debug.Log(physicalMap.GetPixel(x, z));
+                //Debug.Log(physicalMap.GetPixel(x, z));
                 if (DetectCorner(x, z, 1, 1) || DetectCorner(x, z, -1, -1))
                 {
                     PlaceBlock(x + 2, 1.5f, z + 2, biome.pillarBlocks[0], true, null, null);
@@ -228,6 +229,8 @@ public class TerrainGeneration : MonoBehaviour
                 }
             }
         }
+
+        navMeshUpdateInstance.BuildNavMesh();
     }
     public
     #region medo
@@ -248,7 +251,6 @@ public class TerrainGeneration : MonoBehaviour
             scale = type.blockSize;
         //GameObject block = new GameObject(type.blockName);
         GameObject block = new GameObject(type.blockName + " " + x + " " + y + " " + z, typeof(MeshFilter), typeof(MeshRenderer));
-        block.layer = 6;
 
         block.transform.position = new Vector3(x + 0.5f, y, z + 0.5f);
         block.transform.localScale = (Vector3)scale;
@@ -281,11 +283,13 @@ public class TerrainGeneration : MonoBehaviour
         {
             floors[x, z] = block;
             block.transform.parent = floorParent.transform;
+            block.layer = 7;
         }
         else
         {
             walls[x, z] = block;
             block.transform.parent = wallParent.transform;
+            block.layer = 6;
         }
     }
     public GameObject SpawnEntity(float x, float z, string tag)

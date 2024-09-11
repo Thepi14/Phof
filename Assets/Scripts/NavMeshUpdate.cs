@@ -8,8 +8,25 @@ public class NavMeshUpdate : MonoBehaviour
 {
     [SerializeField]
     private NavMeshSurface surface;
+<<<<<<< HEAD
     void Start()
+=======
+    public static NavMeshUpdate navMeshUpdateInstance;
+
+    private void Start()
+    {
+        navMeshUpdateInstance = this;
+    }
+    public void BuildNavMesh()
+>>>>>>> 31cc3995429256f62ebeae524e8610e23e3ae4e3
     {
         surface.BuildNavMesh();
     }
+    //SIM EU SEI ISSO É UMA GAMBIARRA
+    //mas ninguém pode me impedir ha (só o Marcos)
+    //para contexto, eu tava testando esse projeto na escola e estava funcionando normalmente,
+    //mas quando eu coloquei ele na minha casa ele só não funcionou, então eu resolvi da minha forma.
+    //evitei de colocar no Update porque trava muito.
+    //O projeto que eu peguei é do commit "NavMesh aqui prr".
+    //-- Jão
 }

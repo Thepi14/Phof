@@ -57,7 +57,12 @@ public class Enemy : MonoBehaviour
         entityData.currentMana = entityData.maxMana;
         entityData.currentStamina = entityData.maxStamina;
 
+<<<<<<< HEAD
 
+=======
+        entityData.damage = GameManager.CalculateDamage(entityData);
+        entityData.damage =  GameManager.CalculateDamage(entityData);
+>>>>>>> 31cc3995429256f62ebeae524e8610e23e3ae4e3
         entityData.defense = GameManager.CalculateDefense(entityData);
         playerPlayer = player.GetComponent<GamePlayer>();
 

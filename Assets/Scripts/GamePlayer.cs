@@ -52,6 +52,8 @@ public class GamePlayer : MonoBehaviour
     private float time;
     void Start()
     {
+        player = this;
+
         entity.maxHealth = GameManager.CalculateHealth(entity);
         entity.maxMana = GameManager.CalculateMana(entity);
         entity.maxStamina = GameManager.CalculateStamina(entity);
@@ -62,7 +64,6 @@ public class GamePlayer : MonoBehaviour
 
         animater = new Animater(SpriteRenderer);
         animater.Animate(this, new Anime("Idle", idleFrames, true, 12));
-        player = this;
         transform.Find("ShadowObject").GetComponent<ShadowSeek>().shadowCastObject = gameObject;
         entity.canMove = true;
 
@@ -76,7 +77,7 @@ public class GamePlayer : MonoBehaviour
         if(entity.canMove && XZInput != new Vector2(0,0))
             RB.velocity = new Vector3(XZInput.y * Speed * Time.fixedDeltaTime, RB.velocity.y, XZInput.x * Speed * Time.fixedDeltaTime);
 
-        OnGround = GroundDetector.TriggerIsActive && (GroundDetector.TriggerContact != null ? (GroundDetector.TriggerContact.layer == 6 ? true : false) : true);
+        OnGround = GroundDetector.TriggerIsActive && (GroundDetector.TriggerContact != null ? (GroundDetector.TriggerContact.layer == 7 ? true : false) : true);
         if (Input.GetButton("Jump") && OnGround)
         {
             RB.AddForce(0, JumpForce, 0, ForceMode.Impulse);
@@ -90,9 +91,7 @@ public class GamePlayer : MonoBehaviour
         //Debug.Log(RB.velocity.magnitude);
 
         if (RB.velocity.x > 0.1f || RB.velocity.x < -0.1f)
-            SpriteObj.transform.localScale = XZInput.y < 0 ?
-                new Vector3(-1, 1, 1) :
-                new Vector3(1, 1, 1);
+            SpriteRenderer.flipX = XZInput.y < 0;
         if (!OnGround && animater.currentAnimation.name != "Jump")
         {
             animater.Animate(this, new Anime("Jump", jumpFrames, false, 12, true));

@@ -9,11 +9,19 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
+<<<<<<< HEAD
   - Player
   - Water
   - UI
   - Ground
   - Wall
+=======
+  - Mask
+  - Water
+  - UI
+  - Wall
+  - Floor
+>>>>>>> 31cc3995429256f62ebeae524e8610e23e3ae4e3
   - 
   - 
   - 
