@@ -24,7 +24,8 @@ Shader "Sprites/Custom/SpriteShadow"
         "PreviewType" = "Plane"
         "CanUseSpriteAtlas" = "True"
     }
- 
+
+        LOD 200
         Cull Off
         Lighting Off
         ZWrite Off

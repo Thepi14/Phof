@@ -8,14 +8,14 @@ public class CheckAttack : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("GamePlayer"))
-           gameObject.GetComponentInParent<Enemy>().entityData.inCombat = true;
+           gameObject.GetComponentInParent<Enemy>().EntityData.inCombat = true;
     }
 
     private void OnTriggerExit(Collider other)
     {
         if(other.gameObject.CompareTag("GamePlayer"))
         {
-           gameObject.GetComponentInParent<Enemy>().entityData.inCombat = false;
+           gameObject.GetComponentInParent<Enemy>().EntityData.inCombat = false;
         }
     }
 }

@@ -13,11 +13,11 @@ public class CameraControl : MonoBehaviour
     private float _defaultCameraFieldView;
     public float DefaultCameraFieldView { get => _defaultCameraFieldView; private set => _defaultCameraFieldView = value; }
     public const float PLAYER_GROUND_LEVEL = 2f;
-    public const float CAMERA_DEFAULT_X_ANGLE = 35;
+    public float cameraAngle = 35;
     public const float MAX_ANGLE_X = 55;
 
     public List<GameObject> spriteRenderers = new List<GameObject>();
-    public enum FocusMode
+    public enum FocusMode : byte
     {
         moveToFocusXYZ = 1,
         angleToFocus = 2,
@@ -47,22 +47,22 @@ public class CameraControl : MonoBehaviour
         {
             case 1: //XYZ
                 transform.position = focusObject.transform.position + Placement;
-                transform.rotation = Quaternion.Euler(35, 0, 0);
+                transform.rotation = Quaternion.Euler(cameraAngle, 0, 0);
                 break;
             case 2: //Angle
                 if (!((Mathf.Rad2Deg * Mathf.Atan2(transform.position.z - focusObject.transform.position.z, transform.position.y - focusObject.transform.position.y)) + 90 > MAX_ANGLE_X))
                 transform.rotation = Quaternion.Euler((Mathf.Rad2Deg * Mathf.Atan2(transform.position.z - focusObject.transform.position.z, transform.position.y - focusObject.transform.position.y)) + 90, 0, 0);
                 break;
             case 3: //Rotate
-                transform.rotation = Quaternion.Euler(35, (Mathf.Rad2Deg * Mathf.Atan2(transform.position.x - focusObject.transform.position.x, transform.position.z - focusObject.transform.position.z)) + 180, 0);
+                transform.rotation = Quaternion.Euler(cameraAngle, (Mathf.Rad2Deg * Mathf.Atan2(transform.position.x - focusObject.transform.position.x, transform.position.z - focusObject.transform.position.z)) + 180, 0);
                 break;
             case 4: //Y
                 transform.position = new Vector3(transform.position.x, focusObject.transform.position.y + Placement.y, transform.position.z);
-                transform.rotation = Quaternion.Euler(35, 0, 0);
+                transform.rotation = Quaternion.Euler(cameraAngle, 0, 0);
                 break;
             case 5: //XZ
                 transform.position = new Vector3(focusObject.transform.position.x + Placement.x, Placement.y + PLAYER_GROUND_LEVEL, focusObject.transform.position.z + Placement.z);
-                transform.rotation = Quaternion.Euler(35, 0, 0);
+                transform.rotation = Quaternion.Euler(cameraAngle, 0, 0);
                 break;
             case 6: //XZ + ANGLE
                 transform.position = new Vector3(focusObject.transform.position.x + Placement.x, Placement.y + PLAYER_GROUND_LEVEL, focusObject.transform.position.z + Placement.z);
