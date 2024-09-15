@@ -10,7 +10,7 @@ public class GamePlayer : MonoBehaviour, IEntity
 {
     [SerializeField]
     private DeathEvent _onDeathEvent;
-    private DeathEvent OnDeathEvent { get => _onDeathEvent; set => _onDeathEvent = value; }
+    public DeathEvent OnDeathEvent { get => _onDeathEvent; set => _onDeathEvent = value; }
     [SerializeField]
     private DamageEvent _onDamageEvent;
     public DamageEvent OnDamageEvent { get => _onDamageEvent; set => _onDamageEvent = value; }
