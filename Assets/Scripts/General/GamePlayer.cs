@@ -9,8 +9,11 @@ using EntityDataSystem;
 public class GamePlayer : MonoBehaviour, IEntity
 {
     [SerializeField]
-    private DeathEvent OnDeathEvent { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-    public DamageEvent OnDamageEvent { get; set; } = new DamageEvent();
+    private DeathEvent _onDeathEvent;
+    private DeathEvent OnDeathEvent { get => _onDeathEvent; set => _onDeathEvent = value; }
+    [SerializeField]
+    private DamageEvent _onDamageEvent;
+    public DamageEvent OnDamageEvent { get => _onDamageEvent; set => _onDamageEvent = value; }
     [SerializeField]
     private EntityData _entityData;
     public EntityData EntityData { get => _entityData; set => _entityData = value; }

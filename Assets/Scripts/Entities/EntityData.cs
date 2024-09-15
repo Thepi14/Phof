@@ -204,7 +204,6 @@ namespace EntityDataSystem
 
         [SerializeField]
         private EntityData _entityData;
-
         public EntityData EntityData { get => _entityData; set => _entityData = value; }
 
         private Rigidbody RB => GetComponent<Rigidbody>();
