@@ -8,15 +8,16 @@ using EntityDataSystem;
 
 public class GamePlayer : MonoBehaviour, IEntity
 {
-    public DeathEvent OnDeathEvent { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+    [SerializeField]
+    private DeathEvent OnDeathEvent { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     public DamageEvent OnDamageEvent { get; set; } = new DamageEvent();
     [SerializeField]
     private EntityData _entityData;
     public EntityData EntityData { get => _entityData; set => _entityData = value; }
 
-    #region Variáveis obrigatórias
+    #region VariÃ¡veis obrigatÃ³rias
     public static GamePlayer player;
-    [Header("Variáveis Obrigatórias", order = 0)]
+    [Header("VariÃ¡veis ObrigatÃ³rias", order = 0)]
     private float maxJumpSpeed = 7f;
     [SerializeField]
     private float _speed = 1f;
@@ -37,7 +38,7 @@ public class GamePlayer : MonoBehaviour, IEntity
     public Vector2 XZInput; //X vector (vertical) = Z input, Y vector (horizontal) = X inpu
     #endregion
 
-    #region Variáveis pré-definidas
+    #region VariÃ¡veis prÃ©-definidas
     public Rigidbody RB => GetComponent<Rigidbody>();
     public CapsuleCollider2D Collid => GetComponent<CapsuleCollider2D>();
     public GameObject GroundDetectorObj => transform.Find("GroundDetector").gameObject;
