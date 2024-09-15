@@ -32,7 +32,7 @@ namespace EntityDataSystem
         public float speed = 1f;
         public float attackSpeedMultipliyer = 1f;
 
-        [Header("Valores m·ximos")]
+        [Header("Valores m√°ximos")]
         public int maxHealth;
         public int maxStamina;
         public int maxMana;
@@ -84,7 +84,7 @@ namespace EntityDataSystem
         }
 
         /// <summary>
-        /// Calcula o dano que a entidade ir· receber baseado nas caracterÌsticas dela e no dano da arma.
+        /// Calcula o dano que a entidade ir√° receber baseado nas caracter√≠sticas dela e no dano da arma.
         /// </summary>
         /// <param name="weaponDamage">Dano da arma.</param>
         /// <returns>A quantidade de dano.</returns>
@@ -94,7 +94,7 @@ namespace EntityDataSystem
             return result;
         }
         /// <summary>
-        /// Calcula a defesa baseado nas caracterÌsticas da entidade e na defesa da armadura.
+        /// Calcula a defesa baseado nas caracter√≠sticas da entidade e na defesa da armadura.
         /// </summary>
         /// <param name="armorDefense"></param>
         /// <returns>O valor da defesa.</returns>
@@ -106,7 +106,7 @@ namespace EntityDataSystem
         /// <summary>
         /// Ataca com item.
         /// </summary>
-        /// <param name="angle">¬ngulo em radians</param>
+        /// <param name="angle">√Çngulo em radians</param>
         /// <param name="ignoreDefense"></param>
         /// <returns></returns>
         public DamageData AttackWithItem(float angle, bool ignoreDefense = false)
@@ -161,11 +161,11 @@ namespace EntityDataSystem
         }
     }
     /// <summary>
-    /// Evento de dano, È chamado quando a entidade leva dano, ele devolve a entityData da entidade que levou dano e o gameObject e deu o dano.
+    /// Evento de dano, √© chamado quando a entidade leva dano, ele devolve a entityData da entidade que levou dano e o gameObject e deu o dano.
     /// </summary>
     public class DamageEvent : UnityEvent<EntityData, GameObject> { }
     /// <summary>
-    /// Evento de morte, È chamado quando a entidade morre, ele devolve a entityData da entidade que morreu e o gameObject e matou.
+    /// Evento de morte, √© chamado quando a entidade morre, ele devolve a entityData da entidade que morreu e o gameObject e matou.
     /// </summary>
     public class DeathEvent : UnityEvent<EntityData, GameObject> { }
     public interface IEntity
@@ -195,11 +195,11 @@ namespace EntityDataSystem
         public Transform target;
 
         [SerializeField]
-        public DeathEvent _onDeathEvent;
+        private DeathEvent _onDeathEvent;
         public DeathEvent OnDeathEvent { get => _onDeathEvent; set => _onDeathEvent = value; }
 
         [SerializeField]
-        public DamageEvent _onDamageEvent;
+        private DamageEvent _onDamageEvent;
         public DamageEvent OnDamageEvent { get => _onDamageEvent; set => _onDamageEvent = value; }
 
         [SerializeField]
@@ -275,7 +275,7 @@ namespace EntityDataSystem
                         var colliders = Physics.OverlapSphere(transform.position, (EntityData.attackDistance + 0.2f));
                         if (colliders.Length == 0)
                         {
-                            Debug.Log("Atacou mas n„o tinha ninguÈm");
+                            Debug.Log("Atacou mas n√£o tinha ningu√©m");
                             break;
                         }
                         GameObject target = colliders[0].gameObject;
@@ -302,7 +302,7 @@ namespace EntityDataSystem
             else
             {
                 Debug.Log("Atacou, mas sem item :(");
-                //Se n„o tiver item
+                //Se n√£o tiver item
             }
             StartCoroutine(AttackTimer());
         }
