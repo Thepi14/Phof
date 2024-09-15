@@ -163,10 +163,12 @@ namespace EntityDataSystem
     /// <summary>
     /// Evento de dano, é chamado quando a entidade leva dano, ele devolve a entityData da entidade que levou dano e o gameObject e deu o dano.
     /// </summary>
+    [Serializable]
     public class DamageEvent : UnityEvent<EntityData, GameObject> { }
     /// <summary>
     /// Evento de morte, é chamado quando a entidade morre, ele devolve a entityData da entidade que morreu e o gameObject e matou.
     /// </summary>
+    [Serializable]
     public class DeathEvent : UnityEvent<EntityData, GameObject> { }
     public interface IEntity
     {

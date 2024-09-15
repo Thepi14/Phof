@@ -402,6 +402,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90513e67b13a85b419122969380fc31e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _onDeathEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  _onDamageEvent:
+    m_PersistentCalls:
+      m_Calls: []
   _entityData:
     gameObject: {fileID: 0}
     name: 
@@ -926,6 +932,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 721614562}
+  _onDeathEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  _onDamageEvent:
+    m_PersistentCalls:
+      m_Calls: []
   _entityData:
     gameObject: {fileID: 832667277}
     name: 
