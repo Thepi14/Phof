@@ -58,7 +58,7 @@ public class TerrainGeneration : MonoBehaviour
 
         rooms = new List<RoomNode>();
 
-        transform.parent.Find("Player").position = new Vector3(MapWidth / 2, 10, MapHeight / 2);
+        transform.parent.Find("Player").position = new Vector3(MapWidth / 2, 1, MapHeight / 2);
 
         GenerateLevel();
     }

@@ -60,9 +60,11 @@ namespace ItemSystem
             switch (type)
             {
                 case ItemType.None:
+                    bulletPrefab = null;
                     break;
                 case ItemType.MeleeWeapon:
                     maxStack = 1;
+                    bulletPrefab = null;
                     break;
                 case ItemType.RangedWeapon:
                     maxStack = 1;

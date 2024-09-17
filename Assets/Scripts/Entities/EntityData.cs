@@ -4,13 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using ItemSystem;
+using static CameraControl;
 using static GameManagerSystem.GameManager;
 using static GamePlayer;
 using static NavMeshUpdate;
+using ObjectUtils;
 
 using UnityEngine.Events;
 using UnityEngine.AI;
-using static UnityEngine.EventSystems.EventTrigger;
+using UnityEngine.Windows;
 
 namespace EntityDataSystem
 {
@@ -29,7 +31,7 @@ namespace EntityDataSystem
         public int resistence = 1;
         public int intelligence = 1;
         public int defense = 1;
-        public float speed = 1f;
+        public float speed = 2.5f;
         public float attackSpeedMultipliyer = 1f;
 
         [Header("Valores máximos")]
@@ -66,12 +68,19 @@ namespace EntityDataSystem
         public bool attackReloaded = true;
         public bool canMove = true;
         public bool inRange = false;
+        public bool damaged = false;
 
         public void ResetStatus()
         {
             currentHealth = maxHealth;
             currentMana = maxMana;
             currentStamina = maxStamina;
+
+            currentStrength = strength;
+            currentResistence = resistence;
+            currentIntelligence = intelligence;
+            currentDefense = defense;
+            currentSpeed = speed;
         }
         /// <summary>
         /// Calcula os status da entidade.
@@ -175,26 +184,15 @@ namespace EntityDataSystem
         public DeathEvent OnDeathEvent { get; set; }
         public DamageEvent OnDamageEvent { get; set; }
         public EntityData EntityData { get; set; }
-        public void Die(GameObject killer);
-
-        public void Damage(DamageData damageData)
-        {
-            OnDamageEvent.Invoke(EntityData, damageData.sender);
-
-            int total = !damageData.ignoreDefense ? Mathf.Max(damageData.damage - EntityData.CalculateDefense(), 0) : damageData.damage;
-
-            EntityData.currentHealth -= total;
-
-            if (EntityData.currentHealth <= 0)
-            {
-                Die(damageData.sender);
-            }
-        }
+        public void Damage(DamageData damageData);
         public void Attack();
+        public void Die(GameObject killer);
     }
     public abstract class BasicEntityBehaviour : MonoBehaviour, IEntity
     {
-        public Transform target;
+        [SerializeField]
+        private EntityData _entityData;
+        public EntityData EntityData { get => _entityData; set => _entityData = value; }
 
         [SerializeField]
         private DeathEvent _onDeathEvent;
@@ -204,17 +202,16 @@ namespace EntityDataSystem
         private DamageEvent _onDamageEvent;
         public DamageEvent OnDamageEvent { get => _onDamageEvent; set => _onDamageEvent = value; }
 
-        [SerializeField]
-        private EntityData _entityData;
-        public EntityData EntityData { get => _entityData; set => _entityData = value; }
 
         private Rigidbody RB => GetComponent<Rigidbody>();
         public NavMeshAgent Agent => gameObject.GetComponent<NavMeshAgent>();
-        public GameObject SpriteObj => transform.Find("SpriteObject").gameObject;
+        public GameObject SpriteObj => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject");
+        public GameObject ItemSpriteObj => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject\\Item");
         public SpriteRenderer SpriteRenderer => SpriteObj.GetComponent<SpriteRenderer>();
+        public SpriteRenderer ItemSpriteRenderer => ItemSpriteObj.GetComponent<SpriteRenderer>();
 
 
-        private void OnValidate()
+        public void OnValidate()
         {
             EntityData.gameObject = gameObject;
         }
@@ -223,42 +220,68 @@ namespace EntityDataSystem
             gameManagerInstance.entities.Add(gameObject);
 
             EntityData.gameObject = gameObject;
-            target = GameObject.Find(targetName).transform;
+            EntityData.target = GameObject.Find(targetName);
 
             EntityData.CalculateStatus();
             EntityData.ResetStatus();
 
             Agent.speed = EntityData.speed;
             Agent.stoppingDistance = EntityData.attackDistance;
+            EntityData.attackReloaded = true;
+
+            ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
         }
         public void Awake()
         {
             StartEntity("Player");
         }
-        void Update()
+        public void Update()
         {
+            if (Agent.velocity.x > 0.1f || Agent.velocity.x < -0.1f)
+                SpriteObj.transform.localScale = Agent.destination.x < transform.position.x ? new Vector3(-1, 1, 1) : Vector3.one;
+
             if (Agent.isOnNavMesh)
             {
-                Agent.SetDestination(target.position);
+                Agent.SetDestination(EntityData.target.transform.position);
                 Agent.isStopped = false;
             }
 
-            Vector3 direction = target.position - transform.position;
-
-            if (direction.x > 0)
-            {
-                SpriteRenderer.flipX = false;
-            }
-            else if (direction.x < 0)
-            {
-                SpriteRenderer.flipX = true;
-            }
+            /*Vector3 direction = EntityData.target.transform.position - transform.position;
+            SpriteRenderer.flipX = direction.x < 0;*/
 
             FieldOfView();
         }
-        private void FixedUpdate()
+        public void FixedUpdate()
         {
             Attack();
+            EntityData.currentImpulse *= 10 * Time.fixedDeltaTime;
+            RB.velocity = EntityData.currentImpulse;
+        }
+
+        public void Damage(DamageData damageData)
+        {
+            OnDamageEvent.Invoke(EntityData, damageData.sender);
+
+            int total = !damageData.ignoreDefense ? Mathf.Max(damageData.damage - EntityData.CalculateDefense(), 0) : damageData.damage;
+
+            EntityData.currentHealth -= total;
+            EntityData.currentImpulse += damageData.impulse;
+
+            StartCoroutine(SetDamageColor());
+
+            if (EntityData.currentHealth <= 0)
+            {
+                Die(damageData.sender);
+            }
+        }
+
+        private IEnumerator SetDamageColor()
+        {
+            EntityData.damaged = true;
+            SpriteRenderer.color = Color.red;
+            yield return new WaitForSeconds(0.5f);
+            EntityData.damaged = false;
+            SpriteRenderer.color = Color.white;
         }
 
         public void Attack()
@@ -273,10 +296,9 @@ namespace EntityDataSystem
 
                         break;
                     case ItemType.MeleeWeapon:
-                        var colliders = Physics.OverlapSphere(transform.position, (EntityData.attackDistance + 0.2f));
+                        var colliders = Physics.OverlapSphere(transform.position, (EntityData.attackDistance + EntityData.currentAttackItem.attackDistance + 0.2f), LayerMask.GetMask("Player"));
                         if (colliders.Length == 0)
                         {
-                            Debug.Log("Atacou mas não tinha ninguém");
                             break;
                         }
                         GameObject target = colliders[0].gameObject;
@@ -285,10 +307,9 @@ namespace EntityDataSystem
                             if (Vector3.Distance(transform.position, entity.transform.position) < Vector3.Distance(transform.position, target.transform.position) && target != entity)
                                 target = entity.gameObject;
                         }
-                        if (target.layer == 8)
+                        if (target.gameObject.GetComponent<IEntity>() != null)
                         {
                             target.gameObject.GetComponent<IEntity>().Damage(EntityData.AttackWithItem(MathEx.AngleRadian(transform.position, target.transform.position)));
-                            Debug.Log("Atacou com item :)");
                         }
                         else
                         {
@@ -308,37 +329,24 @@ namespace EntityDataSystem
             StartCoroutine(AttackTimer());
         }
 
-        private void FieldOfView()
+        public void FieldOfView()
         {
-            if (EntityData.prioritizePlayer && Vector3.Distance(transform.position, player.transform.position) <= Vector3.Distance(transform.position, target.position))
+            if (EntityData.prioritizePlayer && Vector3.Distance(transform.position, player.transform.position) <= Vector3.Distance(transform.position, EntityData.target.transform.position))
             {
-                target = player.transform;
+                EntityData.target = player.gameObject;
             }
-            if (Vector3.Distance(transform.position, target.position) <= EntityData.visionRadius / 2)
-            {
-                Agent.isStopped = false;
-                EntityData.inRange = true;
-                EntityData.inCombat = true;
-            }
-            else
-            {
-                Agent.isStopped = true;
-                EntityData.inRange = false;
-                EntityData.inCombat = false;
-            }
+            EntityData.inRange = Vector3.Distance(transform.position, EntityData.target.transform.position) <= EntityData.attackDistance + 0.3f;
             Agent.isStopped = !EntityData.canMove;
         }
 
-        IEnumerator AttackTimer()
+        private IEnumerator AttackTimer()
         {
-            Debug.Log("Carregando...");
             EntityData.attackReloaded = false;
             if (EntityData.currentAttackItem != null)
                 yield return new WaitForSeconds(EntityData.currentAttackItem.reloadTime + EntityData.attackDelay);
             else
                 yield return new WaitForSeconds(EntityData.attackDelay);
             EntityData.attackReloaded = true;
-            Debug.Log("Carregado");
         }
 
         public void Die(GameObject killer)
@@ -347,9 +355,14 @@ namespace EntityDataSystem
 
             RB.velocity = Vector3.zero;
             EntityData.canMove = false;
-            gameManagerInstance.entities.Remove(gameObject);
             gameObject.SetActive(false);
             Destroy(gameObject);
+        }
+
+        public void OnDestroy()
+        {
+            MainCameraControl.spriteRenderers.Remove(SpriteObj);
+            gameManagerInstance.entities.Remove(gameObject);
         }
     }
 }
