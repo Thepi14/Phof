@@ -152,20 +152,38 @@ namespace EntityDataSystem
         public List<Effect> effects;
         public bool ignoreDefense;
 
-        public DamageData(GameObject sender, int damage, Vector2 impulse)
+        public DamageData(int damage, bool ignoreDefense = false)
+        {
+            sender = null;
+            this.damage = damage;
+            impulse = Vector2.zero;
+            effects = new List<Effect>();
+            this.ignoreDefense = ignoreDefense;
+        }
+        public DamageData(GameObject sender, int damage, Vector2 impulse, bool ignoreDefense = false)
         {
             this.sender = sender;
             this.damage = damage;
             this.impulse = impulse;
             effects = new List<Effect>();
-            ignoreDefense = false;
+            this.ignoreDefense = ignoreDefense;
         }
-        public DamageData(GameObject sender, int damage, Vector2 impulse, List<Effect> effects) : this(sender, damage, impulse)
+        public DamageData(int damage, Vector2 impulse, bool ignoreDefense = false)
+        {
+            this.sender = null;
+            this.damage = damage;
+            this.impulse = impulse;
+            this.effects = new List<Effect>();
+            this.ignoreDefense = ignoreDefense;
+        }
+        public DamageData(int damage, Vector2 impulse, List<Effect> effects, bool ignoreDefense = false) : this(damage, impulse)
         {
             this.effects = effects;
+            this.ignoreDefense = ignoreDefense;
         }
-        public DamageData(GameObject sender, int damage, Vector2 impulse, List<Effect> effects, bool ignoreDefense) : this(sender, damage, impulse, effects)
+        public DamageData(GameObject sender, int damage, Vector2 impulse, List<Effect> effects, bool ignoreDefense = false) : this(sender, damage, impulse)
         {
+            this.effects = effects;
             this.ignoreDefense = ignoreDefense;
         }
     }
@@ -187,6 +205,14 @@ namespace EntityDataSystem
         public void Damage(DamageData damageData);
         public void Attack();
         public void Die(GameObject killer);
+        public void GiveEffect(Effect effect)
+        {
+            EntityData.currentEffects.Add(effect);
+        }
+        public void GiveEffects(List<Effect> effects)
+        {
+            EntityData.currentEffects.AddRange(effects);
+        }
     }
     public abstract class BasicEntityBehaviour : MonoBehaviour, IEntity
     {
@@ -267,6 +293,7 @@ namespace EntityDataSystem
             EntityData.currentHealth -= total;
             EntityData.currentImpulse += damageData.impulse;
 
+            StopCoroutine(SetDamageColor());
             StartCoroutine(SetDamageColor());
 
             if (EntityData.currentHealth <= 0)
@@ -279,7 +306,7 @@ namespace EntityDataSystem
         {
             EntityData.damaged = true;
             SpriteRenderer.color = Color.red;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.3f);
             EntityData.damaged = false;
             SpriteRenderer.color = Color.white;
         }

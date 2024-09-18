@@ -46,9 +46,9 @@ public class GamePlayer : MonoBehaviour, IEntity
 
     #endregion
 
-    private float time;
     void Start()
     {
+        gameManagerInstance.entities.Add(gameObject);
         EntityData.CalculateStatus();
         EntityData.ResetStatus();
         player = this;
@@ -103,6 +103,7 @@ public class GamePlayer : MonoBehaviour, IEntity
         EntityData.currentHealth -= total;
         EntityData.currentImpulse += damageData.impulse;
 
+        StopCoroutine(SetDamageColor());
         StartCoroutine(SetDamageColor());
 
         if (EntityData.currentHealth <= 0)
@@ -115,7 +116,7 @@ public class GamePlayer : MonoBehaviour, IEntity
     {
         EntityData.damaged = true;
         SpriteRenderer.color = Color.red;
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
         EntityData.damaged = false;
         SpriteRenderer.color = Color.white;
     }

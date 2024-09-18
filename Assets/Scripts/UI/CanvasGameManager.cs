@@ -3,21 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using ObjectUtils;
+using static GameManagerSystem.GameManager;
+using static GamePlayer;
 
 public class CanvasGameManager : MonoBehaviour
 {
-    public RectTransform LifeBar => GameObjectGeneral.GetGameObjectComponent<RectTransform>(gameObject, "Panel/LifeBar/Bar");
-    float t;
-    void Start()
+    public RectTransform LifeBar => GameObjectGeneral.GetGameObjectComponent<RectTransform>(gameObject, "MainPanel/LifeBar/Bar");
+    public RectTransform StaminaBar => GameObjectGeneral.GetGameObjectComponent<RectTransform>(gameObject, "MainPanel/StaminaBar/Bar");
+    public RectTransform ManaBar => GameObjectGeneral.GetGameObjectComponent<RectTransform>(gameObject, "MainPanel/ManaBar/Bar");
+
+    private void Start()
     {
         
     }
-    void Update()
+    private void Update()
     {
-        t += Time.deltaTime;
-        if (t > 1)
-            t = 0;
-        LifeBar.localScale = new Vector3(t, 1, 1);
-        LifeBar.localPosition = new Vector3(0, 0, 0);
+        LifeBar.localScale = new Vector3(Mathf.Max((float)player.EntityData.currentHealth / player.EntityData.maxHealth, 0), 1, 1);
+        StaminaBar.localScale = new Vector3(Mathf.Max((float)player.EntityData.currentStamina / player.EntityData.maxStamina, 0), 1, 1);
+        ManaBar.localScale = new Vector3(Mathf.Max((float)player.EntityData.currentMana / player.EntityData.maxMana, 0), 1, 1);
     }
 }

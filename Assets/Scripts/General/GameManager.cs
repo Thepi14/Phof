@@ -27,23 +27,23 @@ namespace GameManagerSystem
         {
             gameManagerInstance = this;
         }
+        private void Start()
+        {
+            StartCoroutine(test());
+        }
+        private IEnumerator test()
+        {
+            yield return new WaitForSeconds(0.5f);
+            ((IEntity)player).GiveEffect(new Effect("Poison", 100, 0.5f, 1));
+        }
         private void Update()
         {
             foreach (var entity in entities.ToList())
             {
                 switch (entity.layer)
                 {
-                    //PLAYER
-                    case 8:
-
-                        break;
-                    //PLAYER MINION
-                    case 9:
-
-                        break;
-                    //ENEMY
-                    case 10:
-                        VerifyEffects(entity.GetComponent<IEntity>().EntityData);
+                    case 8 or 10:
+                        VerifyEffects(entity.GetComponent<IEntity>());
                         break;
                     default:
                         entities.Remove(entity);
@@ -51,16 +51,17 @@ namespace GameManagerSystem
                 }
             }
         }
-        public void VerifyEffects(EntityData entityData)
+        public void VerifyEffects(IEntity entity)
         {
-            foreach (Effect effect in entityData.currentEffects)
+            foreach (Effect effect in entity.EntityData.currentEffects.ToList())
             {
                 bool ticked = false;
                 effect.duration -= Time.deltaTime;
                 effect.currentTick += Time.deltaTime;
+                Debug.Log(effect.currentTick);
                 if (effect.duration <= 0)
                 {
-                    entityData.currentEffects.Remove(effect);
+                    entity.EntityData.currentEffects.Remove(effect);
                     continue;
                 }
                 if (effect.currentTick >= effect.tickDelay)
@@ -72,9 +73,7 @@ namespace GameManagerSystem
                 {
                     case "Poison":
                         if (ticked)
-                        {
-
-                        }
+                            entity.Damage(new DamageData(effect.level * 2, true));
                         break;
                     default:
                         throw new Exception("Efeito desconhecido, nome: " + effect.name);
