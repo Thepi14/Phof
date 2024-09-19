@@ -26,7 +26,8 @@ public class CameraControl : MonoBehaviour
         moveToFocusXZ = 5,
         moveToFocusXZplusAngle = 6,
         fullRotate = 7,
-        None = 15
+        moveToFocusXYZIsometric = 8,
+        None = 255
     }
     public FocusMode focusMode;
 
@@ -35,7 +36,6 @@ public class CameraControl : MonoBehaviour
         MainCameraControl = this;
         cam = GetComponent<Camera>();
         DefaultCameraFieldView = cam.fieldOfView;
-        Debug.Log(MainCameraControl);
     }
     private void Update()
     {
@@ -43,15 +43,19 @@ public class CameraControl : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        CameraRotater();
+    }
+    private void CameraRotater()
+    {
         switch ((int)focusMode)
         {
-            case 1: //XYZ
+            case 1 or 8: //XYZ
                 transform.position = focusObject.transform.position + Placement;
                 transform.rotation = Quaternion.Euler(cameraAngle, 0, 0);
                 break;
             case 2: //Angle
                 if (!((Mathf.Rad2Deg * Mathf.Atan2(transform.position.z - focusObject.transform.position.z, transform.position.y - focusObject.transform.position.y)) + 90 > MAX_ANGLE_X))
-                transform.rotation = Quaternion.Euler((Mathf.Rad2Deg * Mathf.Atan2(transform.position.z - focusObject.transform.position.z, transform.position.y - focusObject.transform.position.y)) + 90, 0, 0);
+                    transform.rotation = Quaternion.Euler((Mathf.Rad2Deg * Mathf.Atan2(transform.position.z - focusObject.transform.position.z, transform.position.y - focusObject.transform.position.y)) + 90, 0, 0);
                 break;
             case 3: //Rotate
                 transform.rotation = Quaternion.Euler(cameraAngle, (Mathf.Rad2Deg * Mathf.Atan2(transform.position.x - focusObject.transform.position.x, transform.position.z - focusObject.transform.position.z)) + 180, 0);
@@ -70,27 +74,46 @@ public class CameraControl : MonoBehaviour
                     transform.rotation = Quaternion.Euler((Mathf.Rad2Deg * Mathf.Atan2(transform.position.z - focusObject.transform.position.z, transform.position.y - focusObject.transform.position.y)) + 90, 0, 0);
                 break;
             case 7: //FULL ROTATE
-                    transform.rotation = Quaternion.Euler((Mathf.Rad2Deg * Mathf.Atan2(transform.position.z - focusObject.transform.position.z, transform.position.y - focusObject.transform.position.y)) + 90, (Mathf.Rad2Deg * Mathf.Atan2(transform.position.x - focusObject.transform.position.x, transform.position.z - focusObject.transform.position.z)) + 180, transform.rotation.z);
+                transform.rotation = Quaternion.Euler((Mathf.Rad2Deg * Mathf.Atan2(transform.position.z - focusObject.transform.position.z, transform.position.y - focusObject.transform.position.y)) + 90, (Mathf.Rad2Deg * Mathf.Atan2(transform.position.x - focusObject.transform.position.x, transform.position.z - focusObject.transform.position.z)) + 180, transform.rotation.z);
                 break;
 
             default: break;
         }
     }
-
     private void SpriteRotater()
     {
-        foreach (GameObject obj in spriteRenderers.ToArray())
+        switch ((int)focusMode)
         {
-            if (obj.GetComponent<SpriteRenderer>() == null)
-                spriteRenderers.Remove(obj);
-        }
-        foreach (GameObject spriteObj in spriteRenderers.ToArray())
-        {
-            spriteObj.transform.localRotation = Quaternion.Euler((Mathf.Atan2( //X
-                transform.position.z - spriteObj.transform.position.z, 
-                transform.position.y - spriteObj.transform.position.y) * (180 / Mathf.PI)) + 90,
-                (Mathf.Rad2Deg * Mathf.Atan2(transform.position.x - spriteObj.transform.position.x, transform.position.z - spriteObj.transform.position.z)) + 180,
-                spriteObj.transform.localRotation.z);
+            case 1 or 2 or 3 or 4 or 5 or 6 or 7:
+                foreach (GameObject obj in spriteRenderers.ToList())
+                {
+                    if (obj.GetComponent<SpriteRenderer>() == null)
+                        spriteRenderers.Remove(obj);
+                }
+                foreach (GameObject spriteObj in spriteRenderers.ToList())
+                {
+                    spriteObj.transform.localRotation = Quaternion.Euler((Mathf.Atan2( //X
+                        transform.position.z - spriteObj.transform.position.z,
+                        transform.position.y - spriteObj.transform.position.y) * (180 / Mathf.PI)) + 90,
+                        (Mathf.Rad2Deg * Mathf.Atan2(transform.position.x - spriteObj.transform.position.x, transform.position.z - spriteObj.transform.position.z)) + 180,
+                        spriteObj.transform.localRotation.z);
+                }
+                break;
+            case 8:
+                foreach (GameObject obj in spriteRenderers.ToList())
+                {
+                    if (obj.GetComponent<SpriteRenderer>() == null)
+                        spriteRenderers.Remove(obj);
+                }
+                foreach (GameObject spriteObj in spriteRenderers.ToList())
+                {
+                    spriteObj.transform.localRotation = Quaternion.Euler((Mathf.Atan2( //X
+                        transform.position.z - spriteObj.transform.position.z,
+                        transform.position.y - spriteObj.transform.position.y) * (180 / Mathf.PI)) + 90, 0, 0);
+                }
+                break;
+            default:
+                break;
         }
     }
 }

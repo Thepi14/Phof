@@ -414,7 +414,7 @@ Animator:
   m_GameObject: {fileID: 553175926}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 6c40c59ed39e8f04798318a4dac717c5, type: 2}
+  m_Controller: {fileID: 9100000, guid: 9dbc217dbd09ea84693663c2b7bc83e2, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -700,7 +700,6 @@ GameObject:
   - component: {fileID: 721614557}
   - component: {fileID: 721614563}
   - component: {fileID: 721614565}
-  - component: {fileID: 721614566}
   m_Layer: 8
   m_Name: Player
   m_TagString: GamePlayer
@@ -743,7 +742,12 @@ MonoBehaviour:
     currentSpeed: 0
     currentAttackSpeedMultipliyer: 0
     currentImpulse: {x: 0, y: 0}
-    currentEffects: []
+    currentEffects:
+    - name: slowness
+      duration: 100
+      tickDelay: 0
+      level: 1
+      currentTick: 0
     currentAttackItem: {fileID: 11400000, guid: fbdba3ba2efc82a4683a14422cba453c, type: 2}
     attackDistance: 0.5
     attackDelay: 1
@@ -789,7 +793,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 1
+  m_CollisionDetection: 2
 --- !u!136 &721614561
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -868,21 +872,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 721614556}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &721614566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 721614556}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
-  m_EffectDistance: {x: 1, y: -1}
-  m_UseGraphicAlpha: 1
 --- !u!1 &736816647
 GameObject:
   m_ObjectHideFlags: 0
@@ -1335,7 +1324,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -1450,7 +1439,7 @@ MonoBehaviour:
   - {fileID: 1079923889}
   - {fileID: 553175926}
   - {fileID: 1218235499}
-  focusMode: 1
+  focusMode: 8
 --- !u!1 &1007434635
 GameObject:
   m_ObjectHideFlags: 0
@@ -1552,14 +1541,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1079923889}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.36601388, y: -0, z: -0, w: 0.9306094}
+  m_LocalPosition: {x: 0, y: -0.0000000021381266, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1836565660}
   m_Father: {fileID: 721614562}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 42.94, y: 0, z: 0}
 --- !u!212 &1079923891
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2390,6 +2379,8 @@ MonoBehaviour:
   enemyBullets: []
   playerBullets: []
   entities: []
+  enemies: []
+  allies: []
   Tick: 0
 --- !u!1 &1873890744
 GameObject:
@@ -2476,7 +2467,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1940295167}
   - component: {fileID: 1940295168}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: Item
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2560,6 +2551,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1951086412}
   - component: {fileID: 1951086413}
+  - component: {fileID: 1951086414}
   m_Layer: 0
   m_Name: TerrainGeneration
   m_TagString: Untagged
@@ -2617,6 +2609,33 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+--- !u!54 &1951086414
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1951086411}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &2055591378
 GameObject:
   m_ObjectHideFlags: 0

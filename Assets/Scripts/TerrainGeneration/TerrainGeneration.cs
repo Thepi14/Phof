@@ -277,6 +277,7 @@ public class TerrainGeneration : MonoBehaviour
             //block.GetComponent<Rigidbody>().freezeRotation = true;
             block.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             block.GetComponent<Rigidbody>().isKinematic = true;
+            block.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.Continuous;
         }
 
         if (!wall)

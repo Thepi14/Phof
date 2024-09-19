@@ -153,7 +153,7 @@ namespace ObjectUtils
         /// </summary>
         public static float CanvasScaleFactor => FindCanvas().scaleFactor;
     }
-    public static class General
+    public static class MathEx
     {
         public static void Shuffle<T>(this IList<T> list)
         {
@@ -170,6 +170,28 @@ namespace ObjectUtils
                 list[k] = list[n];
                 list[n] = value;
             }
+        }
+        public static Vector2 RadianToVector2(float radian)
+        {
+            return new Vector2(Mathf.Cos(radian), Mathf.Sin(radian));
+        }
+
+        public static Vector2 DegreeToVector2(float degree)
+        {
+            return RadianToVector2(degree * Mathf.Deg2Rad);
+        }
+
+        public static Vector2 AngleVectors(Vector2 a, Vector2 b)
+        {
+            return RadianToVector2(Mathf.Atan2(a.y - b.y, a.x - b.x));
+        }
+        public static Vector2 AngleVectors(Vector3 a, Vector3 b)
+        {
+            return RadianToVector2(Mathf.Atan2(a.z - b.z, a.x - b.x));
+        }
+        public static float AngleRadian(Vector3 a, Vector3 b)
+        {
+            return Mathf.Atan2(a.z - b.z, a.x - b.x);
         }
     }
 }

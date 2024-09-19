@@ -82,6 +82,14 @@ namespace EntityDataSystem
             currentDefense = defense;
             currentSpeed = speed;
         }
+        public void ResetAttributesStatus()
+        {
+            currentStrength = strength;
+            currentResistence = resistence;
+            currentIntelligence = intelligence;
+            currentDefense = defense;
+            currentSpeed = speed;
+        }
         /// <summary>
         /// Calcula os status da entidade.
         /// </summary>
@@ -128,12 +136,12 @@ namespace EntityDataSystem
     public class Effect
     {
         public string name;
-        public byte level;
         public float duration;
         public float tickDelay;
+        public byte level;
         public float currentTick;
 
-        public Effect(string name, float duration, float tickDelay, byte level)
+        public Effect(string name, float duration, float tickDelay, byte level = 1)
         {
             this.name = name;
             this.duration = duration;
@@ -243,6 +251,7 @@ namespace EntityDataSystem
         }
         public void StartEntity(string targetName)
         {
+            EntityData.name = gameObject.name;
             gameManagerInstance.entities.Add(gameObject);
 
             EntityData.gameObject = gameObject;
@@ -270,6 +279,15 @@ namespace EntityDataSystem
             {
                 Agent.SetDestination(EntityData.target.transform.position);
                 Agent.isStopped = false;
+            }
+
+            if ((Agent.velocity.y != 0 || Agent.velocity.x != 0))
+            {
+                SpriteObj.GetComponent<Animator>().SetBool("Walking", true);
+            }
+            else
+            {
+                SpriteObj.GetComponent<Animator>().SetBool("Walking", false);
             }
 
             /*Vector3 direction = EntityData.target.transform.position - transform.position;

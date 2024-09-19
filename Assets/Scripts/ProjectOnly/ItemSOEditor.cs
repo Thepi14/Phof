@@ -61,6 +61,7 @@ public class ItemSOEditor : Editor
                     return type;
             }
         }
+        GUIUtility.ExitGUI();
         return null;
     }
 }

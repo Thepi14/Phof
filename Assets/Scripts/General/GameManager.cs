@@ -19,6 +19,10 @@ namespace GameManagerSystem
         public List<GameObject> playerBullets = new List<GameObject>();
 
         public List<GameObject> entities = new List<GameObject>();
+        public List<GameObject> enemies = new List<GameObject>();
+        public List<GameObject> allies = new List<GameObject>();
+
+        public const float EFFECT_CHANGER = 0.9f;
 
         [SerializeField]
         private bool Tick;
@@ -29,12 +33,7 @@ namespace GameManagerSystem
         }
         private void Start()
         {
-            StartCoroutine(test());
-        }
-        private IEnumerator test()
-        {
-            yield return new WaitForSeconds(0.5f);
-            ((IEntity)player).GiveEffect(new Effect("Poison", 100, 0.5f, 1));
+            gameManagerInstance = this;
         }
         private void Update()
         {
@@ -51,16 +50,38 @@ namespace GameManagerSystem
                 }
             }
         }
+        public void AddEntity(GameObject entity)
+        {
+            if (entity.GetComponent<IEntity>() == null)
+                throw new Exception("Added entity" + entity.name + "doesn't has a entity script.");
+            entities.Add(entity);
+            switch (entity.layer)
+            {
+                case 8 when entity.GetComponent<GamePlayer>() != null:
+
+                    break;
+                case 8:
+                    allies.Add(entity);
+                    entity.GetComponent<IEntity>().OnDeathEvent.AddListener((a, obj) => { entities.Remove(entity); allies.Remove(entity); });
+                    break;
+                case 10:
+                    enemies.Add(entity);
+                    entity.GetComponent<IEntity>().OnDeathEvent.AddListener((a, obj) => { entities.Remove(entity); enemies.Remove(entity); });
+                    break;
+            }
+        }
         public void VerifyEffects(IEntity entity)
         {
+            entity.EntityData.ResetAttributesStatus();
             foreach (Effect effect in entity.EntityData.currentEffects.ToList())
             {
                 bool ticked = false;
                 effect.duration -= Time.deltaTime;
-                effect.currentTick += Time.deltaTime;
-                Debug.Log(effect.currentTick);
-                if (effect.duration <= 0)
+                effect.currentTick += Time.deltaTime; 
+                if (effect.duration <= 0 || effect.level == 0)
                 {
+                    if (effect.level == 0)
+                        Debug.LogWarning("Efeito com nível 0 não tem efeito.");
                     entity.EntityData.currentEffects.Remove(effect);
                     continue;
                 }
@@ -69,9 +90,17 @@ namespace GameManagerSystem
                     effect.currentTick = 0;
                     ticked = true;
                 }
-                switch (effect.name)
+                switch (effect.name.ToLower())
                 {
-                    case "Poison":
+                    case "slowness":
+                        effect.currentTick = 0;
+                        entity.EntityData.currentSpeed = entity.EntityData.currentSpeed * (EFFECT_CHANGER / effect.level);
+                        break;
+                    case "agility":
+                        effect.currentTick = 0;
+                        entity.EntityData.currentSpeed = entity.EntityData.currentSpeed + ((entity.EntityData.currentSpeed / (EFFECT_CHANGER + 1)) * effect.level);
+                        break;
+                    case "poison":
                         if (ticked)
                             entity.Damage(new DamageData(effect.level * 2, true));
                         break;
@@ -98,34 +127,6 @@ namespace GameManagerSystem
         {
             ClearEnemyBullets();
             ClearPlayerBullets();
-        }
-    }
-}
-namespace UnityEngine
-{
-    public struct MathEx
-    {
-        public static Vector2 RadianToVector2(float radian)
-        {
-            return new Vector2(Mathf.Cos(radian), Mathf.Sin(radian));
-        }
-
-        public static Vector2 DegreeToVector2(float degree)
-        {
-            return RadianToVector2(degree * Mathf.Deg2Rad);
-        }
-
-        public static Vector2 AngleVectors(Vector2 a, Vector2 b)
-        {
-            return RadianToVector2(Mathf.Atan2(a.y - b.y, a.x - b.x));
-        }
-        public static Vector2 AngleVectors(Vector3 a, Vector3 b)
-        {
-            return RadianToVector2(Mathf.Atan2(a.z - b.z, a.x - b.x));
-        }
-        public static float AngleRadian(Vector3 a, Vector3 b)
-        {
-            return Mathf.Atan2(a.z - b.z, a.x - b.x);
         }
     }
 }
