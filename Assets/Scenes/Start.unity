@@ -1258,11 +1258,11 @@ MonoBehaviour:
     currentAttackSpeedMultipliyer: 0
     currentImpulse: {x: 0, y: 0}
     currentEffects: []
-    currentAttackItem: {fileID: 11400000, guid: fbdba3ba2efc82a4683a14422cba453c, type: 2}
-    attackDistance: 0.5
+    currentAttackItem: {fileID: 11400000, guid: 89ef9aa054aa1104c975852c204c2530, type: 2}
+    attackDistance: 5
     attackDelay: 0.5
     visionRadius: 10
-    prioritizePlayer: 0
+    prioritizePlayer: 1
     inCombat: 0
     target: {fileID: 0}
     attackReloaded: 1
@@ -1633,7 +1633,7 @@ GameObject:
   - component: {fileID: 1218235501}
   - component: {fileID: 1218235500}
   - component: {fileID: 1218235502}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: AttackArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}

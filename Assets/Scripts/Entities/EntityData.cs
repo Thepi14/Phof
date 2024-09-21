@@ -13,6 +13,7 @@ using ObjectUtils;
 using UnityEngine.Events;
 using UnityEngine.AI;
 using UnityEngine.Windows;
+using ProjectileSystem;
 
 namespace EntityDataSystem
 {
@@ -136,9 +137,9 @@ namespace EntityDataSystem
     public class Effect
     {
         public string name;
-        public float duration;
-        public float tickDelay;
-        public byte level;
+        public float duration = 3f;
+        public float tickDelay = 0.5f;
+        public byte level = 1;
         public float currentTick;
 
         public Effect(string name, float duration, float tickDelay, byte level = 1)
@@ -251,6 +252,7 @@ namespace EntityDataSystem
         }
         public void StartEntity(string targetName)
         {
+            
             EntityData.name = gameObject.name;
             gameManagerInstance.entities.Add(gameObject);
 
@@ -362,7 +364,8 @@ namespace EntityDataSystem
                         }
                         break;
                     case ItemType.RangedWeapon:
-                        //Aqui Marcos
+                        var bullet = Instantiate(EntityData.currentAttackItem.bulletPrefab, transform.position, Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, EntityData.target.transform.position) * Mathf.Rad2Deg) - 90, 0));
+                        bullet.GetComponent<Projectile>().SetProjectile(gameObject);
                         break;
                 }
             }

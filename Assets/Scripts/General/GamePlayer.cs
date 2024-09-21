@@ -6,6 +6,7 @@ using static TerrainGeneration;
 using static GameManagerSystem.GameManager;
 using EntityDataSystem;
 using ObjectUtils;
+using System.Linq;
 
 public class GamePlayer : MonoBehaviour, IEntity
 {
@@ -129,8 +130,8 @@ public class GamePlayer : MonoBehaviour, IEntity
 
     public void Attack()
     {
-        var l = AttackArea.GetComponent<ColliderNutshell>().GetColliders();
-        foreach (var collider in l)
+        var list = AttackArea.GetComponent<ColliderNutshell>().GetColliders();
+        foreach (var collider in list.ToList())
         {
             if (collider.tag == "GamePlayer" || collider.gameObject.layer != 10)
                 continue;

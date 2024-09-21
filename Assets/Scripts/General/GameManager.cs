@@ -104,6 +104,10 @@ namespace GameManagerSystem
                         if (ticked)
                             entity.Damage(new DamageData(effect.level * 2, true));
                         break;
+                    case "on fire":
+                        if (ticked)
+                            entity.Damage(new DamageData(effect.level * 3));
+                        break;
                     default:
                         throw new Exception("Efeito desconhecido, nome: " + effect.name);
                 }
