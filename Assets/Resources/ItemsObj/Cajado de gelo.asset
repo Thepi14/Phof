@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4f003ba63d80694ebe85759d05c8b9f, type: 3}
+  m_Name: Cajado de gelo
+  m_EditorClassIdentifier: 
+  itemName: Cajado de gelo
+  itemSprite: {fileID: 21300000, guid: d3fbc7c933928b842a9e8cc5a90f4e38, type: 3}
+  type: 2
+  reloadTime: 3
+  attackDistance: 6
+  maxStack: 1
+  minDamage: 2
+  maxDamage: 4
+  impulse: 1
+  effects: []
+  bulletPrefab: {fileID: 7661328709117412688, guid: 788f310a07b45fd4dba95f47d9855a74, type: 3}
+  muzzlePrefab: {fileID: 7647464709602969788, guid: 649645953a2d7e944b54d7f61d48ea21, type: 3}

@@ -99,43 +99,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea11baebb5752344daee503b221f1428, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 4556288701442206197}
-  target: {fileID: 0}
-  areaVisao:
-    serializedVersion: 2
-    m_Bits: 8
-  player: {fileID: 0}
-  entityData:
+  _entityData:
+    gameObject: {fileID: 182482321008119340}
     name: 
     level: 1
-    currentHealth: 0
-    maxHealth: 0
-    currentStamina: 0
-    maxStamina: 0
-    currentMana: 0
-    maxMana: 0
     strength: 1
     resistence: 1
     intelligence: 1
-    damage: 1
     defense: 1
-    speed: 3.5
-    attackDistance: 2
-    attackTimer: 2
-    multiAtaque: 0
-    cooldown: 2
+    speed: 2.5
+    attackSpeedMultipliyer: 1
+    maxHealth: 0
+    maxStamina: 0
+    maxMana: 0
+    currentHealth: 0
+    currentStamina: 0
+    currentMana: 0
+    currentStrength: 0
+    currentResistence: 0
+    currentIntelligence: 0
+    currentDefense: 0
+    currentSpeed: 0
+    currentAttackSpeedMultipliyer: 0
+    currentImpulse: {x: 0, y: 0}
+    currentEffects: []
+    currentAttackItem: {fileID: 0}
+    attackDistance: 0.5
+    attackDelay: 1
+    visionRadius: 10
+    prioritizePlayer: 0
     inCombat: 0
     target: {fileID: 0}
-    combatCoroutine: 0
-    dead: 0
-    statusCondition: 0
-  spritePlayer: {fileID: 0}
-  tipo: 0
-  impulseForce: 5
-  kbCount: 0
-  inRange: 0
-  raio: 5
-  freezed: 0
+    attackReloaded: 1
+    canMove: 1
+    inRange: 0
+    damaged: 0
+  _onDeathEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  _onDamageEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!195 &4556288701442206197
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -277,7 +281,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

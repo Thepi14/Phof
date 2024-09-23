@@ -12,24 +12,10 @@ namespace ProjectileSystem
 {
     [RequireComponent(typeof(Collider))]
     [RequireComponent(typeof(Rigidbody))]
-    public class Projectile : MonoBehaviour
+    public class Projectile : BaseBulletBehaviour
     {
-        public GameObject sender;
-        public ProjectileProperties projectileProperties;
         private Rigidbody RB => GetComponent<Rigidbody>();
 
-        [SerializeField]
-        private bool started = false;
-
-        public void SetProjectile(GameObject sender, float? radAngles = null)
-        {
-            //Debug.Log((float)radAngles);
-            this.sender = sender;
-            gameObject.layer = sender.layer == 8 ? 12 : sender.layer == 10 ? 11 : 0;
-            if (radAngles != null)
-                transform.rotation = Quaternion.Euler(0, (float)radAngles * Mathf.Rad2Deg, 0);
-            started = true;
-        }
         private void OnValidate()
         {
             GetComponent<Collider>().isTrigger = true;
@@ -47,13 +33,16 @@ namespace ProjectileSystem
             foreach (var col in colliders.ToList())
             {
                 var obj = col.gameObject;
+                damageData = new DamageData(sender, Random.Range(projectileProperties.minDamage, projectileProperties.maxDamage), MathEx.AngleVectors(transform.position, obj.transform.position) * projectileProperties.impulseForce, projectileProperties.effects);
                 switch (obj.layer)
                 {
+                    //PLAYER
                     case 8 when gameObject.layer == 11:
-                        obj.GetComponent<IEntity>().Damage(new DamageData(sender, Random.Range(projectileProperties.minDamage, projectileProperties.maxDamage), MathEx.AngleVectors(transform.position, obj.transform.position), projectileProperties.effects));
+                        obj.GetComponent<IEntity>().Damage(damageData);
                         break;
+                    //ENEMY
                     case 10 when gameObject.layer == 12:
-                        obj.GetComponent<IEntity>().Damage(new DamageData(sender, Random.Range(projectileProperties.minDamage, projectileProperties.maxDamage), MathEx.AngleVectors(transform.position, obj.transform.position), projectileProperties.effects));
+                        obj.GetComponent<IEntity>().Damage(damageData);
                         break;
                     default:
                         break;
@@ -63,27 +52,22 @@ namespace ProjectileSystem
         }
         private void OnTriggerEnter(Collider collider)
         {
+            damageData = new DamageData(sender, Random.Range(projectileProperties.minDamage, projectileProperties.maxDamage), MathEx.AngleVectors(transform.position, collider.transform.position) * projectileProperties.impulseForce, projectileProperties.effects);
             switch (collider.gameObject.layer)
             {
-                case 0 or 6 or 7:
-                    if (projectileProperties.explosive)
-                        Explode();
-                    else
-                        EndBullet();
+                case 0:
                     return;
+                case 6 or 7:
+                    break;
                     //PLAYER
                 case 8 when gameObject.layer == 11:
-                    collider.GetComponent<IEntity>().Damage(new DamageData(sender, Random.Range(projectileProperties.minDamage, projectileProperties.maxDamage), MathEx.AngleVectors(transform.position, collider.transform.position), projectileProperties.effects));
+                    if (!projectileProperties.explosive)
+                        collider.GetComponent<IEntity>().Damage(damageData);
                     break;
-                    //PLAYER MINION
-                /*case 9 when gameObject.layer == 11:
-                    collider.GetComponent<IEntity>().Damage(new DamageData(sender, Random.Range(projectileProperties.minDamage, projectileProperties.maxDamage), MathEx.AngleVectors(transform.position, collider.transform.position), projectileProperties.effects));
-                    if (projectileProperties.explosive)
-                        Explode();
-                    break;*/
                     //ENEMY
                 case 10 when gameObject.layer == 12:
-                    collider.GetComponent<IEntity>().Damage(new DamageData(sender, Random.Range(projectileProperties.minDamage, projectileProperties.maxDamage), MathEx.AngleVectors(transform.position, collider.transform.position), projectileProperties.effects));
+                    if (!projectileProperties.explosive)
+                        collider.GetComponent<IEntity>().Damage(damageData);
                     break;
                 default:
                     EndBullet();

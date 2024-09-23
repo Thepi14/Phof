@@ -191,7 +191,6 @@ namespace ObjectUtils
         }
         public static float AngleRadian(Vector3 a, Vector3 b)
         {
-            Debug.Log(Mathf.Atan2(a.z - b.z, a.x - b.x));
             return Mathf.Atan2(a.z - b.z, a.x - b.x);
         }
     }

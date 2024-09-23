@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07d7222b6841bb246bf483a2780cfa3d, type: 3}
   m_Name: Fireball
   m_EditorClassIdentifier: 
-  minDamage: 30
-  maxDamage: 50
-  speed: 4
+  minDamage: 15
+  maxDamage: 30
+  speed: 5
   effects:
   - name: on fire
-    duration: 5
+    duration: 3
     tickDelay: 0.75
-    level: 1
+    level: 2
     currentTick: 0
+    stackable: 0
+    frameAdded: 0
   explosive: 1
   explosionRadius: 2
-  impulseForce: 2
+  impulseForce: 7

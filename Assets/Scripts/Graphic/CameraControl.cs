@@ -30,7 +30,10 @@ public class CameraControl : MonoBehaviour
         None = 255
     }
     public FocusMode focusMode;
-
+    public void OnValidate()
+    {
+        MainCameraControl = this;
+    }
     void Start()
     {
         MainCameraControl = this;

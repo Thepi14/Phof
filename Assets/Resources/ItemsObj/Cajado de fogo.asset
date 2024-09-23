@@ -23,3 +23,4 @@ MonoBehaviour:
   impulse: 1
   effects: []
   bulletPrefab: {fileID: 8823858016709436947, guid: 9132d18b02ec5fd45845add0676a5ec5, type: 3}
+  muzzlePrefab: {fileID: 1477386944841773321, guid: 35fc722dbdb171d42b2f316b52427897, type: 3}

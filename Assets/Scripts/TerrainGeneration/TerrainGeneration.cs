@@ -251,6 +251,7 @@ public class TerrainGeneration : MonoBehaviour
             scale = type.blockSize;
         //GameObject block = new GameObject(type.blockName);
         GameObject block = new GameObject(type.blockName + " " + x + " " + y + " " + z, typeof(MeshFilter), typeof(MeshRenderer));
+        block.isStatic = true;
 
         block.transform.position = new Vector3(x + 0.5f, y, z + 0.5f);
         block.transform.localScale = (Vector3)scale;

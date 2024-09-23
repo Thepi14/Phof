@@ -47,8 +47,14 @@ public class GamePlayer : MonoBehaviour, IEntity
 
     #endregion
 
-    void Start()
+    public void OnValidate()
     {
+        EntityData.gameObject = gameObject;
+    }
+    public void Start()
+    {
+        EntityData.gameObject = gameObject;
+        MainCameraControl.spriteRenderers.Add(SpriteObj);
         gameManagerInstance.entities.Add(gameObject);
         EntityData.CalculateStatus();
         EntityData.ResetStatus();
@@ -62,7 +68,7 @@ public class GamePlayer : MonoBehaviour, IEntity
 
         ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
     }
-    void FixedUpdate()
+    public void FixedUpdate()
     {
         XZInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 
@@ -71,12 +77,12 @@ public class GamePlayer : MonoBehaviour, IEntity
         else
             RB.velocity = Vector3.zero;
 
-        EntityData.currentImpulse *= 10 * Time.fixedDeltaTime;
-        RB.velocity += new Vector3(EntityData.currentImpulse.x, EntityData.currentImpulse.y);
+        EntityData.currentImpulse -= new Vector2(EntityData.currentImpulse.x * Time.fixedDeltaTime * 5f, EntityData.currentImpulse.y * Time.fixedDeltaTime * 5f);
+        RB.velocity -= new Vector3(EntityData.currentImpulse.x, 0, EntityData.currentImpulse.y);
         //OnGround = GroundDetector.TriggerIsActive && (GroundDetector.TriggerContact != null ? (GroundDetector.TriggerContact.layer == 7 ? true : false) : true);
         velocity = RB.velocity;
     }
-    private void Update()
+    public void Update()
     {
         if (RB.velocity.x > 0.1f || RB.velocity.x < -0.1f)
             SpriteObj.transform.localScale = XZInput.x < 0 ? new Vector3(-1, 1, 1) : Vector3.one;
@@ -106,6 +112,8 @@ public class GamePlayer : MonoBehaviour, IEntity
 
         StopCoroutine(SetDamageColor());
         StartCoroutine(SetDamageColor());
+
+        EntityData.GiveEffects(damageData.effects);
 
         if (EntityData.currentHealth <= 0)
         {

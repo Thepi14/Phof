@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Linq;
 using EntityDataSystem;
 using static GamePlayer;
+using ObjectUtils;
 
 namespace GameManagerSystem
 {
@@ -70,13 +71,33 @@ namespace GameManagerSystem
                     break;
             }
         }
+        public void RemoveEffectByName(IEntity entity, string name, int frames)
+        {
+            foreach (Effect effect in entity.EntityData.currentEffects.ToList())
+            {
+                if (effect.name.ToLower() == name.ToLower())
+                {
+                    if (effect.frameAdded < frames)
+                    {
+                        entity.EntityData.currentEffects.Remove(effect);
+                    }
+                    return;
+                }
+            }
+        }
         public void VerifyEffects(IEntity entity)
         {
             entity.EntityData.ResetAttributesStatus();
+
+            if (!entity.EntityData.damaged)
+                GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color = Color.white;
+            else
+                GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color = Color.red;
             foreach (Effect effect in entity.EntityData.currentEffects.ToList())
             {
                 bool ticked = false;
                 effect.duration -= Time.deltaTime;
+                    if (effect.tickDelay > 0)
                 effect.currentTick += Time.deltaTime; 
                 if (effect.duration <= 0 || effect.level == 0)
                 {
@@ -93,23 +114,86 @@ namespace GameManagerSystem
                 switch (effect.name.ToLower())
                 {
                     case "slowness":
+                        RemoveEffectByName(entity, "agility", effect.frameAdded);
                         effect.currentTick = 0;
                         entity.EntityData.currentSpeed = entity.EntityData.currentSpeed * (EFFECT_CHANGER / effect.level);
                         break;
                     case "agility":
+                        RemoveEffectByName(entity, "slowness", effect.frameAdded);
                         effect.currentTick = 0;
                         entity.EntityData.currentSpeed = entity.EntityData.currentSpeed + ((entity.EntityData.currentSpeed / (EFFECT_CHANGER + 1)) * effect.level);
                         break;
                     case "poison":
                         if (ticked)
-                            entity.Damage(new DamageData(effect.level * 2, true));
+                        {
+                            if (entity.EntityData.currentHealth - (effect.level * 7) + (entity.EntityData.resistence) <= 0)
+                                effect.currentTick = effect.tickDelay;
+                            else
+                                entity.Damage(new DamageData(effect.level * 2, true));
+                        }
+                        if (!entity.EntityData.damaged)
+                            ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 2) + (Color.green / 2));
                         break;
                     case "on fire":
+                        RemoveEffectByName(entity, "freezed", effect.frameAdded);
+                        RemoveEffectByName(entity, "coldness", effect.frameAdded);
                         if (ticked)
-                            entity.Damage(new DamageData(effect.level * 3));
+                            entity.Damage(new DamageData((effect.level * 6) + (entity.EntityData.resistence) + ((effect.level / 2) * UnityEngine.Random.Range(0, 6))));
+                        if (!entity.EntityData.damaged)
+                            ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 2) + (new Color(1, 0.5f, 0) / 2));
+                        break;
+                    case "coldness":
+                        RemoveEffectByName(entity, "on fire", effect.frameAdded);
+                        entity.EntityData.currentSpeed = entity.EntityData.currentSpeed * (EFFECT_CHANGER / effect.level);
+                        if (ticked)
+                            entity.Damage(new DamageData((effect.level * 8) + (entity.EntityData.resistence)));
+                        if (!entity.EntityData.damaged)
+                            ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 2) + (Color.blue / 2));
+                        break;
+                    case "freeze":
+                        RemoveEffectByName(entity, "on fire", effect.frameAdded);
+                        entity.EntityData.currentSpeed = 0;
+                        if (ticked)
+                            entity.Damage(new DamageData((effect.level * 12) + (entity.EntityData.resistence)));
+                        if (!entity.EntityData.damaged)
+                            ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 3) + (Color.blue / 1.5f));
+                        break;
+                    case "stun":
+                        effect.currentTick = 0;
+                        entity.EntityData.currentSpeed = 0;
+                        if (!entity.EntityData.damaged)
+                            ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 2) + (Color.gray / 2));
+                        break;
+                    case "vulnerable":
+                        effect.currentTick = 0;
+                        entity.EntityData.currentDefense = Mathf.Max(0, entity.EntityData.currentDefense - effect.level);
+                        break;
+                    case "healing":
+                        if (ticked)
+                        {
+                            entity.EntityData.currentHealth = Mathf.Min(entity.EntityData.maxHealth, entity.EntityData.currentHealth + effect.level);
+                            ChangeEntityColor(entity, Color.green, 0.4f);
+                        }
                         break;
                     default:
                         throw new Exception("Efeito desconhecido, nome: " + effect.name);
+                }
+            }
+        }
+        private void ChangeEntityColor(IEntity entity, Color color, float time = 0f)
+        {
+            StartCoroutine(_ChangeEntityColor(entity, color, time));
+            IEnumerator _ChangeEntityColor(IEntity entity, Color color, float time)
+            {
+                float timePassed = 0f;
+                if (!entity.EntityData.damaged)
+                    GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color = color;
+                while (timePassed <= time)
+                {
+                    if (!entity.EntityData.damaged)
+                        GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color = color;
+                    timePassed += Time.deltaTime;
+                    yield return new WaitForEndOfFrame();
                 }
             }
         }

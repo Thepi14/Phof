@@ -54,6 +54,8 @@ namespace ItemSystem
         /// </summary>
         [SerializeReference]
         public GameObject bulletPrefab;
+        [SerializeReference]
+        public GameObject muzzlePrefab;
 
         public void OnValidate()
         {

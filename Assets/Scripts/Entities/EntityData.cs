@@ -14,13 +14,13 @@ using UnityEngine.Events;
 using UnityEngine.AI;
 using UnityEngine.Windows;
 using ProjectileSystem;
+using System.Linq;
 
 namespace EntityDataSystem
 {
     [Serializable]
     public class EntityData
     {
-        [HideInInspector]
         public GameObject gameObject;
 
         [Header("Nome da entidade haha")]
@@ -132,6 +132,50 @@ namespace EntityDataSystem
             int dmg = UnityEngine.Random.Range(currentAttackItem.minDamage, currentAttackItem.maxDamage);
             return new DamageData(gameObject, CalculateDamage(dmg), MathEx.RadianToVector2(angle) * currentAttackItem.impulse, currentAttackItem.effects, ignoreDefense);
         }
+        public void GiveEffect(Effect effect)
+        {
+            bool thereIs = false;
+            foreach (var Ceffect in currentEffects.ToList())
+            {
+                if (effect.name == Ceffect.name)
+                {
+                    thereIs = true;
+                    break;
+                }
+            }
+            //se há um efeito com o nome do effects[i]
+            if (thereIs)
+            {
+                int i = 0;
+                //iteração para cada efeito atual
+                foreach (var Ceffect in currentEffects)
+                {
+                    //se o nome do efeito atual condiz com o que vai ser adicionado
+                    if (Ceffect.name == effect.name)
+                    {
+                        if (Ceffect.stackable && effect.stackable)
+                        {
+                            Ceffect.level += 1;
+                        }
+                        else if (Ceffect.duration < effect.duration && effect.level >= Ceffect.level)
+                        {
+                            currentEffects[i] = new Effect(effect);
+                        }
+                    }
+                    i++;
+                    break;
+                }
+            }
+            else
+                currentEffects.Add(effect);
+        }
+        public void GiveEffects(List<Effect> effects)
+        {
+            foreach (var effect in effects)
+            {
+                GiveEffect(new Effect(effect));
+            }
+        }
     }
     [Serializable]
     public class Effect
@@ -140,14 +184,37 @@ namespace EntityDataSystem
         public float duration = 3f;
         public float tickDelay = 0.5f;
         public byte level = 1;
-        public float currentTick;
+        public float currentTick = 0;
+        public bool stackable = false;
+        [HideInInspector]
+        public int frameAdded = 0;
 
-        public Effect(string name, float duration, float tickDelay, byte level = 1)
+        public Effect(string name, float duration, float tickDelay, byte level = 1, bool stackable = false)
         {
             this.name = name;
             this.duration = duration;
             this.tickDelay = tickDelay;
             this.level = level;
+            this.stackable = stackable;
+            frameAdded = Time.frameCount + 0;
+        }
+        public Effect(string name, float duration, float tickDelay, bool stackable, byte level = 1)
+        {
+            this.name = name;
+            this.duration = duration;
+            this.tickDelay = tickDelay;
+            this.level = level;
+            this.stackable = stackable;
+            frameAdded = Time.frameCount + 0;
+        }
+        public Effect(Effect effect)
+        {
+            name = effect.name;
+            duration = effect.duration;
+            tickDelay = effect.tickDelay;
+            level = effect.level;
+            stackable = effect.stackable;
+            frameAdded = Time.frameCount + 0;
         }
     }
     [Serializable]
@@ -214,14 +281,6 @@ namespace EntityDataSystem
         public void Damage(DamageData damageData);
         public void Attack();
         public void Die(GameObject killer);
-        public void GiveEffect(Effect effect)
-        {
-            EntityData.currentEffects.Add(effect);
-        }
-        public void GiveEffects(List<Effect> effects)
-        {
-            EntityData.currentEffects.AddRange(effects);
-        }
     }
     public abstract class BasicEntityBehaviour : MonoBehaviour, IEntity
     {
@@ -252,7 +311,7 @@ namespace EntityDataSystem
         }
         public void StartEntity(string targetName)
         {
-            
+            MainCameraControl.spriteRenderers.Add(SpriteObj);
             EntityData.name = gameObject.name;
             gameManagerInstance.entities.Add(gameObject);
 
@@ -313,6 +372,8 @@ namespace EntityDataSystem
             EntityData.currentHealth -= total;
             EntityData.currentImpulse += damageData.impulse;
 
+            EntityData.GiveEffects(damageData.effects);
+
             StopCoroutine(SetDamageColor());
             StartCoroutine(SetDamageColor());
 
@@ -337,6 +398,7 @@ namespace EntityDataSystem
                 return;
             if (EntityData.currentAttackItem != null)
             {
+                Instantiate(EntityData.currentAttackItem.muzzlePrefab, transform.position, Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, EntityData.target.transform.position) * Mathf.Rad2Deg) - 90, 0));
                 switch (EntityData.currentAttackItem.type)
                 {
                     case ItemType.None:
@@ -364,8 +426,8 @@ namespace EntityDataSystem
                         }
                         break;
                     case ItemType.RangedWeapon:
-                        var bullet = Instantiate(EntityData.currentAttackItem.bulletPrefab, transform.position, Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, EntityData.target.transform.position) * Mathf.Rad2Deg) - 90, 0));
-                        bullet.GetComponent<Projectile>().SetProjectile(gameObject);
+                        var bullet = Instantiate(EntityData.currentAttackItem.bulletPrefab, new Vector3(transform.position.x, 1.5f, transform.position.z), Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, EntityData.target.transform.position) * Mathf.Rad2Deg) - 90, 0));
+                        bullet.GetComponent<IBullet>().SetBullet(gameObject);
                         break;
                 }
             }
@@ -411,6 +473,36 @@ namespace EntityDataSystem
         {
             MainCameraControl.spriteRenderers.Remove(SpriteObj);
             gameManagerInstance.entities.Remove(gameObject);
+        }
+    }
+    public interface IBullet
+    {
+        public GameObject sender { get; set; }
+        public ProjectileProperties projectileProperties { get; set; }
+        public bool started { get; set; }
+        public void SetBullet(GameObject sender, float? radAngles = null);
+        public DamageData damageData { get; set; }
+    }
+    public class BaseBulletBehaviour : MonoBehaviour, IBullet
+    {
+        public GameObject _sender;
+        public ProjectileProperties _projectileProperties;
+
+        private bool _started = false;
+
+        public GameObject sender { get => _sender; set => _sender = value; }
+        public ProjectileProperties projectileProperties { get => _projectileProperties; set => _projectileProperties = value; }
+        public bool started { get => _started; set => _started = value; }
+        public DamageData damageData { get; set; }
+
+        public void SetBullet(GameObject sender, float? radAngles = null)
+        {
+            //Debug.Log((float)radAngles);
+            this.sender = sender;
+            gameObject.layer = sender.layer == 8 ? 12 : sender.layer == 10 ? 11 : 0;
+            if (radAngles != null)
+                transform.rotation = Quaternion.Euler(0, (float)radAngles * Mathf.Rad2Deg, 0);
+            started = true;
         }
     }
 }
