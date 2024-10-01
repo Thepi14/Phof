@@ -22,5 +22,5 @@ MonoBehaviour:
   maxDamage: 4
   impulse: 1
   effects: []
-  bulletPrefab: {fileID: 7661328709117412688, guid: 788f310a07b45fd4dba95f47d9855a74, type: 3}
-  muzzlePrefab: {fileID: 7647464709602969788, guid: 649645953a2d7e944b54d7f61d48ea21, type: 3}
+  bulletPrefab: {fileID: 7661328709117412688, guid: af4f0bdbe27ac0e4586d290b757b831f, type: 3}
+  muzzlePrefab: {fileID: 7647464709602969788, guid: 8bf60532958004a4281891c561fcb428, type: 3}

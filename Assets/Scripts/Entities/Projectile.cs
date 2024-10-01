@@ -80,6 +80,7 @@ namespace ProjectileSystem
         }
         public void EndBullet()
         {
+            DeathEffect();
             RB.velocity = new Vector3(0f, 0f, 0f);
             RB.constraints = RigidbodyConstraints.FreezeAll;
             if (gameObject.layer == 11)

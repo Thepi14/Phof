@@ -296,7 +296,6 @@ namespace EntityDataSystem
         private DamageEvent _onDamageEvent;
         public DamageEvent OnDamageEvent { get => _onDamageEvent; set => _onDamageEvent = value; }
 
-
         private Rigidbody RB => GetComponent<Rigidbody>();
         public NavMeshAgent Agent => gameObject.GetComponent<NavMeshAgent>();
         public GameObject SpriteObj => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject");
@@ -304,6 +303,7 @@ namespace EntityDataSystem
         public SpriteRenderer SpriteRenderer => SpriteObj.GetComponent<SpriteRenderer>();
         public SpriteRenderer ItemSpriteRenderer => ItemSpriteObj.GetComponent<SpriteRenderer>();
 
+        public const float DEFAULT_SHOT_Y_POSITION = 1f;
 
         public void OnValidate()
         {
@@ -426,7 +426,7 @@ namespace EntityDataSystem
                         }
                         break;
                     case ItemType.RangedWeapon:
-                        var bullet = Instantiate(EntityData.currentAttackItem.bulletPrefab, new Vector3(transform.position.x, 1.5f, transform.position.z), Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, EntityData.target.transform.position) * Mathf.Rad2Deg) - 90, 0));
+                        var bullet = Instantiate(EntityData.currentAttackItem.bulletPrefab, new Vector3(transform.position.x, DEFAULT_SHOT_Y_POSITION, transform.position.z), Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, EntityData.target.transform.position) * Mathf.Rad2Deg) - 90, 0));
                         bullet.GetComponent<IBullet>().SetBullet(gameObject);
                         break;
                 }
@@ -478,19 +478,26 @@ namespace EntityDataSystem
     public interface IBullet
     {
         public GameObject sender { get; set; }
+        public GameObject explosionPrefab { get; set; }
         public ProjectileProperties projectileProperties { get; set; }
         public bool started { get; set; }
         public void SetBullet(GameObject sender, float? radAngles = null);
+        public void DeathEffect();
         public DamageData damageData { get; set; }
     }
     public class BaseBulletBehaviour : MonoBehaviour, IBullet
     {
-        public GameObject _sender;
-        public ProjectileProperties _projectileProperties;
+        [SerializeField]
+        private GameObject _sender;
+        [SerializeField]
+        private GameObject _explosionPrefab;
+        [SerializeField]
+        private ProjectileProperties _projectileProperties;
 
         private bool _started = false;
 
         public GameObject sender { get => _sender; set => _sender = value; }
+        public GameObject explosionPrefab { get => _explosionPrefab; set => _explosionPrefab = value; }
         public ProjectileProperties projectileProperties { get => _projectileProperties; set => _projectileProperties = value; }
         public bool started { get => _started; set => _started = value; }
         public DamageData damageData { get; set; }
@@ -503,6 +510,11 @@ namespace EntityDataSystem
             if (radAngles != null)
                 transform.rotation = Quaternion.Euler(0, (float)radAngles * Mathf.Rad2Deg, 0);
             started = true;
+        }
+        public void DeathEffect()
+        {
+            var expObj = Instantiate(explosionPrefab);
+            expObj.transform.position = transform.position;
         }
     }
 }

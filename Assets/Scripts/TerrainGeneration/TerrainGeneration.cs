@@ -31,6 +31,8 @@ public class TerrainGeneration : MonoBehaviour
     public int maxRoomSize = 6;
 
     #region Vari�veis pr� definidas e constantes
+    public Pathfinding pathfinding;
+
     [SerializeField]
     private int _mapWidth, _mapHeight;
     public int MapWidth
@@ -43,9 +45,6 @@ public class TerrainGeneration : MonoBehaviour
         get { return _mapHeight; }
         private set { _mapHeight = value; }
     }
-
-    public Pathfinding pathfinding;
-
     public int corridorSize = 1;
     public int minimumDistanceBetweenRooms = 12;
     #endregion
@@ -56,6 +55,8 @@ public class TerrainGeneration : MonoBehaviour
     {
         Instance = this;
 
+        pathfinding = new Pathfinding(MapWidth, MapHeight);
+
         rooms = new List<RoomNode>();
 
         transform.parent.Find("Player").position = new Vector3(MapWidth / 2, 1, MapHeight / 2);
@@ -65,8 +66,6 @@ public class TerrainGeneration : MonoBehaviour
     public void GenerateLevel()
     {
         Random.InitState(seed);
-
-        pathfinding = new Pathfinding(MapWidth, MapHeight);
 
         walls = new GameObject[MapWidth, MapHeight];
         floors = new GameObject[MapWidth, MapHeight];
@@ -138,26 +137,6 @@ public class TerrainGeneration : MonoBehaviour
                     PlaceBlock(new Vector3(door.position.x + 2, 1.5f, door.position.y), biome.pillarBlocks[0], true, null, null);
                 }
             }
-            /*if (dotMap.GetPixel(room.position.x + 1, room.position.y) != Color.black)
-            {
-                PlaceBlock(new Vector3(room.RightUpCornerPosition.x, 1.5f, room.position.y + 2), biome.pillarBlocks[0], true, null, null);
-                PlaceBlock(new Vector3(room.RightUpCornerPosition.x, 1.5f, room.position.y - 2), biome.pillarBlocks[0], true, null, null);
-            }
-            if (dotMap.GetPixel(room.position.x - 1, room.position.y) != Color.black)
-            {
-                PlaceBlock(new Vector3(room.LeftDownCornerPosition.x, 1.5f, room.position.y + 2), biome.pillarBlocks[0], true, null, null);
-                PlaceBlock(new Vector3(room.LeftDownCornerPosition.x, 1.5f, room.position.y - 2), biome.pillarBlocks[0], true, null, null);
-            }
-            if (dotMap.GetPixel(room.position.x, room.position.y + 1) != Color.black)
-            {
-                PlaceBlock(new Vector3(room.position.x + 2, 1.5f, room.RightUpCornerPosition.y), biome.pillarBlocks[0], true, null, null);
-                PlaceBlock(new Vector3(room.position.x - 2, 1.5f, room.RightUpCornerPosition.y), biome.pillarBlocks[0], true, null, null);
-            }
-            if (dotMap.GetPixel(room.position.x, room.position.y - 1) != Color.black)
-            {
-                PlaceBlock(new Vector3(room.position.x + 2, 1.5f, room.LeftDownCornerPosition.y), biome.pillarBlocks[0], true, null, null);
-                PlaceBlock(new Vector3(room.position.x - 2, 1.5f, room.LeftDownCornerPosition.y), biome.pillarBlocks[0], true, null, null);
-            }*/
         }
 
         //X = X, Z = Y
@@ -316,12 +295,12 @@ public class TerrainGeneration : MonoBehaviour
     public Texture2D ExpandWhiteDotsRandomly(Texture2D texture, int minX, int minY, int maxX, int maxY, int space)
     {
         var newTex = GetTexture(texture);
-        Grid<pixelNode> analisedPixels = new Grid<pixelNode>(texture.width, texture.height, (Grid<pixelNode> g, int x, int y) => new pixelNode(x, y));
         Color[,] colors = new Color[texture.width, texture.height];
         int _space = space + 1;
 
         Color32 undefinedColor = new Color32(64, 64, 64, 255);
         var currentID = 0;
+
         for (int x = 0; x < texture.width; x++)
         {
             for (int y = 0; y < texture.height; y++)
@@ -391,16 +370,5 @@ public class TerrainGeneration : MonoBehaviour
 
         newTex.Apply();
         return newTex;
-    }
-    private struct pixelNode
-    {
-        int x, y;
-        bool analised;
-        public pixelNode(int x, int y)
-        {
-            this.x = x;
-            this.y = y;
-            analised = false;
-        }
     }
 }
