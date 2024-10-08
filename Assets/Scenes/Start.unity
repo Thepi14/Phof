@@ -938,13 +938,14 @@ GameObject:
   m_Component:
   - component: {fileID: 705507995}
   - component: {fileID: 705507994}
+  - component: {fileID: 705507996}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!108 &705507994
 Light:
   m_ObjectHideFlags: 0
@@ -952,7 +953,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 705507993}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
@@ -1022,6 +1023,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1871006072}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &705507996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 705507993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
 --- !u!1 &721614556
 GameObject:
   m_ObjectHideFlags: 0
@@ -3359,11 +3383,11 @@ Transform:
   - {fileID: 1261473671}
   - {fileID: 963194228}
   - {fileID: 736816648}
+  - {fileID: 1951086412}
   - {fileID: 97371421}
   - {fileID: 1658542072}
   - {fileID: 1386907516}
   - {fileID: 1766357108}
-  - {fileID: 1951086412}
   - {fileID: 705507995}
   - {fileID: 721614562}
   - {fileID: 461846156}
@@ -3599,10 +3623,11 @@ MonoBehaviour:
   dotMap: {fileID: 0}
   physicalMap: {fileID: 0}
   roomsMap: {fileID: 0}
-  lol: {fileID: 0}
+  roomDetectionMap: {fileID: 0}
+  corridorMap: {fileID: 0}
   DEFAULT_MESH: {fileID: 5159557868297216081, guid: 73c1ae02814fb3842b1e2ab98c7b6dd0, type: 3}
   DEFAULT_MATERIAL: {fileID: 2100000, guid: a00251c2ebd815c49bbdaf97a4691fc7, type: 2}
-  seed: 24556
+  seed: 10000
   frequency: 0.2
   limit: 0.9
   scattering: 0
@@ -3612,6 +3637,8 @@ MonoBehaviour:
   _mapHeight: 100
   corridorSize: 1
   minimumDistanceBetweenRooms: 12
+  defaultSeed: 0
+  configSeed: 0
   references:
     version: 2
     RefIds: []

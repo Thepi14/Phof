@@ -4,7 +4,6 @@ using UnityEngine;
 using static TextureFunction;
 using Pathfindingsystem;
 using RoomSystem;
-using UnityEditor;
 using static NavMeshUpdate;
 
 public class TerrainGeneration : MonoBehaviour
@@ -19,8 +18,8 @@ public class TerrainGeneration : MonoBehaviour
     public Texture2D dotMap;
     public Texture2D physicalMap;
     public Texture2D roomsMap;
-    private Texture2D roomsMapDoorVerification;
-    public Texture2D lol;
+    public Texture2D roomDetectionMap;
+    public Texture2D corridorMap;
 
     public Mesh DEFAULT_MESH;
     public Material DEFAULT_MATERIAL;
@@ -51,9 +50,21 @@ public class TerrainGeneration : MonoBehaviour
     public GameObject[,] walls;
     public GameObject[,] floors;
 
+    private const int DEFAULT_SEED = 24556;
+    [SerializeField]
+    private bool defaultSeed = false;
+    [SerializeField]
+    private bool configSeed = false;
+
     void Start()
     {
         Instance = this;
+
+        if (!configSeed)
+            if (!defaultSeed)
+                seed = PlayerPrefs.GetInt("CURRENT_SEED", DEFAULT_SEED);
+            else
+                seed = DEFAULT_SEED;
 
         pathfinding = new Pathfinding(MapWidth, MapHeight);
 
@@ -72,24 +83,27 @@ public class TerrainGeneration : MonoBehaviour
 
         dotMap = new Texture2D(MapWidth, MapHeight);
         physicalMap = new Texture2D(MapWidth, MapHeight);
-        lol = new Texture2D(MapWidth, MapHeight);
+        roomDetectionMap = new Texture2D(MapWidth, MapHeight);
 
         physicalMap.name = "Physical";
 
         dotMap = GenerateNoiseTexture(MapWidth, MapHeight, seed, frequency, limit, scattering, true);
 
-        dotMap = SeparateWhiteDots(dotMap, minimumDistanceBetweenRooms, 8);
-
-        dotMap = GeneratePathsOnMap(dotMap);
-
-        physicalMap = GetTexture(dotMap);
-        dotMap = DefineColorListForPaths(dotMap);
-        //dotMap = ExpandBlackOnNonWhite(dotMap, 2);
+        dotMap = SeparateWhiteDots(dotMap, minimumDistanceBetweenRooms, 10);
 
         roomsMap = ExpandWhiteDotsRandomly(dotMap, minRoomSize, minRoomSize, maxRoomSize, maxRoomSize, 3);
-        roomsMapDoorVerification = ExpandWhiteSquare(roomsMap, 1);
 
-        physicalMap = OtherColorsToTwo(roomsMap, true);
+        roomDetectionMap = GenerateCrossesInMap(ExpandWhiteSquare(roomsMap, 4), dotMap);
+
+        dotMap = GeneratePathsOnMap(roomDetectionMap);
+        corridorMap = AddNotBlack(SubtractToBlack(dotMap, roomDetectionMap), roomsMap);
+        dotMap = OtherColorsToTwo(dotMap, true);
+
+        //dotMap = DefineColorListForPaths(dotMap);
+        //dotMap = ExpandBlackOnNonWhite(dotMap, 2);
+
+        physicalMap = GetTexture(dotMap);
+        //physicalMap = OtherColorsToTwo(roomsMap, true);
         physicalMap = ExpandWhiteSquare(physicalMap, corridorSize);
 
         dotMap.name = "Dungeons";
@@ -103,7 +117,7 @@ public class TerrainGeneration : MonoBehaviour
 
         Color[,] colors = new Color[MapWidth, MapHeight];
 
-        bool DetectCorner(int x, int y, int ex, int ey) => !PixelIsBW(roomsMap, x + ex, y) && !PixelIsBW(roomsMap, x, y + ey);
+        bool DetectCorner(int x, int y, int ex, int ey) => !PixelIsBW(corridorMap, x + ex, y) && !PixelIsBW(corridorMap, x, y + ey);
 
         foreach (RoomNode room in rooms)
         {
@@ -116,7 +130,7 @@ public class TerrainGeneration : MonoBehaviour
             {
                 for (int y = room.LeftDownCornerPosition.y; y <= room.RightUpCornerPosition.y; y++)
                 {
-                    if (roomsMapDoorVerification.GetPixel(x, y) == Color.white || roomsMapDoorVerification.GetPixel(x, y) == Color.black)
+                    if (corridorMap.GetPixel(x, y) == Color.white || corridorMap.GetPixel(x, y) == Color.black)
                         continue;
                     room.doors.Add(new Door(new Vector2Int(x, y), x == room.LeftDownCornerPosition.x ? new Vector2Int(-1, 0) : x == room.RightUpCornerPosition.x ? new Vector2Int(1, 0) : y == room.LeftDownCornerPosition.y ? new Vector2Int(0, -1) : new Vector2Int(0, 1)));
                 }
@@ -144,9 +158,8 @@ public class TerrainGeneration : MonoBehaviour
         {
             for (int z = 0; z < MapHeight; z++)
             {
-                if (dotMap.GetPixel(x, z) == Color.white || dotMap.GetPixel(x, z) == Color.black)
+                if (corridorMap.GetPixel(x, z) == Color.white || corridorMap.GetPixel(x, z) == Color.black)
                     continue;
-                //Debug.Log(physicalMap.GetPixel(x, z));
                 if (DetectCorner(x, z, 1, 1) || DetectCorner(x, z, -1, -1))
                 {
                     PlaceBlock(x + 2, 1.5f, z + 2, biome.pillarBlocks[0], true, null, null);
@@ -318,8 +331,8 @@ public class TerrainGeneration : MonoBehaviour
 
                     var room = new RoomNode(currentID, new Vector2Int(x, y), -Left + Right + 2, -Down + Up + 2);
 
-                    room.LeftDownCornerPosition = new Vector2Int(Left + x - 2, Down + y - 2);
-                    room.RightUpCornerPosition = new Vector2Int(Right + x + 1, Up + y + 1);
+                    room.LeftDownCornerPosition = new Vector2Int(Left + x - 1, Down + y - 1);
+                    room.RightUpCornerPosition = new Vector2Int(Right + x + 0, Up + y + 0);
 
                     rooms.Add(room);
                     Debug.Log(room.ToString());
@@ -370,5 +383,49 @@ public class TerrainGeneration : MonoBehaviour
 
         newTex.Apply();
         return newTex;
+    }
+    public Texture2D GenerateCrossesInMap(Texture2D whiteSquaresTex, Texture2D dotsTex)
+    {
+        Texture2D newTex = GetTexture(whiteSquaresTex);
+         
+        for (int x = 0; x < whiteSquaresTex.width; x++)
+        {
+            for (int y = 0; y < whiteSquaresTex.height; y++)
+            {
+                if (whiteSquaresTex.GetPixel(x, y) == Color.white && dotsTex.GetPixel(x, y) != Color.white)
+                {
+                    newTex.SetPixel(x, y, Color.green);
+                }
+            }
+        }
+        for (int x = 0; x < whiteSquaresTex.width; x++)
+        {
+            for (int y = 0; y < whiteSquaresTex.height; y++)
+            {
+                if (dotsTex.GetPixel(x, y) == Color.white)
+                {
+                    ContinueCross(x + 1, y, 0);
+                    ContinueCross(x - 1, y, 1);
+                    ContinueCross(x, y + 1, 2);
+                    ContinueCross(x, y - 1, 3);
+                }
+            }
+        }
+
+        newTex.Apply();
+        return newTex;
+
+        ///side 0 = x 1, side 1 = x -1, side 2 = y 1, side 3 = y -1
+        void ContinueCross(int x, int y, byte side)
+        {
+            if (whiteSquaresTex.GetPixel(x, y) == Color.white)
+                newTex.SetPixel(x, y, Color.black);
+            else
+                return;
+            ContinueCross(
+                x + (side == 0 ? 1 : side == 1 ? -1 : 0), 
+                y + (side == 2 ? 1 : side == 3 ? -1 : 0), 
+                side);
+        }
     }
 }

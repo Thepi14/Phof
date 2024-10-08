@@ -4,12 +4,35 @@ using System;
 using System.Collections.Generic;
 using Pathfindingsystem;
 using System.Runtime.CompilerServices;
+using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 
 /// <summary>
 /// Classe que lida com operações envolvendo texturas.
 /// </summary>
 public class TextureFunction
 {
+    /// <summary>
+    /// Define a cor de uma textura, o padrão é branco.
+    /// </summary>
+    /// <param name="tex">A textura com o tamanho.</param>
+    /// <param name="color">A cor.</param>
+    /// <returns></returns>
+    public static Texture2D SetTextureColor(Texture2D tex, Color? color = null)
+    {
+        if (color == null)
+            color = Color.white;
+        Texture2D newTex = GetTexture(tex);
+        for (int x = 0; x < newTex.width; x++)
+        {
+            for (int y = 0; y < newTex.height; y++)
+            {
+                newTex.SetPixel(x, y, (Color)color);
+            }
+        }
+        newTex.Apply();
+        return newTex;
+    }
     /// <summary>
     /// Função que retorna a textura da textura fornecida
     /// </summary>
@@ -393,7 +416,7 @@ public class TextureFunction
     /// <param name="texture">Textura original.</param>
     /// <param name="times">Quantas vezes expandirá.</param>
     [Obsolete("Método ultrapassado por passagens por referências")]
-    public static void ExpandWhiteArea(Texture2D texture, int times)
+    public static void ExpandWhiteArea(Texture2D texture, int times = 1)
     {
         Texture2D textureComparative = new Texture2D(texture.width, texture.height);
         TextureToOther(ref textureComparative, texture);
@@ -423,7 +446,7 @@ public class TextureFunction
     /// <param name="texture">Textura original.</param>
     /// <param name="times">Quantas vezes expandirá.</param>
     /// <returns>Nova textura com a cor branca expandida</returns>
-    public static Texture2D ExpandWhite(Texture2D texture, int times)
+    public static Texture2D ExpandWhite(Texture2D texture, int times = 1)
     {
         Texture2D previousTex = GetTexture(texture);
         Texture2D newTex = GetTexture(texture);
@@ -454,7 +477,7 @@ public class TextureFunction
     /// <param name="texture">Textura original.</param>
     /// <param name="times">Quantas vezes expandirá.</param>
     /// <returns>Nova textura com a cor branca expandida</returns>
-    public static Texture2D ExpandWhiteSquare(Texture2D texture, int times)
+    public static Texture2D ExpandWhiteSquare(Texture2D texture, int times = 1)
     {
         Texture2D previousTex = GetTexture(texture);
         Texture2D newTex = GetTexture(texture);
@@ -478,6 +501,37 @@ public class TextureFunction
             }
             newTex.Apply();
             previousTex = GetTexture(newTex);
+        }
+        newTex.Apply();
+        Resources.UnloadUnusedAssets();
+        GC.Collect();
+        return newTex;
+    }
+    /// <summary>
+    /// Expande a área branca, só que as pontas também, evitando pontas arredondads.
+    /// </summary>
+    /// <param name="texture">Textura original.</param>
+    /// <param name="times">Quantas vezes expandirá.</param>
+    /// <returns>Nova textura com a cor branca expandida</returns>
+    public static Texture2D ExpandNotWhiteSquareAndTurnToWhite(Texture2D texture)
+    {
+        Texture2D previousTex = GetTexture(texture);
+        Texture2D newTex = GetTexture(texture);
+        for (int x = 0; x < texture.width; x++)
+        {
+            for (int y = 0; y < texture.height; y++)
+            {
+                if (previousTex.GetPixel(x, y) != Color.white && previousTex.GetPixel(x, y) != Color.black)
+                    for (int j = -1; j <= 1; j++)
+                    {
+                        for (int k = -1; k <= 1; k++)
+                        {
+                            if (j == 0 && k == 0)
+                                continue;
+                            newTex.SetPixel(x + j, y + k, Color.white);
+                        }
+                    }
+            }
         }
         newTex.Apply();
         Resources.UnloadUnusedAssets();
@@ -1247,7 +1301,7 @@ public class TextureFunction
                     }
                 }
             }
-            foreach (PathNode node in pathfinding.FindPath((int)point1.x, (int)point1.y, (int)point2.x, (int)point2.y).ToArray())
+            foreach (PathNode node in pathfinding.FindPath((int)point1.x, (int)point1.y, (int)point2.x, (int)point2.y, (x, y) => { return texture.GetPixel(x, y) != Color.green; } ).ToArray())
             {
                 if (node == null || dotMap.GetPixel(node.x, node.y) == Color.white)
                     continue;
@@ -1263,9 +1317,16 @@ public class TextureFunction
             a -= 1f / pointsParenting.Count;
             Debug.Log(a);
         }*/
+        for (int x = 0; x < texture.width; x++)
+        {
+            for (int y = 0; y < texture.height; y++)
+            {
+                if (texture.GetPixel(x, y) == Color.green)
+                    dotMap.SetPixel(x, y, Color.black);
+            }
+        }
         dotMap.Apply();
         return dotMap;
-
         bool IsReachedPoint(Vector2 currentPoint)
         {
             foreach (Vector2 point in pointsReached)
@@ -1303,4 +1364,37 @@ public class TextureFunction
     }
     public static bool PixelIsBW(Texture2D texture, int x, int y) => texture.GetPixel(x, y) == Color.white || texture.GetPixel(x, y) == Color.black;
     public static bool PixelIsB(Texture2D texture, int x, int y) => texture.GetPixel(x, y) == Color.black;
+    public static bool PixelIsW(Texture2D texture, int x, int y) => texture.GetPixel(x, y) == Color.white;
+    public static Texture2D SubtractToBlack(Texture2D texMantain, Texture2D texRemove)
+    {
+        var texture = GetTexture(texMantain);
+        for (int x = 0; x < texture.width; x++)
+        {
+            for (int y = 0; y < texture.height; y++)
+            {
+                if (texRemove.GetPixel(x, y) != Color.black && texMantain.GetPixel(x, y) == Color.black)
+                {
+                    texture.SetPixel(x, y, Color.black);
+                }
+            }
+        }
+        texture.Apply();
+        return texture;
+    }
+    public static Texture2D AddNotBlack(Texture2D texMantain, Texture2D texAdd)
+    {
+        var texture = GetTexture(texMantain);
+        for (int x = 0; x < texture.width; x++)
+        {
+            for (int y = 0; y < texture.height; y++)
+            {
+                if (texAdd.GetPixel(x, y) != Color.black)
+                {
+                    texture.SetPixel(x, y, texAdd.GetPixel(x, y));
+                }
+            }
+        }
+        texture.Apply();
+        return texture;
+    }
 }
