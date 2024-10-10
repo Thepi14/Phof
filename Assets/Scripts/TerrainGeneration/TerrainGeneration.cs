@@ -70,8 +70,6 @@ public class TerrainGeneration : MonoBehaviour
 
         rooms = new List<RoomNode>();
 
-        transform.parent.Find("Player").position = new Vector3(MapWidth / 2, 1, MapHeight / 2);
-
         GenerateLevel();
     }
     public void GenerateLevel()
@@ -85,11 +83,9 @@ public class TerrainGeneration : MonoBehaviour
         physicalMap = new Texture2D(MapWidth, MapHeight);
         roomDetectionMap = new Texture2D(MapWidth, MapHeight);
 
-        physicalMap.name = "Physical";
-
         dotMap = GenerateNoiseTexture(MapWidth, MapHeight, seed, frequency, limit, scattering, true);
 
-        dotMap = SeparateWhiteDots(dotMap, minimumDistanceBetweenRooms, 10);
+        dotMap = SeparateWhiteDots(dotMap, minimumDistanceBetweenRooms, maxRoomSize + 4);
 
         roomsMap = ExpandWhiteDotsRandomly(dotMap, minRoomSize, minRoomSize, maxRoomSize, maxRoomSize, 3);
 
@@ -97,17 +93,9 @@ public class TerrainGeneration : MonoBehaviour
 
         dotMap = GeneratePathsOnMap(roomDetectionMap);
         corridorMap = AddNotBlack(SubtractToBlack(dotMap, roomDetectionMap), roomsMap);
-        dotMap = OtherColorsToTwo(dotMap, true);
 
-        //dotMap = DefineColorListForPaths(dotMap);
-        //dotMap = ExpandBlackOnNonWhite(dotMap, 2);
-
-        physicalMap = GetTexture(dotMap);
-        //physicalMap = OtherColorsToTwo(roomsMap, true);
+        physicalMap = OtherColorsToTwo(dotMap, true);
         physicalMap = ExpandWhiteSquare(physicalMap, corridorSize);
-
-        dotMap.name = "Dungeons";
-        GeneratePng(dotMap);
 
         Texture2D[] list = new Texture2D[2];
         list[0] = physicalMap;
@@ -138,14 +126,28 @@ public class TerrainGeneration : MonoBehaviour
 
             foreach (Door door in room.doors)
             {
+                var doorObj = PlaceBlock(new Vector3(door.position.x, 1.5f, door.position.y), biome.doorBlock, true, null, null);
+                door.doorBlock = doorObj;
+                doorObj.AddComponent<Animator>().runtimeAnimatorController = biome.doorAnimationController;
+
                 if (door.facing.x == 1 || door.facing.x == -1)
                 {
+                    if (door.facing.x == 1)
+                        doorObj.transform.rotation = Quaternion.Euler(biome.doorBlock.blockRotation.x, biome.doorBlock.blockRotation.y, biome.doorBlock.blockRotation.z - 90f);
+                    else
+                        doorObj.transform.rotation = Quaternion.Euler(biome.doorBlock.blockRotation.x, biome.doorBlock.blockRotation.y, biome.doorBlock.blockRotation.z + 90f);
+
                     //PlaceBlock(new Vector3(door.position.x, 3f, door.position.y), biome.pillarBlocks[0], true, null, null);
                     PlaceBlock(new Vector3(door.position.x, 1.5f, door.position.y + 2), biome.pillarBlocks[0], true, null, null);
                     PlaceBlock(new Vector3(door.position.x, 1.5f, door.position.y - 2), biome.pillarBlocks[0], true, null, null);
                 }
                 else if (door.facing.y == 1 || door.facing.y == -1)
                 {
+                    if (door.facing.y == 1)
+                        doorObj.transform.rotation = Quaternion.Euler(biome.doorBlock.blockRotation.x, biome.doorBlock.blockRotation.y, biome.doorBlock.blockRotation.z + 180f);
+                    else
+                        doorObj.transform.rotation = Quaternion.Euler(biome.doorBlock.blockRotation.x, biome.doorBlock.blockRotation.y, biome.doorBlock.blockRotation.z);
+
                     //PlaceBlock(new Vector3(door.position.x, 3f, door.position.y), biome.pillarBlocks[0], true, null, null);
                     PlaceBlock(new Vector3(door.position.x - 2, 1.5f, door.position.y), biome.pillarBlocks[0], true, null, null);
                     PlaceBlock(new Vector3(door.position.x + 2, 1.5f, door.position.y), biome.pillarBlocks[0], true, null, null);
@@ -223,6 +225,7 @@ public class TerrainGeneration : MonoBehaviour
         }
 
         navMeshUpdateInstance.BuildNavMesh();
+        transform.parent.Find("Player").position = new Vector3(rooms[0].transform.position.x, 1f , rooms[0].transform.position.z);
     }
     public
     #region medo
@@ -231,21 +234,32 @@ public class TerrainGeneration : MonoBehaviour
         
     }
     #endregion
-    public void PlaceBlock(int x, float y, int z, BlockClass type, bool wall = false, Vector3? rotation = null, Vector3? scale = null)
+    public GameObject PlaceBlock(int x, float y, int z, BlockClass type, bool wall = false, Vector3? rotation = null, Vector3? scale = null)
     {
         if (floors[x, z] != null && !wall)
-            return;
+            return null;
         if (walls[x, z] != null && wall)
-            return;
+            return null;
         if (rotation == null)
             rotation = Vector3.zero;
         if (scale == null)
             scale = type.blockSize;
-        //GameObject block = new GameObject(type.blockName);
-        GameObject block = new GameObject(type.blockName + " " + x + " " + y + " " + z, typeof(MeshFilter), typeof(MeshRenderer));
-        block.isStatic = true;
 
-        block.transform.position = new Vector3(x + 0.5f, y, z + 0.5f);
+        GameObject block = new GameObject(type.blockName + " " + x + " " + y + " " + z, typeof(MeshFilter), typeof(MeshRenderer));
+        GameObject parent = null;
+        //block.isStatic = true;
+
+        if (type.isDoor)
+        {
+            parent = new GameObject("Door_Parent " + x + " " + y + " " + z);
+            block.transform.position = Vector3.zero;
+            block.transform.parent = parent.transform;
+            parent.transform.position = new Vector3(x + 0.5f, y, z + 0.5f);
+        }
+        else
+        {
+            block.transform.position = new Vector3(x + 0.5f, y, z + 0.5f);
+        }
         block.transform.localScale = (Vector3)scale;
         block.transform.rotation = Quaternion.Euler(type.blockRotation + (Vector3)rotation);
 
@@ -282,9 +296,13 @@ public class TerrainGeneration : MonoBehaviour
         else
         {
             walls[x, z] = block;
-            block.transform.parent = wallParent.transform;
+            if (!type.isDoor)
+                block.transform.parent = wallParent.transform;
+            else
+                parent.transform.parent = wallParent.transform;
             block.layer = 6;
         }
+        return block;
     }
     public GameObject SpawnEntity(float x, float z, string tag)
     {
@@ -292,9 +310,103 @@ public class TerrainGeneration : MonoBehaviour
 
         return entity;
     }
-    public void PlaceBlock(Vector3 coord, BlockClass type, bool wall = false, Vector3? rotation = null, Vector3? scale = null) => PlaceBlock((int)coord.x, coord.y, (int)coord.z, type, wall, rotation, scale);
+    public GameObject PlaceBlock(Vector3 coord, BlockClass type, bool wall = false, Vector3? rotation = null, Vector3? scale = null) => PlaceBlock((int)coord.x, coord.y, (int)coord.z, type, wall, rotation, scale);
     public GameObject GetWallObj(int x, int y) => walls[x, y];
     public GameObject GetFloorObj(int x, int y) => floors[x, y];
+    /// <summary>
+    /// Gera caminhos entre pixeis brancos, ótimo para gerar Dungeons!
+    /// </summary>
+    /// <param name="texture">A textura com os pontos.</param>
+    /// <returns>Nova textura com os caminhos em verde. (Color.green)</returns>
+    public Texture2D GeneratePathsOnMap(Texture2D texture)
+    {
+        Texture2D dotMap = GetTexture(texture);
+
+        Pathfinding pathfinding = new Pathfinding(texture.width, texture.height);
+
+        pathfinding.MOVE_DIAGONAL_COST = 25;
+        List<Vector2> pointsFound = new List<Vector2>();
+        List<Vector2> pointsReached = new List<Vector2>();
+        List<Vector2> pointsAnalyzed = new List<Vector2>();
+
+        for (int x = 0; x < texture.width; x++)
+        {
+            for (int y = 0; y < texture.height; y++)
+            {
+                if (dotMap.GetPixel(x, y).r == 0)
+                    continue;
+
+                pointsFound.Add(new Vector2(x, y));
+            }
+        }
+        Vector2 point1 = pointsFound[UnityEngine.Random.Range(0, pointsFound.Count - 1)];
+        Vector2 point2 = new Vector2(-1000, -1000);
+
+        for (int i = 0; i < pointsFound.Count - 1; i++)
+        {
+            int range = 10;
+            bool Rx = UnityEngine.Random.Range(0, range) < range / 2 ? false : true;
+            bool Ry = UnityEngine.Random.Range(0, range) < range / 2 ? false : true;
+
+            //Debug.Log("The interaction " + i + " has the parameters: X = " + Rx + " Y = " + Ry);
+
+            bool firstDot = true;
+            for (int x = Rx == true ? 0 : texture.width - 1;
+                x >= 0 && x < texture.height;
+                x = Rx == true ? x + 1 : x - 1)
+            {
+                for (int y = Ry == true ? 0 : texture.width - 1;
+                    y >= 0 && y < texture.height;
+                    y = Ry == true ? y + 1 : y - 1)
+                {
+                    if (firstDot)
+                    {
+                        if (dotMap.GetPixel(x, y).r == 1)
+                        {
+                            if (IsReachedPoint(new Vector2(x, y)))
+                                continue;
+                            point1 = new Vector2(x, y);
+                            pointsReached.Add(point1);
+                            firstDot = false;
+                        }
+                    }
+                    else
+                    {
+                        if (dotMap.GetPixel(x, y).r == 0 || (x == (int)point1.x && y == (int)point1.y) || IsReachedPoint(new Vector2(x, y)))
+                            continue;
+                        point2 = Vector2.Distance(point1, new Vector2(x, y)) < Vector2.Distance(point1, point2) ? new Vector2(x, y) : point2;
+                    }
+                }
+            }
+            foreach (PathNode node in pathfinding.FindPath((int)point1.x, (int)point1.y, (int)point2.x, (int)point2.y, (x, y) => { return texture.GetPixel(x, y) != Color.green; }).ToArray())
+            {
+                if (node == null || dotMap.GetPixel(node.x, node.y) == Color.white)
+                    continue;
+                dotMap.SetPixel(node.x, node.y, Color.green);
+            }
+            point1 = point2;
+            point2 = new Vector2(-1000, -1000);
+        }
+        for (int x = 0; x < texture.width; x++)
+        {
+            for (int y = 0; y < texture.height; y++)
+            {
+                if (texture.GetPixel(x, y) == Color.green)
+                    dotMap.SetPixel(x, y, Color.black);
+            }
+        }
+        dotMap.Apply();
+        return dotMap;
+        bool IsReachedPoint(Vector2 currentPoint)
+        {
+            foreach (Vector2 point in pointsReached)
+            {
+                if (point.Equals(currentPoint))
+                    return true;
+            }
+            return false;
+        }
+    }
     /// <summary>
     /// Script que aumenta pontos brancos únicos para quadrados/retângulos maiores que oscilam entre os tamanhos mínimos e máximos de x e y, definindo também um espaço máximo entre esses retângulos.
     /// </summary>
@@ -323,19 +435,27 @@ public class TerrainGeneration : MonoBehaviour
                     currentID++;
                     newTex.SetPixel(x, y, Color.black);
                     newTex.Apply();
+
                     int Left = UnityEngine.Random.Range(-minX, -maxX);
                     int Right = UnityEngine.Random.Range(minX, maxX);
 
                     int Up = UnityEngine.Random.Range(minY, maxY);
                     int Down = UnityEngine.Random.Range(-minY, -maxY);
 
-                    var room = new RoomNode(currentID, new Vector2Int(x, y), -Left + Right + 2, -Down + Up + 2);
+                    var roomObj = new GameObject("Room " + currentID);
+                    var room = roomObj.AddComponent<RoomNode>();
+
+                    room.NewRoomNode(currentID, new Vector2Int(x, y), -Left + Right + 2, -Down + Up + 2);
 
                     room.LeftDownCornerPosition = new Vector2Int(Left + x - 1, Down + y - 1);
                     room.RightUpCornerPosition = new Vector2Int(Right + x + 0, Up + y + 0);
 
+                    roomObj.transform.position = new Vector3(room.LeftDownCornerPosition.x + (room.width / 2f), 1.5f, room.LeftDownCornerPosition.y + (room.height / 2f));
+                    roomObj.AddComponent<BoxCollider>().size = new Vector3(room.width - 2f, 2, room.height - 2f);
+                    roomObj.GetComponent<BoxCollider>().isTrigger = true;
+
                     rooms.Add(room);
-                    Debug.Log(room.ToString());
+                    //Debug.Log(room.ToString());
 
                     for (int xE = Left + x; xE < Right + x; xE++)
                     {

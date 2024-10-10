@@ -6,10 +6,12 @@ using ObjectUtils;
 using System.Linq;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEditor.Rendering.LookDev;
 
 public class MainMenuManager : MonoBehaviour
 {
     private GameObject MainPanel => GameObjectGeneral.GetGameObject(gameObject, "Mainpanel");
+    private TextMeshProUGUI HotText => GameObjectGeneral.GetGameObjectComponent<TextMeshProUGUI>(MainPanel, "Hottext");
     private Button PlayButton => GameObjectGeneral.GetGameObjectComponent<Button>(MainPanel, "Playbutton");
 
     private GameObject NewGamePanel => GameObjectGeneral.GetGameObject(gameObject, "Newgamepanel");
@@ -37,7 +39,10 @@ public class MainMenuManager : MonoBehaviour
 
         PlayButton.onClick.AddListener(() => { OpenMenu(Panel.Newgamepanel); });
         GenerateGameButton.onClick.AddListener(() => { GenerateNewWorld(); });
-
+        #region secret
+        HotTexts hotTexts = new HotTexts();
+        HotText.text = hotTexts.texts[UnityEngine.Random.Range(0, hotTexts.texts.Count - 1)];
+        #endregion
         SeedInput.onValueChanged.AddListener((text) => { if (text.Length == 0 || !int.TryParse(text, out var a)) { seed = UnityEngine.Random.Range(10000, 999999); SeedInput.text = seed + ""; } else seed = int.Parse(text); });
     }
     void Update()
@@ -60,5 +65,10 @@ public class MainMenuManager : MonoBehaviour
         PlayerPrefs.SetInt("CURRENT_SEED", seed);
         PlayerPrefs.Save();
         SceneManager.LoadScene(1);
+    }
+    public void DeactivateAllOtherPanels()
+    {
+        MainPanel.SetActive(true);
+        NewGamePanel.SetActive(false);
     }
 }

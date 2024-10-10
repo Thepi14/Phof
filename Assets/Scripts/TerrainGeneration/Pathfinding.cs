@@ -350,6 +350,7 @@ namespace Pathfindingsystem
             PathNode currentNode = endNode;
             //Debug.Log(currentNode);
             //Debug.Log(currentNode.cameFromNode);
+
             int x = currentNode.cameFromNode.x - currentNode.x, prevX = currentNode.cameFromNode.x - currentNode.x,
                 y = currentNode.cameFromNode.y - currentNode.y, prevY = currentNode.cameFromNode.y - currentNode.y,
                 counter = 0;

@@ -294,7 +294,7 @@ public class ColliderNutshell : MonoBehaviour
         }
 
         throw new System.NullReferenceException("Não foi achado nenhum collider bro.");
-        return null;
+        //return null;
     }
     /// <summary>
     /// Usado para conseguir uma lista de colisores que interseccionem com o colisor criado, usando o colisor atual do <b>GameObject</b>
@@ -334,7 +334,7 @@ public class ColliderNutshell : MonoBehaviour
         }
 
         throw new System.NullReferenceException("Não foi achado nenhum collider bro.");
-        return null;
+        //return null;
     }
     private void GetCollidersDebug(Vector3 vector)
     {

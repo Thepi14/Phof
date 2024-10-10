@@ -6,6 +6,7 @@ using System.Linq;
 using EntityDataSystem;
 using static GamePlayer;
 using ObjectUtils;
+using RoomSystem;
 
 namespace GameManagerSystem
 {
@@ -15,6 +16,8 @@ namespace GameManagerSystem
     public class GameManager : MonoBehaviour
     {
         public static GameManager gameManagerInstance;
+
+        public RoomNode currentRoom;
 
         public List<GameObject> enemyBullets = new List<GameObject>();
         public List<GameObject> playerBullets = new List<GameObject>();
