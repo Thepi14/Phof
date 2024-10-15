@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static TextureFunction;
+using GameManagerSystem;
 using Pathfindingsystem;
 using RoomSystem;
 using static NavMeshUpdate;
@@ -239,7 +240,7 @@ public class TerrainGeneration : MonoBehaviour
         }
 
         navMeshUpdateInstance.BuildNavMesh();
-        transform.parent.Find("Player").position = new Vector3(rooms[0].transform.position.x, 1f , rooms[0].transform.position.z);
+        Instantiate(GameManager.gameManagerInstance.playerPrefab, new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z), Quaternion.identity, transform);
     }
     public
     #region medo

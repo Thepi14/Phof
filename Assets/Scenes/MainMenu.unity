@@ -2339,7 +2339,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   langTab: {fileID: 3046247111866851280, guid: 674c87b4c76997149b558848a4392b2c, type: 3}
-  currentPanel: 0
 --- !u!114 &613541203
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -30,6 +30,9 @@ public class CameraControl : MonoBehaviour
         None = 255
     }
     public FocusMode focusMode;
+    public bool lerp;
+    public float moveSpeed = 2f;
+
     public void OnValidate()
     {
         MainCameraControl = this;
@@ -46,14 +49,15 @@ public class CameraControl : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        CameraRotater();
+        if (focusObject != null)
+            CameraRotater();
     }
     private void CameraRotater()
     {
         switch ((int)focusMode)
         {
             case 1 or 8: //XYZ
-                transform.position = focusObject.transform.position + Placement;
+                CameraPositioner();
                 transform.rotation = Quaternion.Euler(cameraAngle, 0, 0);
                 break;
             case 2: //Angle
@@ -78,10 +82,18 @@ public class CameraControl : MonoBehaviour
                 break;
             case 7: //FULL ROTATE
                 transform.rotation = Quaternion.Euler((Mathf.Rad2Deg * Mathf.Atan2(transform.position.z - focusObject.transform.position.z, transform.position.y - focusObject.transform.position.y)) + 90, (Mathf.Rad2Deg * Mathf.Atan2(transform.position.x - focusObject.transform.position.x, transform.position.z - focusObject.transform.position.z)) + 180, transform.rotation.z);
+                //transform.rotation = Quaternion.LookRotation(transform.position, focusObject.transform.position);
                 break;
 
             default: break;
         }
+    }
+    public void CameraPositioner()
+    {
+        if (lerp)
+            transform.position = Vector3.Lerp(transform.position, focusObject.transform.position + Placement, moveSpeed * Time.deltaTime);
+        else
+            transform.position = focusObject.transform.position + Placement;
     }
     private void SpriteRotater()
     {

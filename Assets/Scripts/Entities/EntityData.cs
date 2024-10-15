@@ -70,6 +70,7 @@ namespace EntityDataSystem
         public bool canMove = true;
         public bool inRange = false;
         public bool damaged = false;
+        public bool dead = false;
 
         public void ResetStatus()
         {
@@ -338,6 +339,8 @@ namespace EntityDataSystem
         }
         public void Update()
         {
+            FieldOfView();
+
             if (Agent.velocity.x > 0.1f || Agent.velocity.x < -0.1f)
                 SpriteObj.transform.localScale = Agent.destination.x < transform.position.x ? new Vector3(-1, 1, 1) : Vector3.one;
 
@@ -358,8 +361,6 @@ namespace EntityDataSystem
 
             /*Vector3 direction = EntityData.target.transform.position - transform.position;
             SpriteRenderer.flipX = direction.x < 0;*/
-
-            FieldOfView();
         }
         public void FixedUpdate()
         {
@@ -448,10 +449,32 @@ namespace EntityDataSystem
         {
             if (!gameObject.activeSelf)
                 return;
-            if (EntityData.prioritizePlayer && Vector3.Distance(transform.position, player.transform.position) <= Vector3.Distance(transform.position, EntityData.target.transform.position))
+            if (EntityData.target == null)
             {
-                EntityData.target = player.gameObject;
+                if (!EntityData.prioritizePlayer)
+                {
+                    foreach(var ally in gameManagerInstance.allies)
+                    {
+                        if (EntityData.prioritizePlayer && Vector3.Distance(transform.position, ally.transform.position) <= EntityData.visionRadius)
+                        {
+                            EntityData.target = ally;
+                        }
+                    }
+                }
+                else if (EntityData.prioritizePlayer && Vector3.Distance(transform.position, player.transform.position) <= EntityData.visionRadius)
+                {
+                    EntityData.target = player.gameObject;
+                }
             }
+            if (EntityData.target != null)
+            {
+                if (EntityData.prioritizePlayer && Vector3.Distance(transform.position, player.transform.position) <= Vector3.Distance(transform.position, EntityData.target.transform.position))
+                {
+                    EntityData.target = player.gameObject;
+                }
+            }
+            if (EntityData.target == null)
+                return;
             EntityData.inRange = Vector3.Distance(transform.position, EntityData.target.transform.position) <= EntityData.attackDistance + 0.3f;
             Agent.isStopped = !EntityData.canMove;
         }
@@ -468,12 +491,31 @@ namespace EntityDataSystem
 
         public void Die(GameObject killer)
         {
+            if (EntityData.dead)
+                return;
+            EntityData.dead = true;
             OnDeathEvent.Invoke(EntityData, killer);
 
             RB.velocity = Vector3.zero;
             EntityData.canMove = false;
-            gameObject.SetActive(false);
-            Destroy(gameObject);
+            GetComponent<Collider>().enabled = false;
+            //gameObject.SetActive(false);
+
+            DieAnim();
+        }
+        public void DieAnim()
+        {
+            SpriteObj.GetComponent<Animator>().SetBool("Dead", true);
+            SpriteObj.GetComponent<Animator>().Play("Dead");
+            StartCoroutine(DieAnimC());
+            IEnumerator DieAnimC()
+            {
+                for (float t = 0; t < SpriteObj.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.length; t += Time.deltaTime)
+                {
+                    yield return new WaitForEndOfFrame();
+                }
+                Destroy(gameObject);
+            }
         }
 
         public void OnDestroy()

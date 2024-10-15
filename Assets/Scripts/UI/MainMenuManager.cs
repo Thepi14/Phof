@@ -44,7 +44,25 @@ public class MainMenuManager : MonoBehaviour
         Newgamepanel = 1,
         LanguagePanel = 2,
     }
-    public Panel currentPanel;
+    private Panel _currentPanel;
+    public Panel currentPanel
+    {
+        get
+        {
+            return _currentPanel;
+        }
+        set
+        {
+            _currentPanel = value;
+            foreach (var gpanel in PanelList)
+            {
+                if (gpanel == null)
+                    break;
+                gpanel.SetActive(false);
+            }
+            PanelList[(byte)value].SetActive(true);
+        }
+    }
 
     void Start()
     {
@@ -121,13 +139,6 @@ public class MainMenuManager : MonoBehaviour
     public void OpenMenu(Panel panel)
     {
         currentPanel = panel;
-        foreach(var gpanel in PanelList)
-        {
-            if (gpanel == null)
-                break;
-            gpanel.SetActive(false);
-        }
-        PanelList[(byte)panel].SetActive(true);
     }
     public void OpenMenu(int panel) => OpenMenu((Panel)panel);
     private void GenerateNewWorld()

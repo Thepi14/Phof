@@ -96,7 +96,7 @@ Animator:
   m_GameObject: {fileID: 2518187719541145006}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 9dbc217dbd09ea84693663c2b7bc83e2, type: 2}
+  m_Controller: {fileID: 22100000, guid: 15fb3bc39637a7444b9631f373f0f2d0, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -373,7 +373,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6372259321148836672
 Transform:
   m_ObjectHideFlags: 0
@@ -485,7 +485,7 @@ MonoBehaviour:
     prioritizePlayer: 1
     inCombat: 0
     target: {fileID: 0}
-    attackReloaded: 1
+    attackReloaded: 0
     canMove: 1
     inRange: 0
     damaged: 0

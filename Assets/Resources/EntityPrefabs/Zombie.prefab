@@ -225,7 +225,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 455687258, guid: 4c06155572b33fa4499622ca1f82f559, type: 3}
+  m_Sprite: {fileID: 416806270, guid: fecaadd2dc6b4e44a82bd6ec447897d2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -246,7 +246,7 @@ Animator:
   m_GameObject: {fileID: 5699451918642454475}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: 15fb3bc39637a7444b9631f373f0f2d0, type: 2}
+  m_Controller: {fileID: 22100000, guid: 9961e34cae2fa4742bc54ae7e1cb8768, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -271,7 +271,7 @@ GameObject:
   - component: {fileID: 2035788556043339541}
   - component: {fileID: 6268715994321511157}
   m_Layer: 10
-  m_Name: Enemy gelo
+  m_Name: Zombie
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

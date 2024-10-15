@@ -19,7 +19,8 @@ namespace GameManagerSystem
     {
         public static GameManager gameManagerInstance;
 
-        //[Header("Stage config", order = 0)]
+        [Header("General", order = 0)]
+        public GameObject playerPrefab;
 
         [Header("Current Status", order = 1)]
         public RoomNode currentRoom;

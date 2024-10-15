@@ -72,7 +72,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 0}
+  m_Motion: {fileID: 7400000, guid: 272b562347d6f8743bc32c73348d2b90, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -134,7 +134,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: EntityBasicAnimation
+  m_Name: EntityBasicAnimationTemplate
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Walking
@@ -184,7 +184,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 3f272d29d5d77b647a3d9069c00c87c4, type: 2}
+  m_Motion: {fileID: 7400000, guid: 97168af10c568fa44a35dd0f14866753, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -240,7 +240,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 7885c96b70cf61347a2e514358a9600f, type: 2}
+  m_Motion: {fileID: 7400000, guid: 21a6062f4f8e3584cad293de5f46f8cc, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 

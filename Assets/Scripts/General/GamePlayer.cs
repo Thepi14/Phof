@@ -67,10 +67,12 @@ public class GamePlayer : MonoBehaviour, IEntity
         MainCameraControl.focusMode = FocusMode.moveToFocusXYZ;
 
         ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
+
+        gameManagerInstance.allies.Add(gameObject);
     }
     public void FixedUpdate()
     {
-        XZInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        XZInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * new Vector2(Mathf.Abs(Input.GetAxis("Horizontal")), Mathf.Abs(Input.GetAxis("Vertical")));
 
         if(EntityData.canMove && XZInput != new Vector2(0, 0))
             RB.velocity = new Vector3(XZInput.x * EntityData.currentSpeed, 0, XZInput.y * EntityData.currentSpeed);
@@ -132,8 +134,30 @@ public class GamePlayer : MonoBehaviour, IEntity
 
     public void Die(GameObject killer)
     {
+        if (EntityData.dead)
+            return;
+        EntityData.dead = true;
         OnDeathEvent.Invoke(EntityData, killer);
-        Destroy(gameObject);
+
+        RB.velocity = Vector3.zero;
+        EntityData.canMove = false;
+        GetComponent<Collider>().enabled = false;
+
+        DieAnim();
+    }
+    public void DieAnim()
+    {
+        SpriteObj.GetComponent<Animator>().SetBool("Dead", true);
+        SpriteObj.GetComponent<Animator>().Play("Dead");
+        StartCoroutine(DieAnimC());
+        IEnumerator DieAnimC()
+        {
+            for (float t = 0; t < SpriteObj.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.length; t += Time.deltaTime)
+            {
+                yield return new WaitForEndOfFrame();
+            }
+            gameObject.SetActive(false);
+        }
     }
 
     public void Attack()
