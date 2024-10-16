@@ -18,6 +18,9 @@ namespace ItemSystem
         /// </summary>
         RangedWeapon = 2,
     }
+    /// <summary>
+    /// Classe scriptável para itens.
+    /// </summary>
     [Serializable]
     [CreateAssetMenu(fileName = "new Item", menuName = "Novo item", order = 0)]
     public class Item : ScriptableObject
@@ -25,6 +28,8 @@ namespace ItemSystem
         [Header("Geral", order = 0)]
         public string itemName = "NULL";
         public Sprite itemSprite;
+        public RuntimeAnimatorController animatorController;
+        public Vector2 positionOffSet;
         public ItemType type;
 
         [Header("Ataque", order = 1)]

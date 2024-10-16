@@ -832,7 +832,7 @@ MonoBehaviour:
   spriteRenderers: []
   focusMode: 8
   lerp: 1
-  moveSpeed: 4
+  moveSpeed: 6
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0

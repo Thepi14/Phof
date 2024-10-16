@@ -7,6 +7,7 @@ using static GameManagerSystem.GameManager;
 using EntityDataSystem;
 using ObjectUtils;
 using System.Linq;
+using ItemSystem;
 
 public class GamePlayer : MonoBehaviour, IEntity
 {
@@ -36,13 +37,15 @@ public class GamePlayer : MonoBehaviour, IEntity
 
     #region Variáveis pré-definidas
     public Rigidbody RB => GetComponent<Rigidbody>();
-    public CapsuleCollider2D Collid => GetComponent<CapsuleCollider2D>();
+    public Collider Collid => GetComponent<Collider>();
     public GameObject GroundDetectorObj => transform.Find("GroundDetector").gameObject;
     public ColliderNutshell GroundDetector => GroundDetectorObj.GetComponent<ColliderNutshell>();
     public GameObject SpriteObj => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject");
-    public GameObject ItemSpriteObj => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject\\Item");
+    public GameObject ItemSpriteOffset => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject\\ItemOffset");
+    public GameObject ItemSpriteObj => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject\\ItemOffset\\Item");
     public SpriteRenderer SpriteRenderer => SpriteObj.GetComponent<SpriteRenderer>();
     public SpriteRenderer ItemSpriteRenderer => ItemSpriteObj.GetComponent<SpriteRenderer>();
+    public Animator ItemSpriteAnimator => ItemSpriteObj.GetComponent<Animator>();
     public GameObject AttackArea => transform.Find("AttackArea").gameObject;
 
     #endregion
@@ -51,8 +54,10 @@ public class GamePlayer : MonoBehaviour, IEntity
     {
         EntityData.gameObject = gameObject;
     }
-    public void Start()
+    public void Awake()
     {
+        EntityData.attackReloaded = true;
+
         player = this;
         EntityData.gameObject = gameObject;
         MainCameraControl.spriteRenderers.Add(SpriteObj);
@@ -64,14 +69,17 @@ public class GamePlayer : MonoBehaviour, IEntity
         EntityData.canMove = true;
 
         MainCameraControl.focusObject = gameObject;
-        MainCameraControl.focusMode = FocusMode.moveToFocusXYZ;
 
         ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
 
+        SetItem(EntityData.currentAttackItem);
         gameManagerInstance.allies.Add(gameObject);
     }
     public void FixedUpdate()
     {
+        if (EntityData.dead)
+            return;
+
         XZInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * new Vector2(Mathf.Abs(Input.GetAxis("Horizontal")), Mathf.Abs(Input.GetAxis("Vertical")));
 
         if(EntityData.canMove && XZInput != new Vector2(0, 0))
@@ -86,6 +94,9 @@ public class GamePlayer : MonoBehaviour, IEntity
     }
     public void Update()
     {
+        if (EntityData.dead)
+            return;
+
         if (RB.velocity.x > 0.1f || RB.velocity.x < -0.1f)
             SpriteObj.transform.localScale = XZInput.x < 0 ? new Vector3(-1, 1, 1) : Vector3.one;
 
@@ -102,7 +113,6 @@ public class GamePlayer : MonoBehaviour, IEntity
             Attack();
         }
     }
-
     public void Damage(DamageData damageData)
     {
         OnDamageEvent.Invoke(EntityData, damageData.sender);
@@ -122,7 +132,12 @@ public class GamePlayer : MonoBehaviour, IEntity
             Die(damageData.sender);
         }
     }
-
+    public void SetItem(Item item)
+    {
+        ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
+        ItemSpriteAnimator.runtimeAnimatorController = item.animatorController;
+        ItemSpriteOffset.transform.localPosition = (Vector3)item.positionOffSet + new Vector3(0, 0, -0.01f);
+    }
     private IEnumerator SetDamageColor()
     {
         EntityData.damaged = true;
@@ -147,22 +162,23 @@ public class GamePlayer : MonoBehaviour, IEntity
     }
     public void DieAnim()
     {
-        SpriteObj.GetComponent<Animator>().SetBool("Dead", true);
-        SpriteObj.GetComponent<Animator>().Play("Dead");
+        RB.constraints = RigidbodyConstraints.FreezeAll;
+        StopCoroutine(DieAnimC());
         StartCoroutine(DieAnimC());
         IEnumerator DieAnimC()
         {
-            for (float t = 0; t < SpriteObj.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.length; t += Time.deltaTime)
-            {
-                yield return new WaitForEndOfFrame();
-            }
-            gameObject.SetActive(false);
+            SpriteObj.GetComponent<Animator>().SetBool("Dead", true);
+            SpriteObj.GetComponent<Animator>().Play("Dead");
+            yield return new WaitForSeconds(SpriteObj.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.length);
+            SpriteRenderer.enabled = false;
+            ItemSpriteRenderer.color = Color.clear;
         }
     }
-
     public void Attack()
     {
-        var list = AttackArea.GetComponent<ColliderNutshell>().GetColliders();
+        if (!EntityData.attackReloaded)
+            return;
+        var list = AttackArea.GetComponent<ColliderNutshell>().GetColliders(EntityData.attackDistance + EntityData.currentAttackItem.attackDistance);
         foreach (var collider in list.ToList())
         {
             if (collider.tag == "GamePlayer" || collider.gameObject.layer != 10)
@@ -172,6 +188,23 @@ public class GamePlayer : MonoBehaviour, IEntity
                 collider.GetComponent<IEntity>().Damage(EntityData.AttackWithItem(MathEx.AngleRadian(transform.position, collider.transform.position)));
             }
         }
+        StartCoroutine(AttackTimer());
+        StartCoroutine(AttackAnimC());
+        IEnumerator AttackAnimC()
+        {
+            ItemSpriteAnimator.Play("Attack");
+            yield return new WaitForSeconds(ItemSpriteAnimator.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.length);
+            ItemSpriteAnimator.Play("Default");
+        }
+    }
+    private IEnumerator AttackTimer()
+    {
+        EntityData.attackReloaded = false;
+        if (EntityData.currentAttackItem != null)
+            yield return new WaitForSeconds(EntityData.currentAttackItem.reloadTime + EntityData.attackDelay);
+        else
+            yield return new WaitForSeconds(EntityData.attackDelay);
+        EntityData.attackReloaded = true;
     }
 
     public void OnDestroy()

@@ -83,6 +83,38 @@ MonoBehaviour:
   colliderContact: {fileID: 0}
   lastTriggerContact: {fileID: 0}
   lastColliderContact: {fileID: 0}
+--- !u!1 &1091989100456873145
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6558870026693656505}
+  m_Layer: 8
+  m_Name: ItemOffset
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6558870026693656505
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1091989100456873145}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.3, y: 0, z: -0.01}
+  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_ConstrainProportionsScale: 1
+  m_Children:
+  - {fileID: 4529003873175507442}
+  m_Father: {fileID: 2439809679447267163}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1425104884946670678
 GameObject:
   m_ObjectHideFlags: 0
@@ -93,6 +125,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4529003873175507442}
   - component: {fileID: 4825295011019067667}
+  - component: {fileID: 1532241649934485293}
   m_Layer: 8
   m_Name: Item
   m_TagString: Untagged
@@ -109,11 +142,11 @@ Transform:
   m_GameObject: {fileID: 1425104884946670678}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.3, y: 0, z: -0.01}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 2439809679447267163}
+  m_Father: {fileID: 6558870026693656505}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4825295011019067667
 SpriteRenderer:
@@ -156,7 +189,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: dbd9f360b0be44f43a941b28e433efa0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -164,9 +197,30 @@ SpriteRenderer:
   m_Size: {x: 4, y: 4}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
+--- !u!95 &1532241649934485293
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1425104884946670678}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1512f04d6b6cdfc4692ca95a5c476c53, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2764406364007988026
 GameObject:
   m_ObjectHideFlags: 0
@@ -416,7 +470,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4529003873175507442}
+  - {fileID: 6558870026693656505}
   m_Father: {fileID: 3090349714473885802}
   m_LocalEulerAnglesHint: {x: 42.94, y: 0, z: 0}
 --- !u!212 &2372684621920896910
@@ -460,7 +514,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1352407677, guid: f063e5d0bfe3a8a499ebac198ff177b3, type: 3}
+  m_Sprite: {fileID: -2098278483, guid: daac7969d8e39ac419c514f0990f5b73, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -521,7 +575,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5316647512813464706}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -5, y: 0, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -616,7 +670,7 @@ MonoBehaviour:
     currentIntelligence: 0
     currentDefense: 0
     currentSpeed: 0
-    currentAttackSpeedMultipliyer: 0
+    currentAttackSpeedMultipliyer: 1
     currentImpulse: {x: 0, y: 0}
     currentEffects:
     - name: healing
@@ -627,8 +681,8 @@ MonoBehaviour:
       stackable: 0
       frameAdded: 0
     currentAttackItem: {fileID: 11400000, guid: fbdba3ba2efc82a4683a14422cba453c, type: 2}
-    attackDistance: 0.5
-    attackDelay: 1
+    attackDistance: 0.7
+    attackDelay: 0.1
     visionRadius: 10
     prioritizePlayer: 0
     inCombat: 0
@@ -637,6 +691,7 @@ MonoBehaviour:
     canMove: 1
     inRange: 0
     damaged: 0
+    dead: 0
   _onDeathEvent:
     m_PersistentCalls:
       m_Calls: []

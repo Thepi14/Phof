@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Cajado de gelo
   itemSprite: {fileID: 21300000, guid: d3fbc7c933928b842a9e8cc5a90f4e38, type: 3}
+  animatorController: {fileID: 9100000, guid: 6d04b7b3269a3aa4a864a361ecfbb9d6, type: 2}
+  positionOffSet: {x: 0.3, y: 0}
   type: 2
   reloadTime: 3
   attackDistance: 6

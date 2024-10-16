@@ -118,7 +118,7 @@ namespace RoomSystem
                 if (posList.Contains(new Vector2Int(x, y)))
                     goto returnV;
 
-                GameManager.gameManagerInstance.SpawnEntity(new Vector2(x, y), info.entities[UnityEngine.Random.Range(0, info.entities.Count - 1)]);
+                GameManager.gameManagerInstance.SpawnEntity(new Vector2(x, y), info.entities[UnityEngine.Random.Range(0, info.entities.Count)]);
 
                 posList.Add(new Vector2Int(x, y));
             }

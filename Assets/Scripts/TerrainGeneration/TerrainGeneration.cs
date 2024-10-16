@@ -68,7 +68,6 @@ public class TerrainGeneration : MonoBehaviour
             MapWidth = PlayerPrefs.GetInt("MAP_WIDTH", 100);
             MapHeight = PlayerPrefs.GetInt("MAP_HEIGHT", 100);
         }
-        Debug.Log(CurrentStage);
 
         pathfinding = new Pathfinding(MapWidth, MapHeight);
 
@@ -240,6 +239,10 @@ public class TerrainGeneration : MonoBehaviour
         }
 
         navMeshUpdateInstance.BuildNavMesh();
+        if (GameManager.gameManagerInstance == null)
+            throw new System.Exception("Manager is null");
+        if (GameManager.gameManagerInstance.playerPrefab == null)
+            throw new System.Exception("Manager player prefab is null");
         Instantiate(GameManager.gameManagerInstance.playerPrefab, new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z), Quaternion.identity, transform);
     }
     public

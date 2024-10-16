@@ -282,6 +282,7 @@ namespace EntityDataSystem
         public void Damage(DamageData damageData);
         public void Attack();
         public void Die(GameObject killer);
+        public void SetItem(Item item);
     }
     public abstract class BasicEntityBehaviour : MonoBehaviour, IEntity
     {
@@ -298,22 +299,24 @@ namespace EntityDataSystem
         public DamageEvent OnDamageEvent { get => _onDamageEvent; set => _onDamageEvent = value; }
 
         private Rigidbody RB => GetComponent<Rigidbody>();
+        public Collider Collid => GetComponent<Collider>();
         public NavMeshAgent Agent => gameObject.GetComponent<NavMeshAgent>();
         public GameObject SpriteObj => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject");
-        public GameObject ItemSpriteObj => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject\\Item");
+        public GameObject ItemSpriteOffset => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject\\ItemOffset");
+        public GameObject ItemSpriteObj => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject\\ItemOffset\\Item");
         public SpriteRenderer SpriteRenderer => SpriteObj.GetComponent<SpriteRenderer>();
         public SpriteRenderer ItemSpriteRenderer => ItemSpriteObj.GetComponent<SpriteRenderer>();
+        public Animator ItemSpriteAnimator => ItemSpriteObj.GetComponent<Animator>();
 
         public const float DEFAULT_SHOT_Y_POSITION = 1f;
 
         public void OnValidate()
         {
             EntityData.gameObject = gameObject;
-            EntityData.attackReloaded = false;
         }
         public void StartEntity(string targetName)
         {
-            EntityData.attackReloaded = false;
+            EntityData.attackReloaded = true;
 
             MainCameraControl.spriteRenderers.Add(SpriteObj);
             EntityData.name = gameObject.name;
@@ -325,13 +328,14 @@ namespace EntityDataSystem
             EntityData.CalculateStatus();
             EntityData.ResetStatus();
 
-            Agent.speed = EntityData.speed;
-            Agent.stoppingDistance = EntityData.attackDistance;
-            EntityData.attackReloaded = true;
-
-            ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
-
+            SetItem(EntityData.currentAttackItem);
             AttackTimer();
+        }
+        public void SetItem(Item item)
+        {
+            ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
+            ItemSpriteAnimator.runtimeAnimatorController = item.animatorController;
+            ItemSpriteOffset.transform.localPosition = (Vector3)item.positionOffSet + new Vector3(0, 0, -0.01f);
         }
         public void Awake()
         {
@@ -339,12 +343,15 @@ namespace EntityDataSystem
         }
         public void Update()
         {
+            if (EntityData.dead)
+                return;
+
             FieldOfView();
 
             if (Agent.velocity.x > 0.1f || Agent.velocity.x < -0.1f)
                 SpriteObj.transform.localScale = Agent.destination.x < transform.position.x ? new Vector3(-1, 1, 1) : Vector3.one;
 
-            if (Agent.isOnNavMesh)
+            if (Agent.isOnNavMesh && EntityData.target != null)
             {
                 Agent.SetDestination(EntityData.target.transform.position);
                 Agent.isStopped = false;
@@ -364,6 +371,9 @@ namespace EntityDataSystem
         }
         public void FixedUpdate()
         {
+            if (EntityData.dead)
+                return;
+
             Attack();
             EntityData.currentImpulse *= 10 * Time.fixedDeltaTime;
             RB.velocity = EntityData.currentImpulse;
@@ -372,6 +382,8 @@ namespace EntityDataSystem
         public void Damage(DamageData damageData)
         {
             OnDamageEvent.Invoke(EntityData, damageData.sender);
+            if (EntityData.target == null && (damageData.sender.layer == 8 || damageData.sender.layer == 9))
+                EntityData.target = damageData.sender;
 
             int total = !damageData.ignoreDefense ? Mathf.Max(damageData.damage - EntityData.CalculateDefense(), 0) : damageData.damage;
 
@@ -404,7 +416,9 @@ namespace EntityDataSystem
                 return;
             if (EntityData.currentAttackItem != null)
             {
-                Instantiate(EntityData.currentAttackItem.muzzlePrefab, transform.position, Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, EntityData.target.transform.position) * Mathf.Rad2Deg) - 90, 0));
+                if (EntityData.currentAttackItem.muzzlePrefab != null)
+                    Instantiate(EntityData.currentAttackItem.muzzlePrefab, transform.position, Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, EntityData.target.transform.position) * Mathf.Rad2Deg) - 90, 0));
+
                 switch (EntityData.currentAttackItem.type)
                 {
                     case ItemType.None:
@@ -413,15 +427,15 @@ namespace EntityDataSystem
                     case ItemType.MeleeWeapon:
                         var colliders = Physics.OverlapSphere(transform.position, (EntityData.attackDistance + EntityData.currentAttackItem.attackDistance + 0.2f), LayerMask.GetMask("Player"));
                         if (colliders.Length == 0)
-                        {
                             break;
-                        }
+
                         GameObject target = colliders[0].gameObject;
                         foreach (var entity in colliders)
                         {
                             if (Vector3.Distance(transform.position, entity.transform.position) < Vector3.Distance(transform.position, target.transform.position) && target != entity)
                                 target = entity.gameObject;
                         }
+
                         if (target.gameObject.GetComponent<IEntity>() != null)
                         {
                             target.gameObject.GetComponent<IEntity>().Damage(EntityData.AttackWithItem(MathEx.AngleRadian(transform.position, target.transform.position)));
@@ -430,6 +444,7 @@ namespace EntityDataSystem
                         {
                             return;
                         }
+
                         break;
                     case ItemType.RangedWeapon:
                         var bullet = Instantiate(EntityData.currentAttackItem.bulletPrefab, new Vector3(transform.position.x, DEFAULT_SHOT_Y_POSITION, transform.position.z), Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, EntityData.target.transform.position) * Mathf.Rad2Deg) - 90, 0));
@@ -443,10 +458,27 @@ namespace EntityDataSystem
                 //Se não tiver item
             }
             StartCoroutine(AttackTimer());
+            StartCoroutine(AttackAnimC());
+            IEnumerator AttackAnimC()
+            {
+                ItemSpriteAnimator.Play("Attack");
+                yield return new WaitForSeconds(ItemSpriteAnimator.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.length);
+                ItemSpriteAnimator.Play("Default");
+            }
         }
-
+        private IEnumerator AttackTimer()
+        {
+            EntityData.attackReloaded = false;
+            if (EntityData.currentAttackItem != null)
+                yield return new WaitForSeconds(EntityData.currentAttackItem.reloadTime + EntityData.attackDelay);
+            else
+                yield return new WaitForSeconds(EntityData.attackDelay);
+            EntityData.attackReloaded = true;
+        }
         public void FieldOfView()
         {
+            Agent.speed = EntityData.currentSpeed;
+
             if (!gameObject.activeSelf)
                 return;
             if (EntityData.target == null)
@@ -475,20 +507,12 @@ namespace EntityDataSystem
             }
             if (EntityData.target == null)
                 return;
-            EntityData.inRange = Vector3.Distance(transform.position, EntityData.target.transform.position) <= EntityData.attackDistance + 0.3f;
+
+            Agent.stoppingDistance = EntityData.currentAttackItem.attackDistance;
+            EntityData.inRange = Vector3.Distance(transform.position, EntityData.target.transform.position) <= EntityData.currentAttackItem.attackDistance + 0.3f;
+
             Agent.isStopped = !EntityData.canMove;
         }
-
-        private IEnumerator AttackTimer()
-        {
-            EntityData.attackReloaded = false;
-            if (EntityData.currentAttackItem != null)
-                yield return new WaitForSeconds(EntityData.currentAttackItem.reloadTime + EntityData.attackDelay);
-            else
-                yield return new WaitForSeconds(EntityData.attackDelay);
-            EntityData.attackReloaded = true;
-        }
-
         public void Die(GameObject killer)
         {
             if (EntityData.dead)
@@ -505,15 +529,15 @@ namespace EntityDataSystem
         }
         public void DieAnim()
         {
-            SpriteObj.GetComponent<Animator>().SetBool("Dead", true);
-            SpriteObj.GetComponent<Animator>().Play("Dead");
+            RB.constraints = RigidbodyConstraints.FreezeAll;
+            StopCoroutine(DieAnimC());
             StartCoroutine(DieAnimC());
             IEnumerator DieAnimC()
             {
-                for (float t = 0; t < SpriteObj.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.length; t += Time.deltaTime)
-                {
-                    yield return new WaitForEndOfFrame();
-                }
+                SpriteObj.GetComponent<Animator>().SetBool("Dead", true);
+                SpriteObj.GetComponent<Animator>().Play("Dead");
+                yield return new WaitForEndOfFrame();
+                yield return new WaitForSeconds(SpriteObj.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.length);
                 Destroy(gameObject);
             }
         }

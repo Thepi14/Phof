@@ -15,7 +15,7 @@ TagManager:
   - Wall
   - Floor
   - Player
-  - 
+  - Ally
   - Enemy
   - EnemyProjectile
   - PlayerProjectile

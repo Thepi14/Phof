@@ -41,7 +41,7 @@ namespace GameManagerSystem
         {
             gameManagerInstance = this;
         }
-        private void Start()
+        private void Awake()
         {
             gameManagerInstance = this;
         }

@@ -9,7 +9,9 @@ AnimatorOverrideController:
   m_Name: Skeleton
   m_Controller: {fileID: 9100000, guid: 9dbc217dbd09ea84693663c2b7bc83e2, type: 2}
   m_Clips:
-  - m_OriginalClip: {fileID: 7400000, guid: 7885c96b70cf61347a2e514358a9600f, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 21a6062f4f8e3584cad293de5f46f8cc, type: 2}
     m_OverrideClip: {fileID: 7400000, guid: 7885c96b70cf61347a2e514358a9600f, type: 2}
-  - m_OriginalClip: {fileID: 7400000, guid: 3f272d29d5d77b647a3d9069c00c87c4, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 97168af10c568fa44a35dd0f14866753, type: 2}
     m_OverrideClip: {fileID: 7400000, guid: 3f272d29d5d77b647a3d9069c00c87c4, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 272b562347d6f8743bc32c73348d2b90, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: afcbb030b2d2b9848aafaa3c5e55dfb5, type: 2}

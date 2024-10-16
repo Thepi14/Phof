@@ -302,7 +302,7 @@ public class ColliderNutshell : MonoBehaviour
     /// <param name="radius">Raio opcional para a esfera ou a cápsula.</param>
     /// <returns>Uma lista dos colisores detectados.</returns>
     /// <exception cref="System.NullReferenceException"></exception>
-    public Collider[] GetColliders(int radius)
+    public Collider[] GetColliders(float radius)
     {
         if (ColliderComponent is Collider)
         {

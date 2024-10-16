@@ -18,6 +18,8 @@ public class CanvasGameManager : MonoBehaviour
     }
     private void Update()
     {
+        if (player == null)
+            return;
         LifeBar.localScale = new Vector3(Mathf.Max((float)player.EntityData.currentHealth / player.EntityData.maxHealth, 0), 1, 1);
         StaminaBar.localScale = new Vector3(Mathf.Max((float)player.EntityData.currentStamina / player.EntityData.maxStamina, 0), 1, 1);
         ManaBar.localScale = new Vector3(Mathf.Max((float)player.EntityData.currentMana / player.EntityData.maxMana, 0), 1, 1);
