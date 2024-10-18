@@ -19,6 +19,7 @@ namespace LangSystem
         public string enterText;
         public string enterNumber;
         public string exit;
+        public string exitGame;
 
         //New game world
         public string generateNewWorld;

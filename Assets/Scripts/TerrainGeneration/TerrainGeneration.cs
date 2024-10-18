@@ -243,7 +243,7 @@ public class TerrainGeneration : MonoBehaviour
             throw new System.Exception("Manager is null");
         if (GameManager.gameManagerInstance.playerPrefab == null)
             throw new System.Exception("Manager player prefab is null");
-        Instantiate(GameManager.gameManagerInstance.playerPrefab, new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z), Quaternion.identity, transform);
+        Instantiate(GameManager.gameManagerInstance.playerPrefab, new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z), Quaternion.identity, transform.parent);
     }
     public
     #region medo

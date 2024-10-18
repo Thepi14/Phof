@@ -6,9 +6,12 @@ using ObjectUtils;
 using System.Linq;
 using TMPro;
 using UnityEngine.SceneManagement;
-using LangSystem;
 using static ObjectUtils.GameObjectGeneral;
 using System;
+using LangSystem;
+using static LangSystem.Language;
+using UnityEditor;
+using EasterEggs;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -35,6 +38,8 @@ public class MainMenuManager : MonoBehaviour
     #endregion
 
     private GameObject[] PanelList = new GameObject[3];
+    private int selectedMapWidth;
+    private int selectedMapHeight;
 
     [SerializeField]
     [Serializable]
@@ -66,7 +71,7 @@ public class MainMenuManager : MonoBehaviour
 
     void Start()
     {
-        Language.GetLanguage();
+        GetLanguage();
 
         float offset = 0f;
 
@@ -76,7 +81,7 @@ public class MainMenuManager : MonoBehaviour
             languageTab.GetComponent<RectTransform>().localPosition = new Vector3(0, (float)offset, 0f);
             languageTab.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = language.name;
 
-            languageTab.GetComponent<Button>().onClick.AddListener(() => { Language.SetLanguage(language.name); SetAllLang(); });
+            languageTab.GetComponent<Button>().onClick.AddListener(() => { SetLanguage(language.name); SetAllLang(); });
 
             offset += langTab.GetComponent<RectTransform>().sizeDelta.y + 3f;
         }
@@ -94,16 +99,15 @@ public class MainMenuManager : MonoBehaviour
         GenerateGameButton.onClick.AddListener(() => { GenerateNewWorld(); });
 
         #region secret
-        HotTexts hotTexts = new HotTexts();
-        HotText.text = hotTexts.texts[UnityEngine.Random.Range(0, hotTexts.texts.Count - 1)];
+        HotText.text = HotTexts.texts[UnityEngine.Random.Range(0, HotTexts.texts.Count - 1)];
         #endregion
 
         SeedInput.onEndEdit.AddListener((text) => { if (text.Length == 0 || !int.TryParse(text, out var a)) { SeedInput.text = UnityEngine.Random.Range(10000, 999999) + ""; } });
 
-        Toggle80.onValueChanged.AddListener((a) => { DeactivateAllToggles(); Toggle80.SetIsOnWithoutNotify(true); PlayerPrefs.SetInt("MAP_WIDTH", 80); PlayerPrefs.SetInt("MAP_HEIGHT", 80); });
-        Toggle100.onValueChanged.AddListener((a) => { DeactivateAllToggles(); Toggle100.SetIsOnWithoutNotify(true); PlayerPrefs.SetInt("MAP_WIDTH", 100); PlayerPrefs.SetInt("MAP_HEIGHT", 100); });
-        Toggle150.onValueChanged.AddListener((a) => { DeactivateAllToggles(); Toggle150.SetIsOnWithoutNotify(true); PlayerPrefs.SetInt("MAP_WIDTH", 150); PlayerPrefs.SetInt("MAP_HEIGHT", 150); });
-        Toggle200.onValueChanged.AddListener((a) => { DeactivateAllToggles(); Toggle200.SetIsOnWithoutNotify(true); PlayerPrefs.SetInt("MAP_WIDTH", 200); PlayerPrefs.SetInt("MAP_HEIGHT", 200); });
+        Toggle80.onValueChanged.AddListener((a) => { DeactivateAllToggles(); Toggle80.SetIsOnWithoutNotify(true); selectedMapWidth = 80; selectedMapHeight = 80; });
+        Toggle100.onValueChanged.AddListener((a) => { DeactivateAllToggles(); Toggle100.SetIsOnWithoutNotify(true); selectedMapWidth = 100; selectedMapHeight = 100; });
+        Toggle150.onValueChanged.AddListener((a) => { DeactivateAllToggles(); Toggle150.SetIsOnWithoutNotify(true); selectedMapWidth = 150; selectedMapHeight = 150; });
+        Toggle200.onValueChanged.AddListener((a) => { DeactivateAllToggles(); Toggle200.SetIsOnWithoutNotify(true); selectedMapWidth = 200; selectedMapHeight = 200; });
 
         PlayerPrefs.SetInt("MAP_WIDTH", 100);
         PlayerPrefs.SetInt("MAP_HEIGHT", 100);
@@ -120,21 +124,22 @@ public class MainMenuManager : MonoBehaviour
     public void SetAllLang()
     {
         //main menu
-        GetGameObjectComponent<TextMeshProUGUI>(PlayButton.gameObject, "Text").text = Language.currentLanguage.playNewGame;
-        GetGameObjectComponent<TextMeshProUGUI>(LangButton.gameObject, "Text").text = Language.currentLanguage.language;
+        GetGameObjectComponent<TextMeshProUGUI>(PlayButton.gameObject, "Text").text = currentLanguage.playNewGame;
+        GetGameObjectComponent<TextMeshProUGUI>(LangButton.gameObject, "Text").text = currentLanguage.language;
+        GetGameObjectComponent<TextMeshProUGUI>(ExitButton.gameObject, "Text").text = currentLanguage.exitGame;
 
         //new game menu
-        GetGameObjectComponent<TextMeshProUGUI>(NewGamePanel, "Title").text = Language.currentLanguage.generateNewWorld;
+        GetGameObjectComponent<TextMeshProUGUI>(NewGamePanel, "Title").text = currentLanguage.generateNewWorld;
 
-        GetGameObjectComponent<TextMeshProUGUI>(NewGamePanel, "Seedtext").text = Language.currentLanguage.seed;
-        SeedInput.placeholder.gameObject.GetComponent<TextMeshProUGUI>().text = Language.currentLanguage.enterNumber + "...";
+        GetGameObjectComponent<TextMeshProUGUI>(NewGamePanel, "Seedtext").text = currentLanguage.seed;
+        SeedInput.placeholder.gameObject.GetComponent<TextMeshProUGUI>().text = currentLanguage.enterNumber + "...";
 
-        GetGameObjectComponent<TextMeshProUGUI>(NewGamePanel, "Mapsizetext").text = Language.currentLanguage.mapSize;
-        GetGameObjectComponent<TextMeshProUGUI>(GenerateGameButton.gameObject, "Text").text = Language.currentLanguage.generate;
+        GetGameObjectComponent<TextMeshProUGUI>(NewGamePanel, "Mapsizetext").text = currentLanguage.mapSize;
+        GetGameObjectComponent<TextMeshProUGUI>(GenerateGameButton.gameObject, "Text").text = currentLanguage.generate;
 
         //language menu
-        GetGameObjectComponent<TextMeshProUGUI>(LanguagePanel.gameObject, "Title").text = Language.currentLanguage.language;
-        GetGameObjectComponent<TextMeshProUGUI>(LanguagePanel.gameObject, "Exitbutton/Text").text = Language.currentLanguage.exit;
+        GetGameObjectComponent<TextMeshProUGUI>(LanguagePanel.gameObject, "Title").text = currentLanguage.language;
+        GetGameObjectComponent<TextMeshProUGUI>(LanguagePanel.gameObject, "Exitbutton/Text").text = currentLanguage.exit;
     }
     public void OpenMenu(Panel panel)
     {
@@ -144,6 +149,8 @@ public class MainMenuManager : MonoBehaviour
     private void GenerateNewWorld()
     {
         PlayerPrefs.SetInt("CURRENT_SEED", int.Parse(SeedInput.text));
+        PlayerPrefs.SetInt("MAP_WIDTH", selectedMapWidth);
+        PlayerPrefs.SetInt("MAP_HEIGHT", selectedMapHeight);
         PlayerPrefs.SetInt("STAGE_OFFSET", PlayerPrefs.GetInt("MAP_WIDTH", 100));
         PlayerPrefs.SetInt("CURRENT_STAGE", 1);
         PlayerPrefs.Save();

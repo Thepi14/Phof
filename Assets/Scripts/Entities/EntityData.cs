@@ -3,17 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using ItemSystem;
 using static CameraControl;
 using static GameManagerSystem.GameManager;
 using static GamePlayer;
 using static NavMeshUpdate;
 using ObjectUtils;
+using ItemSystem;
+using HabilitySystem;
+using ProjectileSystem;
 
 using UnityEngine.Events;
 using UnityEngine.AI;
-using UnityEngine.Windows;
-using ProjectileSystem;
 using System.Linq;
 
 namespace EntityDataSystem
@@ -34,6 +34,9 @@ namespace EntityDataSystem
         public int defense = 1;
         public float speed = 2.5f;
         public float attackSpeedMultipliyer = 1f;
+
+        [SerializeReference]
+        public List<HabilityBehaviour> habilities = new List<HabilityBehaviour>();
 
         [Header("Valores máximos")]
         public int maxHealth;
@@ -343,10 +346,10 @@ namespace EntityDataSystem
         }
         public void Update()
         {
+            FieldOfView();
+
             if (EntityData.dead)
                 return;
-
-            FieldOfView();
 
             if (Agent.velocity.x > 0.1f || Agent.velocity.x < -0.1f)
                 SpriteObj.transform.localScale = Agent.destination.x < transform.position.x ? new Vector3(-1, 1, 1) : Vector3.one;
@@ -511,7 +514,7 @@ namespace EntityDataSystem
             Agent.stoppingDistance = EntityData.currentAttackItem.attackDistance;
             EntityData.inRange = Vector3.Distance(transform.position, EntityData.target.transform.position) <= EntityData.currentAttackItem.attackDistance + 0.3f;
 
-            Agent.isStopped = !EntityData.canMove;
+            Agent.isStopped = !EntityData.canMove && !EntityData.dead;
         }
         public void Die(GameObject killer)
         {

@@ -421,6 +421,7 @@ MonoBehaviour:
     defense: 1
     speed: 1.75
     attackSpeedMultipliyer: 1
+    habilities: []
     maxHealth: 0
     maxStamina: 0
     maxMana: 0

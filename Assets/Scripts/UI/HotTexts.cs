@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[HideInInspector]
-public class HotTexts
+namespace EasterEggs
 {
     [HideInInspector]
-    public List<string> texts = new List<string>()
+    public class HotTexts
+    {
+        [HideInInspector]
+        public static List<string> texts = new List<string>()
     {
         "a",
         "Tá feliz JoãoNathan!?!?",
@@ -19,4 +21,5 @@ public class HotTexts
         "Eu ainda darei a Cirno Fumo (eu não sei na real)",
         "Frotas faz o vampiro pra nóis"
     };
+    }
 }

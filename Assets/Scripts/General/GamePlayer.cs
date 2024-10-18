@@ -108,7 +108,7 @@ public class GamePlayer : MonoBehaviour, IEntity
         {
             SpriteObj.GetComponent<Animator>().SetBool("Walking", false);
         }
-        if (Input.GetKeyDown(KeyCode.L))
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             Attack();
         }
@@ -178,6 +178,9 @@ public class GamePlayer : MonoBehaviour, IEntity
     {
         if (!EntityData.attackReloaded)
             return;
+
+        //ATAQUE EM ÁREA
+        /*
         var list = AttackArea.GetComponent<ColliderNutshell>().GetColliders(EntityData.attackDistance + EntityData.currentAttackItem.attackDistance);
         foreach (var collider in list.ToList())
         {
@@ -187,7 +190,20 @@ public class GamePlayer : MonoBehaviour, IEntity
             {
                 collider.GetComponent<IEntity>().Damage(EntityData.AttackWithItem(MathEx.AngleRadian(transform.position, collider.transform.position)));
             }
+        }*/
+        switch (EntityData.currentAttackItem.type)
+        {
+            case ItemType.MeleeWeapon:
+
+                break;
+            case ItemType.RangedWeapon:
+
+                break;
+            case ItemType.CustomWeapon:
+
+                break;
         }
+
         StartCoroutine(AttackTimer());
         StartCoroutine(AttackAnimC());
         IEnumerator AttackAnimC()

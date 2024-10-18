@@ -17,6 +17,7 @@ MonoBehaviour:
   enterText: Enter text
   enterNumber: Enter number
   exit: Exit
+  exitGame: Exit to desktop
   generateNewWorld: Generate new world
   generate: Generate
   mapSize: Map size

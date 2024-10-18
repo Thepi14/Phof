@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace ItemSystem
 {
+    public delegate void CustomItemAttack(EntityData senderEntityData);
     public enum ItemType : byte
     {
         None = 0,
@@ -17,6 +18,10 @@ namespace ItemSystem
         /// Arma à distância.
         /// </summary>
         RangedWeapon = 2,
+        /// <summary>
+        /// Arma com comportamento customizado
+        /// </summary>
+        CustomWeapon = 3,
     }
     /// <summary>
     /// Classe scriptável para itens.
@@ -33,52 +38,53 @@ namespace ItemSystem
         public ItemType type;
 
         [Header("Ataque", order = 1)]
-        /// <summary>
-        /// Recarregamento do ataque em segundos
-        /// </summary>
+        [Tooltip("Recarregamento do ataque em segundos")]
         public float reloadTime = 1f;
         public float attackDistance = 1f;
-        /// <summary>
-        /// Quantidade máxima por slot
-        /// </summary>
+        [Tooltip("Quantidade máxima por slot")]
         public byte maxStack = 1;
-        /// <summary>
-        /// Dano mínimo
-        /// </summary>
         public int minDamage = 1;
-        /// <summary>
-        /// Dano máximo
-        /// </summary>
         public int maxDamage = 1;
         public float impulse = 0f;
         public List<Effect> effects;
 
         [Header("Ataque à distância", order = 2)]
-        /// <summary>
-        /// Prefab da bala
-        /// </summary>
         [SerializeReference]
         public GameObject bulletPrefab;
+
+        [Header("Efeitos", order = 3)]
         [SerializeReference]
         public GameObject muzzlePrefab;
 
+        [Header("Scripts customizados", order = 4)]
+        [Tooltip("Script customizado para ataques, deve ser um MonoBehaviour com a interface ICustomItemAttack para funcionar")]
+        public CustomAttackIndex customAttackIndex;
+        public CustomItemAttack customAttack;
+
         public void OnValidate()
         {
+            customAttack = customAttacks[customAttackIndex];
+
             switch (type)
             {
                 case ItemType.None:
                     bulletPrefab = null;
                     break;
-                case ItemType.MeleeWeapon:
-                    maxStack = 1;
-                    bulletPrefab = null;
-                    break;
-                case ItemType.RangedWeapon:
+                case ItemType.MeleeWeapon or ItemType.RangedWeapon or ItemType.CustomWeapon:
                     maxStack = 1;
                     break;
                 default:
                     throw new Exception("O tipo do item não foi achado.");
             }
         }
+        public enum CustomAttackIndex : byte
+        {
+            None = 0,
+
+        }
+        private static Dictionary<CustomAttackIndex, CustomItemAttack> customAttacks = new Dictionary<CustomAttackIndex, CustomItemAttack>
+        {
+            {CustomAttackIndex.None, (senderEntityData) => { } }
+        };
     }
 }

@@ -17,6 +17,7 @@ MonoBehaviour:
   enterText: Coloque texto
   enterNumber: "Coloque n\xFAmero"
   exit: Sair
+  exitGame: Sair do jogo
   generateNewWorld: Gerar novo mundo
   generate: Gerar
   mapSize: Tamanho do mapa
