@@ -247,7 +247,7 @@ GameObject:
   - component: {fileID: 3668959361021008998}
   - component: {fileID: 813773363767144038}
   - component: {fileID: 8580787842352252156}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: AttackArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -492,7 +492,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.25
+  m_Radius: 0.35
   m_Height: 0.8
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -518,6 +518,7 @@ MonoBehaviour:
     defense: 1
     speed: 3.5
     attackSpeedMultipliyer: 1
+    habilities: []
     maxHealth: 0
     maxStamina: 0
     maxMana: 0

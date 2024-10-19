@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+[RequireComponent(typeof(Camera))]
 public class CameraControl : MonoBehaviour
 {
-    public Camera cam;
+    public Camera cam => GetComponent<Camera>();
     public GameObject focusObject;
     public static CameraControl MainCameraControl;
     public Vector3 Placement;
@@ -40,7 +41,6 @@ public class CameraControl : MonoBehaviour
     void Awake()
     {
         MainCameraControl = this;
-        cam = GetComponent<Camera>();
         DefaultCameraFieldView = cam.fieldOfView;
     }
     private void Update()

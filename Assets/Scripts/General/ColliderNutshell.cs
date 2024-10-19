@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+#pragma strict
 
 [AddComponentMenu("Physics/Collider Nutshell", 0)]
 [RequireComponent(typeof(Collider))]
@@ -85,10 +87,12 @@ public class ColliderNutshell : MonoBehaviour
     public GameObject LastTriggerContact { get => lastTriggerContact; private set => lastTriggerContact = value; }
     public GameObject LastColliderContact { get => lastColliderContact; private set => lastColliderContact = value; }
 
+    //váriaveis de listas
+    public List<GameObject> triggerList = new List<GameObject>();
+
     //variáveis privadas
     /*private GameObject afterActualCol;
     private GameObject afterActualTri;*/
-
     #endregion
 
     #region Resolução de variáveis
@@ -125,6 +129,12 @@ public class ColliderNutshell : MonoBehaviour
 
         colliderIsActive = ColliderIsActive;
         triggerIsActive = TriggerIsActive;
+
+        foreach (var obj in triggerList.ToList())
+        {
+            if (obj == null)
+                triggerList.Remove(obj);
+        }
     }
     #endregion
 
@@ -188,14 +198,21 @@ public class ColliderNutshell : MonoBehaviour
 
     public void OnTriggerEnter(Collider collision)
     {
+        var obj = collision.gameObject;
         _enteredTrigger = true;
         EnteredTrigger = true;
         SetActualObjectTriggering(collision.gameObject);
         if (showDebugMessages)
             Debug.Log("Entered Trigger with " + collision.gameObject.name);
+
+        if (!triggerList.Contains(obj))
+        {
+            triggerList.Add(obj);
+        }
     }
     public void OnTriggerStay(Collider collision)
     {
+        var obj = collision.gameObject;
         _onTrigger = true;
         OnTrigger = true;
         //TriggerContact = collision.gameObject;
@@ -204,12 +221,27 @@ public class ColliderNutshell : MonoBehaviour
     }
     public void OnTriggerExit(Collider collision)
     {
+        var obj = collision.gameObject;
         _exitedTrigger = true;
         ExitedTrigger = true;
         SetActualObjectTriggering(null);
         if (showDebugMessages)
             Debug.Log("Exited Trigger with " + collision.gameObject.name);
+        
+        if (triggerList.Contains(obj))
+        {
+            //remove it from the list
+            triggerList.Remove(obj);
+        }
     }
+    public void OnDisable()
+    {
+        triggerList.Clear();
+    }
+    /// <summary>
+    /// Limpa a lista do trigger.
+    /// </summary>
+    public void ClearTriggerList() => triggerList.Clear();
     #endregion
 
     #region colisões com Triggers 2D

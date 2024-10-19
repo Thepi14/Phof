@@ -5,6 +5,8 @@ using TMPro;
 using ObjectUtils;
 using static GameManagerSystem.GameManager;
 using static GamePlayer;
+using UnityEngine.UI;
+using ItemSystem;
 
 public class CanvasGameManager : MonoBehaviour
 {
@@ -12,9 +14,16 @@ public class CanvasGameManager : MonoBehaviour
     public RectTransform StaminaBar => GameObjectGeneral.GetGameObjectComponent<RectTransform>(gameObject, "MainPanel/StaminaBar/Bar");
     public RectTransform ManaBar => GameObjectGeneral.GetGameObjectComponent<RectTransform>(gameObject, "MainPanel/ManaBar/Bar");
 
+    public Button sword;
+    public Button staff;
+
+    public Item swordItem;
+    public Item staffItem;
+
     private void Start()
     {
-        
+        sword.onClick.AddListener(() => { player.SetItem(swordItem); });
+        staff.onClick.AddListener(() => { player.SetItem(staffItem); });
     }
     private void Update()
     {

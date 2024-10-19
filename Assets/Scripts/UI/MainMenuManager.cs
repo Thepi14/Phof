@@ -71,6 +71,16 @@ public class MainMenuManager : MonoBehaviour
 
     void Start()
     {
+        if (PlayerPrefs.GetInt("DEFAULTED", 0) == 0)
+        {
+            Debug.Log("Game defaulted succesfullyyy");
+            PlayerPrefs.SetInt("DEFAULTED", 1);
+            MakeDefaultConfig();
+        }
+
+        selectedMapWidth = PlayerPrefs.GetInt("MAP_WIDTH", 100);
+        selectedMapHeight = PlayerPrefs.GetInt("MAP_HEIGHT", 100);
+
         GetLanguage();
 
         float offset = 0f;
@@ -109,8 +119,6 @@ public class MainMenuManager : MonoBehaviour
         Toggle150.onValueChanged.AddListener((a) => { DeactivateAllToggles(); Toggle150.SetIsOnWithoutNotify(true); selectedMapWidth = 150; selectedMapHeight = 150; });
         Toggle200.onValueChanged.AddListener((a) => { DeactivateAllToggles(); Toggle200.SetIsOnWithoutNotify(true); selectedMapWidth = 200; selectedMapHeight = 200; });
 
-        PlayerPrefs.SetInt("MAP_WIDTH", 100);
-        PlayerPrefs.SetInt("MAP_HEIGHT", 100);
         Toggle100.isOn = true;
 
         SeedInput.text = UnityEngine.Random.Range(10000, 999999) + "";
@@ -162,5 +170,11 @@ public class MainMenuManager : MonoBehaviour
         Toggle100.SetIsOnWithoutNotify(false);
         Toggle150.SetIsOnWithoutNotify(false);
         Toggle200.SetIsOnWithoutNotify(false);
+    }
+    private void MakeDefaultConfig()
+    {
+        PlayerPrefs.SetInt("MAP_WIDTH", 100);
+        PlayerPrefs.SetInt("MAP_HEIGHT", 100);
+        PlayerPrefs.Save();
     }
 }

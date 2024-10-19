@@ -279,6 +279,7 @@ namespace EntityDataSystem
     public class DeathEvent : UnityEvent<EntityData, GameObject> { }
     public interface IEntity
     {
+        public const float DEFAULT_SHOT_Y_POSITION = 1f;
         public DeathEvent OnDeathEvent { get; set; }
         public DamageEvent OnDamageEvent { get; set; }
         public EntityData EntityData { get; set; }
@@ -311,8 +312,6 @@ namespace EntityDataSystem
         public SpriteRenderer ItemSpriteRenderer => ItemSpriteObj.GetComponent<SpriteRenderer>();
         public Animator ItemSpriteAnimator => ItemSpriteObj.GetComponent<Animator>();
 
-        public const float DEFAULT_SHOT_Y_POSITION = 1f;
-
         public void OnValidate()
         {
             EntityData.gameObject = gameObject;
@@ -336,6 +335,7 @@ namespace EntityDataSystem
         }
         public void SetItem(Item item)
         {
+            EntityData.currentAttackItem = item;
             ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
             ItemSpriteAnimator.runtimeAnimatorController = item.animatorController;
             ItemSpriteOffset.transform.localPosition = (Vector3)item.positionOffSet + new Vector3(0, 0, -0.01f);
@@ -378,8 +378,8 @@ namespace EntityDataSystem
                 return;
 
             Attack();
-            EntityData.currentImpulse *= 10 * Time.fixedDeltaTime;
-            RB.velocity = EntityData.currentImpulse;
+            EntityData.currentImpulse -= new Vector2(EntityData.currentImpulse.x * Time.fixedDeltaTime * 5f, EntityData.currentImpulse.y * Time.fixedDeltaTime * 5f);
+            RB.velocity = -new Vector3(EntityData.currentImpulse.x, 0, EntityData.currentImpulse.y);
         }
 
         public void Damage(DamageData damageData)
@@ -450,7 +450,7 @@ namespace EntityDataSystem
 
                         break;
                     case ItemType.RangedWeapon:
-                        var bullet = Instantiate(EntityData.currentAttackItem.bulletPrefab, new Vector3(transform.position.x, DEFAULT_SHOT_Y_POSITION, transform.position.z), Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, EntityData.target.transform.position) * Mathf.Rad2Deg) - 90, 0));
+                        var bullet = Instantiate(EntityData.currentAttackItem.bulletPrefab, new Vector3(transform.position.x, IEntity.DEFAULT_SHOT_Y_POSITION, transform.position.z), Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, EntityData.target.transform.position) * Mathf.Rad2Deg) - 90, 0));
                         bullet.GetComponent<IBullet>().SetBullet(gameObject);
                         break;
                 }
@@ -469,6 +469,7 @@ namespace EntityDataSystem
                 ItemSpriteAnimator.Play("Default");
             }
         }
+
         private IEnumerator AttackTimer()
         {
             EntityData.attackReloaded = false;
@@ -544,11 +545,15 @@ namespace EntityDataSystem
                 Destroy(gameObject);
             }
         }
-
         public void OnDestroy()
         {
             MainCameraControl.spriteRenderers.Remove(SpriteObj);
             gameManagerInstance.entities.Remove(gameObject);
+        }
+        public void OnMouseDown()
+        {
+            Debug.Log("Clicked");
+            player.EntityData.target = gameObject;
         }
     }
     public interface IBullet

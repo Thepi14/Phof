@@ -8,6 +8,7 @@ using EntityDataSystem;
 using ObjectUtils;
 using System.Linq;
 using ItemSystem;
+using System.Threading.Tasks;
 
 public class GamePlayer : MonoBehaviour, IEntity
 {
@@ -89,7 +90,7 @@ public class GamePlayer : MonoBehaviour, IEntity
 
         EntityData.currentImpulse -= new Vector2(EntityData.currentImpulse.x * Time.fixedDeltaTime * 5f, EntityData.currentImpulse.y * Time.fixedDeltaTime * 5f);
         RB.velocity -= new Vector3(EntityData.currentImpulse.x, 0, EntityData.currentImpulse.y);
-        //OnGround = GroundDetector.TriggerIsActive && (GroundDetector.TriggerContact != null ? (GroundDetector.TriggerContact.layer == 7 ? true : false) : true);
+
         velocity = RB.velocity;
     }
     public void Update()
@@ -134,6 +135,7 @@ public class GamePlayer : MonoBehaviour, IEntity
     }
     public void SetItem(Item item)
     {
+        EntityData.currentAttackItem = item;
         ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
         ItemSpriteAnimator.runtimeAnimatorController = item.animatorController;
         ItemSpriteOffset.transform.localPosition = (Vector3)item.positionOffSet + new Vector3(0, 0, -0.01f);
@@ -174,9 +176,13 @@ public class GamePlayer : MonoBehaviour, IEntity
             ItemSpriteRenderer.color = Color.clear;
         }
     }
-    public void Attack()
+    private async void GetResultTask()
     {
-        if (!EntityData.attackReloaded)
+        await Task.Delay(1000);
+    }
+    public async void Attack()
+    {
+        if (!EntityData.attackReloaded || UIGeneral.IsPointerOverUIElement())
             return;
 
         //ATAQUE EM ÁREA
@@ -191,13 +197,30 @@ public class GamePlayer : MonoBehaviour, IEntity
                 collider.GetComponent<IEntity>().Damage(EntityData.AttackWithItem(MathEx.AngleRadian(transform.position, collider.transform.position)));
             }
         }*/
+
+        var target = EntityData.target;
+        RaycastHit hit;
+        Ray ray = MainCameraControl.cam.ScreenPointToRay(Input.mousePosition);
+        Physics.Raycast(ray, out hit, Vector3.Distance(MainCameraControl.gameObject.transform.position, transform.position) + 10f, LayerMask.GetMask("Wall", "Floor"), QueryTriggerInteraction.Ignore);
+        if (hit.transform != null)
+            Debug.Log(hit.transform.gameObject.name);
+
+        var atkRotation = MathEx.AngleRadian(AttackArea.transform.position, hit.point);
+        AttackArea.transform.rotation = Quaternion.Euler(-90, 0, (-atkRotation * Mathf.Rad2Deg) + 90);
+        await Task.Delay(10);
+
         switch (EntityData.currentAttackItem.type)
         {
             case ItemType.MeleeWeapon:
-
+                foreach (var entity in AttackArea.GetComponent<ColliderNutshell>().triggerList.ToList())
+                {
+                    if (entity.layer == 10 && entity.GetComponent<IEntity>() != null)
+                        entity.GetComponent<IEntity>().Damage(EntityData.AttackWithItem(MathEx.AngleRadian(transform.position, entity.transform.position)));
+                }
                 break;
             case ItemType.RangedWeapon:
-
+                var bullet = Instantiate(EntityData.currentAttackItem.bulletPrefab, new Vector3(transform.position.x, IEntity.DEFAULT_SHOT_Y_POSITION, transform.position.z), Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, new Vector3(hit.point.x, IEntity.DEFAULT_SHOT_Y_POSITION, hit.point.z)) * Mathf.Rad2Deg) - 90, 0));
+                bullet.GetComponent<IBullet>().SetBullet(gameObject);
                 break;
             case ItemType.CustomWeapon:
 

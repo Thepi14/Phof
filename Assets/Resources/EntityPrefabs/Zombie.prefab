@@ -117,7 +117,7 @@ GameObject:
   - component: {fileID: 3511909198094533134}
   - component: {fileID: 2977570499006437926}
   - component: {fileID: 1795387596776129760}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: AttackArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -395,7 +395,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.25
+  m_Radius: 0.35
   m_Height: 0.8
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}

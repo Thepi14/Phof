@@ -83,6 +83,7 @@ MonoBehaviour:
   colliderContact: {fileID: 0}
   lastTriggerContact: {fileID: 0}
   lastColliderContact: {fileID: 0}
+  triggerList: []
 --- !u!1 &1091989100456873145
 GameObject:
   m_ObjectHideFlags: 0
@@ -659,6 +660,7 @@ MonoBehaviour:
     defense: 2
     speed: 5
     attackSpeedMultipliyer: 1
+    habilities: []
     maxHealth: 0
     maxStamina: 0
     maxMana: 0
@@ -680,7 +682,7 @@ MonoBehaviour:
       currentTick: 0
       stackable: 0
       frameAdded: 0
-    currentAttackItem: {fileID: 11400000, guid: fbdba3ba2efc82a4683a14422cba453c, type: 2}
+    currentAttackItem: {fileID: 11400000, guid: 89ef9aa054aa1104c975852c204c2530, type: 2}
     attackDistance: 0.7
     attackDelay: 0.1
     visionRadius: 10
@@ -727,6 +729,7 @@ MonoBehaviour:
   colliderContact: {fileID: 0}
   lastTriggerContact: {fileID: 0}
   lastColliderContact: {fileID: 0}
+  triggerList: []
 --- !u!33 &6429081168655082510
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -744,9 +747,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3980773533436824205}
-  - component: {fileID: 3332188512135606596}
-  - component: {fileID: 5612789121870858724}
-  m_Layer: 0
+  - component: {fileID: 3449936481190906857}
+  - component: {fileID: 5028544229465254675}
+  m_Layer: 12
   m_Name: AttackArea
   m_TagString: GamePlayer
   m_Icon: {fileID: 0}
@@ -761,15 +764,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5836442930941546240}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0.1, z: -0.04}
+  m_LocalScale: {x: 1.12, y: 1.09, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3090349714473885802}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &3332188512135606596
-SphereCollider:
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+--- !u!64 &3449936481190906857
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -786,10 +789,11 @@ SphereCollider:
   m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 1
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5612789121870858724
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4341091208801120557, guid: 2ec3ba925c8c63a4bbfffdb1749c31fb, type: 3}
+--- !u!114 &5028544229465254675
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -816,3 +820,4 @@ MonoBehaviour:
   colliderContact: {fileID: 0}
   lastTriggerContact: {fileID: 0}
   lastColliderContact: {fileID: 0}
+  triggerList: []

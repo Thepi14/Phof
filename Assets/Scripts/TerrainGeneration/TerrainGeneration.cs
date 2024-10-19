@@ -461,6 +461,7 @@ public class TerrainGeneration : MonoBehaviour
                     int Down = UnityEngine.Random.Range(-minY, -maxY);
 
                     var roomObj = new GameObject("Room " + currentID);
+                    roomObj.layer = 2;
                     var room = roomObj.AddComponent<RoomNode>();
                     room.info = biome.defaultRoom;
 
