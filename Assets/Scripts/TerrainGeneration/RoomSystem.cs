@@ -5,6 +5,8 @@ using EntityDataSystem;
 using GameManagerSystem;
 using UnityEngine;
 using UnityEngine.Events;
+using static TerrainGeneration;
+using static NavMeshUpdate;
 
 namespace RoomSystem
 {
@@ -29,9 +31,13 @@ namespace RoomSystem
 
         public Vector2Int LeftDownCornerPosition;
         public Vector2Int RightUpCornerPosition;
+        public Vector2Int LeftDownCornerPositionInternal => LeftDownCornerPosition + new Vector2Int(1, 1);
+        public Vector2Int RightUpCornerPositionInternal => RightUpCornerPosition - new Vector2Int(1, 1);
 
         public int width;
         public int height;
+
+        public List<GameObject> blocks = new List<GameObject>();
 
         public List<Door> doors;
         [HideInInspector]
@@ -48,6 +54,24 @@ namespace RoomSystem
             this.width = width;
             this.height = height;
             doors = new List<Door>();
+            blocks = new List<GameObject>();
+        }
+        public void SetRoomInfo()
+        {
+            for (int x = 0; x <= width - 1; x++)
+            {
+                for (int y = 0; y <= height - 1; y++)
+                {
+                    var xP = x + LeftDownCornerPositionInternal.x;
+                    var yP = y + LeftDownCornerPositionInternal.y;
+
+                    if (info.grid[x, y].id == 0)
+                        continue;
+                    var gInfo = info.grid[x, y];
+                    var block = Instance.biome.generalBlocks[gInfo.id - 1];
+                    Instance.PlaceBlock(new Vector3(xP, gInfo.height + 1f, yP), block, true);
+                }
+            }
         }
         public void SetPosID(byte id, Vector2Int position)
         {
@@ -112,13 +136,16 @@ namespace RoomSystem
             for (int i = 0; i < (width + height) * info.entityDensity; i++)
             {
             returnV:;
-                x = UnityEngine.Random.Range(LeftDownCornerPosition.x, RightUpCornerPosition.x);
-                y = UnityEngine.Random.Range(LeftDownCornerPosition.y, RightUpCornerPosition.y);
+                x = UnityEngine.Random.Range(LeftDownCornerPositionInternal.x, RightUpCornerPositionInternal.x);
+                y = UnityEngine.Random.Range(LeftDownCornerPositionInternal.y, RightUpCornerPositionInternal.y);
 
                 if (posList.Contains(new Vector2Int(x, y)))
                     goto returnV;
 
-                GameManager.gameManagerInstance.SpawnEntity(new Vector2(x, y), info.entities[UnityEngine.Random.Range(0, info.entities.Count)]);
+                if (info.entities.Count > 0)
+                    GameManager.gameManagerInstance.SpawnEntity(new Vector2(x + 0.5f, y + 0.5f), info.entities[UnityEngine.Random.Range(0, info.entities.Count)]);
+                else
+                    GameManager.gameManagerInstance.SpawnEntity(new Vector2(x + 0.5f, y + 0.5f), Instance.biome.defaultRoom.entities[UnityEngine.Random.Range(0, info.entities.Count)]);
 
                 posList.Add(new Vector2Int(x, y));
             }
@@ -127,6 +154,8 @@ namespace RoomSystem
             {
                 entity.GetComponent<IEntity>().OnDeathEvent.AddListener((a, b) => { if (GameManager.gameManagerInstance.enemies.Count == 0) CompleteRoom(); });
             }
+
+            Instance.RoomOcclusion(id);
         }
         private void RoomCompletionFunction()
         {
@@ -135,6 +164,8 @@ namespace RoomSystem
             {
                 door.doorBlock.GetComponent<Animator>().Play("DoorOpen");
             }
+
+            Instance.RoomOcclusion(-1);
         }
         public void CompleteRoom()
         {

@@ -22,3 +22,8 @@ MonoBehaviour:
   generate: Gerar
   mapSize: Tamanho do mapa
   seed: Semente
+  generatingWorld: Gerando mundo...
+  habilityInfosList:
+  - ID: Slash
+    name: Slash
+    description: Slash man

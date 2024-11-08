@@ -35,16 +35,24 @@ namespace ItemSystem
         public Sprite itemSprite;
         public RuntimeAnimatorController animatorController;
         public Vector2 positionOffSet;
+        public int manaUse;
+        public int staminaUse;
         public ItemType type;
 
         [Header("Ataque", order = 1)]
         [Tooltip("Recarregamento do ataque em segundos")]
         public float reloadTime = 1f;
         public float attackDistance = 1f;
+        [Tooltip("Largura do ataque, diferente do attackDistance pois faz a largura da área de ataque aumentar, podendo afetar mais entidades em ataques corpo à corpo")]
+        public float attackwidth = 1f;
         [Tooltip("Quantidade máxima por slot")]
         public byte maxStack = 1;
         public int minDamage = 1;
         public int maxDamage = 1;
+        [Tooltip("Dano de mana, diminui a mana do inimigo")]
+        public int manaDamage = 0;
+        [Tooltip("Dano de stamina, diminui a stamina do inimigo")]
+        public int staminaDamage = 0;
         public float impulse = 0f;
         public List<Effect> effects;
 

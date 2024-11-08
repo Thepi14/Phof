@@ -1,11 +1,6 @@
 using UnityEngine;
 using System.IO;
 using System;
-using System.Collections.Generic;
-using Pathfindingsystem;
-using System.Runtime.CompilerServices;
-using UnityEngine.Rendering;
-using UnityEngine.UIElements;
 
 /// <summary>
 /// Classe que lida com operações envolvendo texturas.

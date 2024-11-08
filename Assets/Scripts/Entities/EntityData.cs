@@ -36,7 +36,7 @@ namespace EntityDataSystem
         public float attackSpeedMultipliyer = 1f;
 
         [SerializeReference]
-        public List<HabilityBehaviour> habilities = new List<HabilityBehaviour>();
+        public Dictionary<string, HabilityBehaviour> habilities = new Dictionary<string, HabilityBehaviour>();
 
         [Header("Valores máximos")]
         public int maxHealth;
@@ -74,6 +74,7 @@ namespace EntityDataSystem
         public bool inRange = false;
         public bool damaged = false;
         public bool dead = false;
+        public bool canAttack = true;
 
         public void ResetStatus()
         {
@@ -94,6 +95,7 @@ namespace EntityDataSystem
             currentIntelligence = intelligence;
             currentDefense = defense;
             currentSpeed = speed;
+            attackSpeedMultipliyer = 1f;
         }
         /// <summary>
         /// Calcula os status da entidade.
@@ -104,7 +106,26 @@ namespace EntityDataSystem
             maxStamina = (resistence + strength) + (level * 2) + 5;
             maxMana = (intelligence * 10) + (level * 4) + 5;
         }
-
+        /// <summary>
+        /// Gasta stamina, valores negativos aumentam a stamina.
+        /// </summary>
+        /// <param name="value">Valor que será retirado/adicionado</param>
+        public void WasteStamina(int value)
+        {
+            var val = currentStamina - value;
+            currentStamina = Mathf.Min(Mathf.Max(val, 0), maxStamina);
+        }
+        public bool CanWasteStamina(int value) => currentStamina - value >= 0;
+        /// <summary>
+        /// Gasta mana, valores negativos aumentam a mana.
+        /// </summary>
+        /// <param name="value">Valor que será retirado/adicionado</param>
+        public void WasteMana(int value)
+        {
+            var val = currentMana - value;
+            currentMana = Mathf.Min(Mathf.Max(val, 0), maxMana);
+        }
+        public bool CanWasteMana(int value) => currentMana - value >= 0;
         /// <summary>
         /// Calcula o dano que a entidade irá receber baseado nas características dela e no dano da arma.
         /// </summary>
@@ -134,7 +155,7 @@ namespace EntityDataSystem
         public DamageData AttackWithItem(float angle, bool ignoreDefense = false)
         {
             int dmg = UnityEngine.Random.Range(currentAttackItem.minDamage, currentAttackItem.maxDamage);
-            return new DamageData(gameObject, CalculateDamage(dmg), MathEx.RadianToVector2(angle) * currentAttackItem.impulse, currentAttackItem.effects, ignoreDefense);
+            return new DamageData(gameObject, CalculateDamage(dmg), MathEx.RadianToVector2(angle) * currentAttackItem.impulse, currentAttackItem.effects, currentAttackItem.staminaDamage, currentAttackItem.manaDamage, ignoreDefense);
         }
         public void GiveEffect(Effect effect)
         {
@@ -173,6 +194,20 @@ namespace EntityDataSystem
             else
                 currentEffects.Add(effect);
         }
+        public void GiveEffect(params Effect[] effects)
+        {
+            foreach (var effect in effects)
+            {
+                GiveEffect(new Effect(effect));
+            }
+        }
+        public void GiveEffects(Effect[] effects)
+        {
+            foreach (var effect in effects)
+            {
+                GiveEffect(new Effect(effect));
+            }
+        }
         public void GiveEffects(List<Effect> effects)
         {
             foreach (var effect in effects)
@@ -190,6 +225,7 @@ namespace EntityDataSystem
         public byte level = 1;
         public float currentTick = 0;
         public bool stackable = false;
+        public GameObject effectVFX;
         [HideInInspector]
         public int frameAdded = 0;
 
@@ -227,6 +263,8 @@ namespace EntityDataSystem
         public GameObject sender;
 
         public int damage;
+        public int manaDamage;
+        public int staminaDamage;
         public Vector2 impulse;
 
         public List<Effect> effects;
@@ -239,6 +277,8 @@ namespace EntityDataSystem
             impulse = Vector2.zero;
             effects = new List<Effect>();
             this.ignoreDefense = ignoreDefense;
+            manaDamage = 0;
+            staminaDamage = 0;
         }
         public DamageData(GameObject sender, int damage, Vector2 impulse, bool ignoreDefense = false)
         {
@@ -247,6 +287,8 @@ namespace EntityDataSystem
             this.impulse = impulse;
             effects = new List<Effect>();
             this.ignoreDefense = ignoreDefense;
+            manaDamage = 0;
+            staminaDamage = 0;
         }
         public DamageData(int damage, Vector2 impulse, bool ignoreDefense = false)
         {
@@ -255,6 +297,8 @@ namespace EntityDataSystem
             this.impulse = impulse;
             this.effects = new List<Effect>();
             this.ignoreDefense = ignoreDefense;
+            manaDamage = 0;
+            staminaDamage = 0;
         }
         public DamageData(int damage, Vector2 impulse, List<Effect> effects, bool ignoreDefense = false) : this(damage, impulse)
         {
@@ -265,6 +309,13 @@ namespace EntityDataSystem
         {
             this.effects = effects;
             this.ignoreDefense = ignoreDefense;
+        }
+        public DamageData(GameObject sender, int damage, Vector2 impulse, List<Effect> effects, int staminaDamage = 0, int manaDamage = 0, bool ignoreDefense = false) : this(sender, damage, impulse)
+        {
+            this.effects = effects;
+            this.ignoreDefense = ignoreDefense;
+            this.staminaDamage = staminaDamage;
+            this.manaDamage = manaDamage;
         }
     }
     /// <summary>
@@ -280,13 +331,14 @@ namespace EntityDataSystem
     public interface IEntity
     {
         public const float DEFAULT_SHOT_Y_POSITION = 1f;
+        public EntityData EntityData { get; set; }
         public DeathEvent OnDeathEvent { get; set; }
         public DamageEvent OnDamageEvent { get; set; }
-        public EntityData EntityData { get; set; }
         public void Damage(DamageData damageData);
         public void Attack();
         public void Die(GameObject killer);
         public void SetItem(Item item);
+        public void CalculateStatusRegen();
     }
     public abstract class BasicEntityBehaviour : MonoBehaviour, IEntity
     {
@@ -312,17 +364,16 @@ namespace EntityDataSystem
         public SpriteRenderer ItemSpriteRenderer => ItemSpriteObj.GetComponent<SpriteRenderer>();
         public Animator ItemSpriteAnimator => ItemSpriteObj.GetComponent<Animator>();
 
-        public void OnValidate()
+        public virtual void OnValidate()
         {
             EntityData.gameObject = gameObject;
         }
-        public void StartEntity(string targetName)
+        public virtual void StartEntity(string targetName)
         {
             EntityData.attackReloaded = true;
 
             MainCameraControl.spriteRenderers.Add(SpriteObj);
             EntityData.name = gameObject.name;
-            gameManagerInstance.AddEntity(gameObject);
 
             EntityData.gameObject = gameObject;
             EntityData.target = GameObject.Find(targetName);
@@ -332,24 +383,27 @@ namespace EntityDataSystem
 
             SetItem(EntityData.currentAttackItem);
             AttackTimer();
+            gameManagerInstance.AddEntity(gameObject);
         }
-        public void SetItem(Item item)
+        public virtual void SetItem(Item item)
         {
             EntityData.currentAttackItem = item;
             ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
             ItemSpriteAnimator.runtimeAnimatorController = item.animatorController;
             ItemSpriteOffset.transform.localPosition = (Vector3)item.positionOffSet + new Vector3(0, 0, -0.01f);
         }
-        public void Awake()
+        public virtual void Awake()
         {
             StartEntity("Player");
         }
-        public void Update()
+        public virtual void Update()
         {
-            FieldOfView();
+            Agent.isStopped = !EntityData.dead;
+            Agent.speed = 0;
 
             if (EntityData.dead)
                 return;
+            FieldOfView();
 
             if (Agent.velocity.x > 0.1f || Agent.velocity.x < -0.1f)
                 SpriteObj.transform.localScale = Agent.destination.x < transform.position.x ? new Vector3(-1, 1, 1) : Vector3.one;
@@ -372,17 +426,17 @@ namespace EntityDataSystem
             /*Vector3 direction = EntityData.target.transform.position - transform.position;
             SpriteRenderer.flipX = direction.x < 0;*/
         }
-        public void FixedUpdate()
+        public virtual void FixedUpdate()
         {
             if (EntityData.dead)
                 return;
-
+            CalculateStatusRegen();
             Attack();
             EntityData.currentImpulse -= new Vector2(EntityData.currentImpulse.x * Time.fixedDeltaTime * 5f, EntityData.currentImpulse.y * Time.fixedDeltaTime * 5f);
             RB.velocity = -new Vector3(EntityData.currentImpulse.x, 0, EntityData.currentImpulse.y);
         }
 
-        public void Damage(DamageData damageData)
+        public virtual void Damage(DamageData damageData)
         {
             OnDamageEvent.Invoke(EntityData, damageData.sender);
             if (EntityData.target == null && (damageData.sender.layer == 8 || damageData.sender.layer == 9))
@@ -391,6 +445,8 @@ namespace EntityDataSystem
             int total = !damageData.ignoreDefense ? Mathf.Max(damageData.damage - EntityData.CalculateDefense(), 0) : damageData.damage;
 
             EntityData.currentHealth -= total;
+            EntityData.WasteMana(damageData.manaDamage);
+            EntityData.WasteStamina(damageData.staminaDamage);
             EntityData.currentImpulse += damageData.impulse;
 
             EntityData.GiveEffects(damageData.effects);
@@ -413,7 +469,7 @@ namespace EntityDataSystem
             SpriteRenderer.color = Color.white;
         }
 
-        public void Attack()
+        public virtual void Attack()
         {
             if (!EntityData.attackReloaded || !EntityData.inRange)
                 return;
@@ -469,17 +525,26 @@ namespace EntityDataSystem
                 ItemSpriteAnimator.Play("Default");
             }
         }
-
         private IEnumerator AttackTimer()
         {
             EntityData.attackReloaded = false;
-            if (EntityData.currentAttackItem != null)
-                yield return new WaitForSeconds(EntityData.currentAttackItem.reloadTime + EntityData.attackDelay);
-            else
-                yield return new WaitForSeconds(EntityData.attackDelay);
+            var currentTime = 0f;
+            while (currentTime < EntityData.currentAttackItem.reloadTime + EntityData.attackDelay)
+            {
+                if (EntityData.currentAttackItem != null)
+                {
+                    currentTime += Time.deltaTime * EntityData.attackSpeedMultipliyer;
+                    yield return new WaitForEndOfFrame();
+                }
+                else
+                {
+                    currentTime += Time.deltaTime * EntityData.attackSpeedMultipliyer;
+                    yield return new WaitForEndOfFrame();
+                }
+            }
             EntityData.attackReloaded = true;
         }
-        public void FieldOfView()
+        public virtual void FieldOfView()
         {
             Agent.speed = EntityData.currentSpeed;
 
@@ -515,9 +580,9 @@ namespace EntityDataSystem
             Agent.stoppingDistance = EntityData.currentAttackItem.attackDistance;
             EntityData.inRange = Vector3.Distance(transform.position, EntityData.target.transform.position) <= EntityData.currentAttackItem.attackDistance + 0.3f;
 
-            Agent.isStopped = !EntityData.canMove && !EntityData.dead;
+            Agent.isStopped = !EntityData.canMove;
         }
-        public void Die(GameObject killer)
+        public virtual void Die(GameObject killer)
         {
             if (EntityData.dead)
                 return;
@@ -531,7 +596,7 @@ namespace EntityDataSystem
 
             DieAnim();
         }
-        public void DieAnim()
+        public virtual void DieAnim()
         {
             RB.constraints = RigidbodyConstraints.FreezeAll;
             StopCoroutine(DieAnimC());
@@ -545,15 +610,31 @@ namespace EntityDataSystem
                 Destroy(gameObject);
             }
         }
-        public void OnDestroy()
+        public virtual void OnDestroy()
         {
             MainCameraControl.spriteRenderers.Remove(SpriteObj);
-            gameManagerInstance.entities.Remove(gameObject);
         }
-        public void OnMouseDown()
+        public virtual void OnMouseDown()
         {
-            Debug.Log("Clicked");
             player.EntityData.target = gameObject;
+        }
+        private float manaTimer;
+        private float staminaTimer;
+        public virtual void CalculateStatusRegen()
+        {
+            manaTimer += Time.fixedDeltaTime;
+            staminaTimer += Time.fixedDeltaTime;
+
+            if (manaTimer >= 20f / (EntityData.level * EntityData.currentIntelligence))
+            {
+                manaTimer = 0;
+                EntityData.WasteMana(-EntityData.currentIntelligence);
+            }
+            if (staminaTimer >= 20f / (EntityData.level * EntityData.currentStrength))
+            {
+                staminaTimer = 0;
+                EntityData.WasteStamina(-EntityData.currentStrength);
+            }
         }
     }
     public interface IBullet
@@ -565,8 +646,9 @@ namespace EntityDataSystem
         public void SetBullet(GameObject sender, float? radAngles = null);
         public void DeathEffect();
         public DamageData damageData { get; set; }
+        public int damageAdd { get; set; }
     }
-    public class BaseBulletBehaviour : MonoBehaviour, IBullet
+    public abstract class BaseBulletBehaviour : MonoBehaviour, IBullet
     {
         [SerializeField]
         private GameObject _sender;
@@ -582,8 +664,11 @@ namespace EntityDataSystem
         public ProjectileProperties projectileProperties { get => _projectileProperties; set => _projectileProperties = value; }
         public bool started { get => _started; set => _started = value; }
         public DamageData damageData { get; set; }
+        [SerializeField]
+        private int _damageAdd;
+        public int damageAdd { get => _damageAdd; set => _damageAdd = value; }
 
-        public void SetBullet(GameObject sender, float? radAngles = null)
+        public virtual void SetBullet(GameObject sender, float? radAngles = null)
         {
             //Debug.Log((float)radAngles);
             this.sender = sender;
@@ -592,7 +677,7 @@ namespace EntityDataSystem
                 transform.rotation = Quaternion.Euler(0, (float)radAngles * Mathf.Rad2Deg, 0);
             started = true;
         }
-        public void DeathEffect()
+        public virtual void DeathEffect()
         {
             var expObj = Instantiate(explosionPrefab);
             expObj.transform.position = transform.position;

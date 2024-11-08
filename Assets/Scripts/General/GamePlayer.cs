@@ -34,6 +34,7 @@ public class GamePlayer : MonoBehaviour, IEntity
     [SerializeField]
     private Vector3 velocity;
     public Vector2 XZInput; //X vector (vertical) = Z input, Y vector (horizontal) = X inpu
+    public Vector3 playerTarget;
     #endregion
 
     #region Variáveis pré-definidas
@@ -80,6 +81,7 @@ public class GamePlayer : MonoBehaviour, IEntity
     {
         if (EntityData.dead)
             return;
+        CalculateStatusRegen();
 
         XZInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * new Vector2(Mathf.Abs(Input.GetAxis("Horizontal")), Mathf.Abs(Input.GetAxis("Vertical")));
 
@@ -93,6 +95,8 @@ public class GamePlayer : MonoBehaviour, IEntity
 
         velocity = RB.velocity;
     }
+    private bool attackHeldDown = false;
+    private bool canAttackByHeld = true;
     public void Update()
     {
         if (EntityData.dead)
@@ -109,9 +113,45 @@ public class GamePlayer : MonoBehaviour, IEntity
         {
             SpriteObj.GetComponent<Animator>().SetBool("Walking", false);
         }
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+
+        AttackArea.transform.localScale = new Vector3(EntityData.currentAttackItem.attackwidth, EntityData.currentAttackItem.attackDistance, 1);
+
+        attackHeldDown = Input.GetKey(KeyCode.Mouse0);
+        if (attackHeldDown && !EntityData.canAttack)
+        {
+            canAttackByHeld = false;
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse0) && EntityData.canAttack)
+        {
+            canAttackByHeld = true;
+            Attack();
+        }
+        else if (Input.GetKey(KeyCode.Mouse0) && EntityData.canAttack && canAttackByHeld)
         {
             Attack();
+        }
+
+        RaycastHit hit;
+        Ray ray = MainCameraControl.cam.ScreenPointToRay(Input.mousePosition);
+        Physics.Raycast(ray, out hit, Vector3.Distance(MainCameraControl.gameObject.transform.position, transform.position) + 10f, LayerMask.GetMask("RaycastHit"), QueryTriggerInteraction.Ignore);
+        playerTarget = hit.point;
+
+        switch (EntityData.currentAttackItem.type)
+        {
+            case ItemType.MeleeWeapon:
+                var atkRotation = MathEx.AngleRadian(AttackArea.transform.position, hit.point);
+                AttackArea.transform.rotation = Quaternion.Euler(-90, 0, (-atkRotation * Mathf.Rad2Deg) + 90);
+                AttackArea.SetActive(true);
+                gameManagerInstance.targetObject.SetActive(false);
+                break;
+            case ItemType.RangedWeapon:
+                gameManagerInstance.SetTargetPosition(new Vector2(hit.point.x, hit.point.z));
+                AttackArea.SetActive(false);
+                gameManagerInstance.targetObject.SetActive(true);
+                break;
+            case ItemType.CustomWeapon:
+
+                break;
         }
     }
     public void Damage(DamageData damageData)
@@ -121,6 +161,8 @@ public class GamePlayer : MonoBehaviour, IEntity
         int total = !damageData.ignoreDefense ? Mathf.Max(damageData.damage - EntityData.CalculateDefense(), 0) : damageData.damage;
 
         EntityData.currentHealth -= total;
+        EntityData.WasteMana(damageData.manaDamage);
+        EntityData.WasteStamina(damageData.staminaDamage);
         EntityData.currentImpulse += damageData.impulse;
 
         StopCoroutine(SetDamageColor());
@@ -176,14 +218,18 @@ public class GamePlayer : MonoBehaviour, IEntity
             ItemSpriteRenderer.color = Color.clear;
         }
     }
-    private async void GetResultTask()
+    public void Attack()
     {
-        await Task.Delay(1000);
+        StartCoroutine(_Attack());
     }
-    public async void Attack()
+    private IEnumerator _Attack()
     {
-        if (!EntityData.attackReloaded || UIGeneral.IsPointerOverUIElement())
-            return;
+        if (!EntityData.attackReloaded ||
+            UIGeneral.IsPointerOverUIElement() ||
+            EntityData.currentAttackItem == null ||
+            !EntityData.CanWasteMana(EntityData.currentAttackItem.manaUse) ||
+            !EntityData.CanWasteStamina(EntityData.currentAttackItem.staminaUse))
+            yield break;
 
         //ATAQUE EM ÁREA
         /*
@@ -199,36 +245,37 @@ public class GamePlayer : MonoBehaviour, IEntity
         }*/
 
         var target = EntityData.target;
-        RaycastHit hit;
-        Ray ray = MainCameraControl.cam.ScreenPointToRay(Input.mousePosition);
-        Physics.Raycast(ray, out hit, Vector3.Distance(MainCameraControl.gameObject.transform.position, transform.position) + 10f, LayerMask.GetMask("Wall", "Floor"), QueryTriggerInteraction.Ignore);
-        if (hit.transform != null)
-            Debug.Log(hit.transform.gameObject.name);
+        var atkRotation = MathEx.AngleRadian(AttackArea.transform.position, playerTarget);
 
-        var atkRotation = MathEx.AngleRadian(AttackArea.transform.position, hit.point);
         AttackArea.transform.rotation = Quaternion.Euler(-90, 0, (-atkRotation * Mathf.Rad2Deg) + 90);
-        await Task.Delay(10);
+        EntityData.WasteMana(EntityData.currentAttackItem.manaUse);
+        EntityData.WasteStamina(EntityData.currentAttackItem.staminaUse);
+
+        StartCoroutine(AttackTimer());
+        StartCoroutine(AttackAnimC());
+
+        yield return new WaitForEndOfFrame();
 
         switch (EntityData.currentAttackItem.type)
         {
             case ItemType.MeleeWeapon:
                 foreach (var entity in AttackArea.GetComponent<ColliderNutshell>().triggerList.ToList())
                 {
-                    if (entity.layer == 10 && entity.GetComponent<IEntity>() != null)
+                    if ((entity.layer == 6 || entity.layer == 10) && entity.GetComponent<IEntity>() != null)
                         entity.GetComponent<IEntity>().Damage(EntityData.AttackWithItem(MathEx.AngleRadian(transform.position, entity.transform.position)));
                 }
                 break;
             case ItemType.RangedWeapon:
-                var bullet = Instantiate(EntityData.currentAttackItem.bulletPrefab, new Vector3(transform.position.x, IEntity.DEFAULT_SHOT_Y_POSITION, transform.position.z), Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, new Vector3(hit.point.x, IEntity.DEFAULT_SHOT_Y_POSITION, hit.point.z)) * Mathf.Rad2Deg) - 90, 0));
+                var bullet = Instantiate(EntityData.currentAttackItem.bulletPrefab, new Vector3(transform.position.x, IEntity.DEFAULT_SHOT_Y_POSITION, transform.position.z), Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, new Vector3(playerTarget.x, IEntity.DEFAULT_SHOT_Y_POSITION, playerTarget.z)) * Mathf.Rad2Deg) - 90, 0));
                 bullet.GetComponent<IBullet>().SetBullet(gameObject);
                 break;
             case ItemType.CustomWeapon:
 
                 break;
         }
+        if (EntityData.currentAttackItem.muzzlePrefab != null)
+            Instantiate(EntityData.currentAttackItem.muzzlePrefab, transform.position, Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, playerTarget) * Mathf.Rad2Deg) - 90, 0));
 
-        StartCoroutine(AttackTimer());
-        StartCoroutine(AttackAnimC());
         IEnumerator AttackAnimC()
         {
             ItemSpriteAnimator.Play("Attack");
@@ -245,10 +292,27 @@ public class GamePlayer : MonoBehaviour, IEntity
             yield return new WaitForSeconds(EntityData.attackDelay);
         EntityData.attackReloaded = true;
     }
-
     public void OnDestroy()
     {
         MainCameraControl.spriteRenderers.Remove(SpriteObj);
         gameManagerInstance.entities.Remove(gameObject);
+    }
+    private float manaTimer;
+    private float staminaTimer;
+    public void CalculateStatusRegen()
+    {
+        manaTimer += Time.fixedDeltaTime;
+        staminaTimer += Time.fixedDeltaTime;
+
+        if (manaTimer >= 6f / (EntityData.currentIntelligence))
+        {
+            manaTimer = 0;
+            EntityData.WasteMana(-EntityData.currentIntelligence);
+        }
+        if (staminaTimer >= 6f / (EntityData.currentStrength))
+        {
+            staminaTimer = 0;
+            EntityData.WasteStamina(-EntityData.currentStrength);
+        }
     }
 }

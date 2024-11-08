@@ -15,7 +15,7 @@ public class ShadowSeek : MonoBehaviour
         transform.localScale = Scale;
         var t = shadowCastObject.transform.position;
 
-        if (!IsInside2DArray((int)t.x, (int)t.z, Instance.floors))
+        if (!IsInside2DArray((int)t.x, (int)t.z, (GameObject[,])Instance.floors))
         {
             transform.localPosition = new Vector3(0, -1000, 0); // :O omagaaaaaa 
             return;

@@ -19,7 +19,8 @@ namespace EasterEggs
         "Tiger",
         "Touhou",
         "Eu ainda darei a Cirno Fumo (eu não sei na real)",
-        "Frotas faz o vampiro pra nóis"
+        "Frotas faz o vampiro pra nóis",
+        "I'm not chiwawa, i am Fuwawa! I'm not Fuwawa, i'm Mococo! Togeder we is... FuwaMoco desu!~"
     };
     }
 }

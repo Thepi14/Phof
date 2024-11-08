@@ -1,5 +1,7 @@
 fileFormatVersion: 2
 guid: 2937238f7934d36428f4bcff0191ef44
+labels:
+- Prop
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 11400000

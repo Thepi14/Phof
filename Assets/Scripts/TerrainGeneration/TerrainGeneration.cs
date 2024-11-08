@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static CanvasGameManager;
 using static TextureFunction;
 using GameManagerSystem;
 using Pathfindingsystem;
 using RoomSystem;
 using static NavMeshUpdate;
+using System.Threading.Tasks;
+using EntityDataSystem;
+using UnityEditor;
 
 public class TerrainGeneration : MonoBehaviour
 {
@@ -50,19 +54,25 @@ public class TerrainGeneration : MonoBehaviour
 
     public int corridorSize = 1;
     public int minimumDistanceBetweenRooms = 12;
-    #endregion
-    public GameObject[,] walls;
-    public GameObject[,] floors;
 
     private const int DEFAULT_SEED = 24556;
+    public const float DEFAULT_GROUND_HEIGHT = 0.5f;
+    #endregion
+
+    public Grid<GameObject> walls;
+    public Grid<GameObject> floors;
+    public Grid<bool> spawnTiles;
+    public Grid<int> roomGrid;
+
     [SerializeField]
     private bool configSeed = false;
+    public bool mapLoaded = false;
 
     void Start()
     {
         Instance = this;
 
-        if (!configSeed)
+        if (configSeed)
         {
             seed = PlayerPrefs.GetInt("CURRENT_SEED", DEFAULT_SEED);
             MapWidth = PlayerPrefs.GetInt("MAP_WIDTH", 100);
@@ -75,12 +85,57 @@ public class TerrainGeneration : MonoBehaviour
 
         GenerateLevel();
     }
-    public void GenerateLevel()
+    public async void GenerateLevel()
     {
+        await _GenerateLevel();
+    }
+    public float generationProgress { get; private set; } = 0;
+    public async void RoomOcclusion(int roomIndex)
+    {
+        var maxWaitTime = 0.01f;
+        if (roomIndex == -1)
+        {
+            await TickAll(true);
+        }
+        else
+        {
+            await TickAll(false);
+            foreach (var block in rooms[roomIndex - 1].blocks)
+            {
+                if (Time.unscaledDeltaTime > maxWaitTime)
+                    await Task.Delay(50);
+                block.SetActive(true);
+            }
+            navMeshUpdateInstance.BuildNavMesh();
+        }
+        async Task TickAll(bool activate)
+        {
+            foreach (var wall in walls.GridToList())
+            {
+                if (Time.unscaledDeltaTime > maxWaitTime)
+                    await Task.Delay(50);
+                if (wall == null) continue;
+                wall.SetActive(activate);
+            }
+            foreach (var floors in floors.GridToList())
+            {
+                if (Time.unscaledDeltaTime > maxWaitTime)
+                    await Task.Delay(50);
+                if (floors == null) continue;
+                floors.SetActive(activate);
+            }
+        }
+    }
+    private async Task _GenerateLevel()
+    {
+        mapLoaded = false;
         Random.InitState(seed);
+        generationProgress = 0;
 
-        walls = new GameObject[MapWidth, MapHeight];
-        floors = new GameObject[MapWidth, MapHeight];
+        walls = new Grid<GameObject>(MapWidth, MapHeight, (grid, x, y) => { return null; });
+        floors = new Grid<GameObject>(MapWidth, MapHeight, (grid, x, y) => { return null; });
+        spawnTiles = new Grid<bool>(MapWidth, MapHeight, (spawntiles, x, y) => { return false; });
+        roomGrid = new Grid<int>(MapWidth, MapHeight, (grid, x, y) => { return -1; });
 
         dotMap = new Texture2D(MapWidth, MapHeight);
         physicalMap = new Texture2D(MapWidth, MapHeight);
@@ -108,14 +163,20 @@ public class TerrainGeneration : MonoBehaviour
 
         Color[,] colors = new Color[MapWidth, MapHeight];
 
-        bool DetectCorner(int x, int y, int ex, int ey) => !PixelIsBW(corridorMap, x + ex, y) && !PixelIsBW(corridorMap, x, y + ey);
+        var genOffset = 0.1f;
+        generationProgress = genOffset;
+        var GenOffset2 = 0f;
+
+        bool DetectCorner(int x, int y, int ex, int ey) => 
+            (PixelIsB(physicalMap, x + ex, y + ey) && (PixelIsB(physicalMap, x + ex, y) && PixelIsB(physicalMap, x, y + ey)) || 
+            (PixelIsB(physicalMap, x + ex, y + ey) && PixelIsW(physicalMap, x + ex, y) && PixelIsW(physicalMap, x, y + ey)));
 
         foreach (RoomNode room in rooms)
         {
-            PlaceBlock(new Vector3(room.LeftDownCornerPosition.x, 1.5f, room.LeftDownCornerPosition.y), biome.pillarBlocks[0], true, null, null);
-            PlaceBlock(new Vector3(room.RightUpCornerPosition.x, 1.5f, room.RightUpCornerPosition.y), biome.pillarBlocks[0], true, null, null);
-            PlaceBlock(new Vector3(room.LeftDownCornerPosition.x, 1.5f, room.RightUpCornerPosition.y), biome.pillarBlocks[0], true, null, null);
-            PlaceBlock(new Vector3(room.RightUpCornerPosition.x, 1.5f, room.LeftDownCornerPosition.y), biome.pillarBlocks[0], true, null, null);
+            room.blocks.Add(PlaceBlock(new Vector3(room.LeftDownCornerPosition.x, 1.5f, room.LeftDownCornerPosition.y), biome.pillarBlocks[0], true, null, null));
+            room.blocks.Add(PlaceBlock(new Vector3(room.RightUpCornerPosition.x, 1.5f, room.RightUpCornerPosition.y), biome.pillarBlocks[0], true, null, null));
+            room.blocks.Add(PlaceBlock(new Vector3(room.LeftDownCornerPosition.x, 1.5f, room.RightUpCornerPosition.y), biome.pillarBlocks[0], true, null, null));
+            room.blocks.Add(PlaceBlock(new Vector3(room.RightUpCornerPosition.x, 1.5f, room.LeftDownCornerPosition.y), biome.pillarBlocks[0], true, null, null));
 
             for (int x = room.LeftDownCornerPosition.x; x <= room.RightUpCornerPosition.x; x++)
             {
@@ -126,12 +187,16 @@ public class TerrainGeneration : MonoBehaviour
                     room.doors.Add(new Door(new Vector2Int(x, y), x == room.LeftDownCornerPosition.x ? new Vector2Int(-1, 0) : x == room.RightUpCornerPosition.x ? new Vector2Int(1, 0) : y == room.LeftDownCornerPosition.y ? new Vector2Int(0, -1) : new Vector2Int(0, 1)));
                 }
             }
+            GenOffset2 += 0.1f / rooms.Count;
+            generationProgress = genOffset + GenOffset2;
 
             foreach (Door door in room.doors)
             {
             remadeDoor:;
                 var doorObj = PlaceBlock(new Vector3(door.position.x, 1.5f, door.position.y), biome.doorBlock, true, null, null);
+                room.blocks.Add(doorObj);
                 door.doorBlock = doorObj;
+
                 if (doorObj == null)
                 {
                     if (walls[door.position.x, door.position.y] != null)
@@ -147,9 +212,9 @@ public class TerrainGeneration : MonoBehaviour
                 if (door.facing.x == 1 || door.facing.x == -1)
                 {
                     if (door.facing.x == 1)
-                        doorObj.transform.rotation = Quaternion.Euler(biome.doorBlock.blockRotation.x, biome.doorBlock.blockRotation.y, biome.doorBlock.blockRotation.z - 90f);
+                        doorObj.transform.rotation = Quaternion.Euler(doorObj.transform.rotation.eulerAngles + new Vector3(0, 0, 90f));
                     else
-                        doorObj.transform.rotation = Quaternion.Euler(biome.doorBlock.blockRotation.x, biome.doorBlock.blockRotation.y, biome.doorBlock.blockRotation.z + 90f);
+                        doorObj.transform.rotation = Quaternion.Euler(doorObj.transform.rotation.eulerAngles + new Vector3(0, 0, 90f));
 
                     //PlaceBlock(new Vector3(door.position.x, 3f, door.position.y), biome.pillarBlocks[0], true, null, null);
                     PlaceBlock(new Vector3(door.position.x, 1.5f, door.position.y + 2), biome.pillarBlocks[0], true, null, null);
@@ -158,44 +223,58 @@ public class TerrainGeneration : MonoBehaviour
                 else if (door.facing.y == 1 || door.facing.y == -1)
                 {
                     if (door.facing.y == 1)
-                        doorObj.transform.rotation = Quaternion.Euler(biome.doorBlock.blockRotation.x, biome.doorBlock.blockRotation.y, biome.doorBlock.blockRotation.z + 180f);
+                        doorObj.transform.rotation = Quaternion.Euler(doorObj.transform.rotation.eulerAngles + new Vector3(0, 0, + 180f));
                     else
-                        doorObj.transform.rotation = Quaternion.Euler(biome.doorBlock.blockRotation.x, biome.doorBlock.blockRotation.y, biome.doorBlock.blockRotation.z);
+                        doorObj.transform.rotation = Quaternion.Euler(doorObj.transform.rotation.eulerAngles + new Vector3(0, 0, 0));
 
                     //PlaceBlock(new Vector3(door.position.x, 3f, door.position.y), biome.pillarBlocks[0], true, null, null);
                     PlaceBlock(new Vector3(door.position.x - 2, 1.5f, door.position.y), biome.pillarBlocks[0], true, null, null);
                     PlaceBlock(new Vector3(door.position.x + 2, 1.5f, door.position.y), biome.pillarBlocks[0], true, null, null);
                 }
             }
+            await Task.Delay(1);
         }
-
+        genOffset = 0.2f;
+        GenOffset2 = 0;
+        //generate columns borders in corridors
         //X = X, Z = Y
         for (int x = 0; x < MapWidth; x++)
         {
             for (int z = 0; z < MapHeight; z++)
             {
-                if (corridorMap.GetPixel(x, z) == Color.white || corridorMap.GetPixel(x, z) == Color.black)
+                if (corridorMap.GetPixel(x, z) == Color.white || physicalMap.GetPixel(x, z) == Color.black)
                     continue;
-                if (DetectCorner(x, z, 1, 1) || DetectCorner(x, z, -1, -1))
+                if (DetectCorner(x, z, 1, 1))
                 {
-                    PlaceBlock(x + 2, 1.5f, z + 2, biome.pillarBlocks[0], true, null, null);
-                    PlaceBlock(x - 2, 1.5f, z - 2, biome.pillarBlocks[0], true, null, null);
+                    PlaceBlock(x + 1, 1.5f, z + 1, biome.pillarBlocks[0], true, null, null);
                 }
-                if (DetectCorner(x, z, 1, -1) || DetectCorner(x, z, -1, 1))
+                else if (DetectCorner(x, z, -1, -1))
                 {
-                    PlaceBlock(x + 2, 1.5f, z - 2, biome.pillarBlocks[0], true, null, null);
-                    PlaceBlock(x - 2, 1.5f, z + 2, biome.pillarBlocks[0], true, null, null);
+                    PlaceBlock(x - 1, 1.5f, z - 1, biome.pillarBlocks[0], true, null, null);
+                }
+                else if (DetectCorner(x, z, 1, -1))
+                {
+                    PlaceBlock(x + 1, 1.5f, z - 1, biome.pillarBlocks[0], true, null, null);
+                }
+                else if (DetectCorner(x, z, -1, 1))
+                {
+                    PlaceBlock(x - 1, 1.5f, z + 1, biome.pillarBlocks[0], true, null, null);
                 }
             }
+            GenOffset2 += 0.1f / MapWidth;
+            generationProgress = genOffset + GenOffset2;
+            await Task.Delay(1);
         }
-
+        genOffset = 0.3f;
+        GenOffset2 = 0;
+        //General walls
         //X = X, Z = Y
         for (int x = 0; x < MapWidth; x++)
         {
             for (int z = 0; z < MapHeight; z++)
             {
                 if (physicalMap.GetPixel(x, z) == Color.white)
-                    PlaceBlock(x, 0, z, biome.groundBlocks[0]);
+                    PlaceBlock(x, DEFAULT_GROUND_HEIGHT, z, biome.groundBlocks[0]);
 
                 if (physicalMap.GetPixel(x, z) == Color.black)
                 {
@@ -216,7 +295,7 @@ public class TerrainGeneration : MonoBehaviour
                     }
                     if (generateWall && walls[x, z] == null)
                     {
-                        PlaceBlock(x, 0, z, biome.groundBlocks[0]);
+                        PlaceBlock(x, DEFAULT_GROUND_HEIGHT, z, biome.groundBlocks[0]);
                         if (physicalMap.GetPixel(x - 1, z) == Color.white)
                         {
                             PlaceBlock(x, 1.5f, z, biome.wallBlocks[0], true, new Vector3(0, 0, -90), null);
@@ -232,9 +311,26 @@ public class TerrainGeneration : MonoBehaviour
                     }
                     else if (generateWall && floors[x, z] == null)
                     {
-                        PlaceBlock(x, 0, z, biome.groundBlocks[0]);
+                        PlaceBlock(x, DEFAULT_GROUND_HEIGHT, z, biome.groundBlocks[0]);
                     }
                 }
+            }
+
+            GenOffset2 += 0.7f / MapWidth;
+            generationProgress = genOffset + GenOffset2;
+            await Task.Delay(1);
+        }
+
+        for (int x = 0; x < MapWidth; x++)
+        {
+            for (int z = 0; z < MapHeight; z++)
+            {
+                if (roomGrid.GetGridObject(x, z) == -1)
+                    continue;
+                if (GetWallObj(x, z) != null)
+                    rooms[roomGrid.GetGridObject(x, z) - 1].blocks.Add(GetWallObj(x, z));
+                else if (GetFloorObj(x, z) != null)
+                    rooms[roomGrid.GetGridObject(x, z) - 1].blocks.Add(GetFloorObj(x, z));
             }
         }
 
@@ -243,7 +339,10 @@ public class TerrainGeneration : MonoBehaviour
             throw new System.Exception("Manager is null");
         if (GameManager.gameManagerInstance.playerPrefab == null)
             throw new System.Exception("Manager player prefab is null");
+
         Instantiate(GameManager.gameManagerInstance.playerPrefab, new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z), Quaternion.identity, transform.parent);
+        mapLoaded = true;
+        return;
     }
     public
     #region medo
@@ -261,9 +360,10 @@ public class TerrainGeneration : MonoBehaviour
         if (rotation == null)
             rotation = Vector3.zero;
         if (scale == null)
-            scale = type.blockSize;
+            scale = type.blockPrefab.transform.localScale;
 
-        GameObject block = new GameObject(type.blockName + " " + x + " " + y + " " + z, typeof(MeshFilter), typeof(MeshRenderer));
+        GameObject block = Instantiate(type.blockPrefab, null, true);
+        block.name = type.blockName + " " + x + " " + y + " " + z;
         GameObject parent = null;
         //block.isStatic = true;
 
@@ -279,11 +379,7 @@ public class TerrainGeneration : MonoBehaviour
             block.transform.position = new Vector3(x + 0.5f, y, z + 0.5f);
         }
         block.transform.localScale = (Vector3)scale;
-        block.transform.rotation = Quaternion.Euler(type.blockRotation + (Vector3)rotation);
-
-        block.GetComponent<MeshFilter>().mesh = type.mesh == null ? DEFAULT_MESH : type.mesh;
-
-        block.GetComponent<MeshRenderer>().material = type.material == null ? DEFAULT_MATERIAL : type.material;
+        block.transform.rotation = Quaternion.Euler(type.blockPrefab.transform.rotation.eulerAngles + (Vector3)rotation);
 
         //block.transform.localScale = new Vector3(type.blockSize.x, type.blockSize.y, type.blockSize.z);
 
@@ -303,30 +399,34 @@ public class TerrainGeneration : MonoBehaviour
             block.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             block.GetComponent<Rigidbody>().isKinematic = true;
             block.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.Continuous;
+            if (type.isDestructible)
+            {
+                block.AddComponent<BlockEntity>();
+                block.GetComponent<BlockEntity>().EntityData.maxHealth = type.hitPoints;
+                block.GetComponent<BlockEntity>().EntityData.currentHealth = type.hitPoints;
+            }
         }
 
         if (!wall)
         {
-            floors[x, z] = block;
+            floors.SetGridObject(x, z, block);
             block.transform.parent = floorParent.transform;
             block.layer = 7;
         }
         else
         {
-            walls[x, z] = block;
             if (!type.isDoor)
+            {
+                walls.SetGridObject(x, z, block);
                 block.transform.parent = wallParent.transform;
+            }
             else
                 parent.transform.parent = wallParent.transform;
             block.layer = 6;
         }
-        return block;
-    }
-    public GameObject SpawnEntity(float x, float z, string tag)
-    {
-        var entity = new GameObject();
 
-        return entity;
+        return block;
+        //return Task.FromResult(block);
     }
     public GameObject PlaceBlock(Vector3 coord, BlockClass type, bool wall = false, Vector3? rotation = null, Vector3? scale = null) => PlaceBlock((int)coord.x, coord.y, (int)coord.z, type, wall, rotation, scale);
     public GameObject GetWallObj(int x, int y) => walls[x, y];
@@ -461,14 +561,28 @@ public class TerrainGeneration : MonoBehaviour
                     int Down = UnityEngine.Random.Range(-minY, -maxY);
 
                     var roomObj = new GameObject("Room " + currentID);
+                    roomObj.transform.SetParent(transform);
                     roomObj.layer = 2;
+
                     var room = roomObj.AddComponent<RoomNode>();
+                    room.NewRoomNode(currentID, new Vector2Int(x, y), -Left + Right + 2, -Down + Up + 2);
                     room.info = biome.defaultRoom;
 
-                    room.NewRoomNode(currentID, new Vector2Int(x, y), -Left + Right + 2, -Down + Up + 2);
+                    foreach (var rInfo in biome.rooms)
+                    {
+                        if (rInfo.size.x == room.width && rInfo.size.y == room.height)
+                        {
+                            room.info = rInfo;
+                            break;
+                        }
+                    }
 
                     room.LeftDownCornerPosition = new Vector2Int(Left + x - 1, Down + y - 1);
                     room.RightUpCornerPosition = new Vector2Int(Right + x + 0, Up + y + 0);
+
+                    if (room.info != null)
+                        if (!room.info.universal)
+                            room.SetRoomInfo();
 
                     roomObj.transform.position = new Vector3(room.LeftDownCornerPosition.x + (room.width / 2f), 1.5f, room.LeftDownCornerPosition.y + (room.height / 2f));
                     roomObj.AddComponent<BoxCollider>().size = new Vector3(room.width - 2f, 2, room.height - 2f);
@@ -505,6 +619,13 @@ public class TerrainGeneration : MonoBehaviour
                                 (newTex.GetPixel(xE + space, yE - space) == Color.black) ||
                                 (newTex.GetPixel(xE - space, yE - space) == Color.black))
                                 newTex.SetPixel(xE, yE, undefinedColor);
+                        }
+                    }
+                    for (int xE = Left - 1 + x; xE < Right + 1 + x; xE++)
+                    {
+                        for (int yE = Down - 1 + y; yE < Up + 1 + y; yE++)
+                        {
+                            roomGrid.SetGridObject(xE, yE, currentID);
                         }
                     }
                     newTex.Apply();

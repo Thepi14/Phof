@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
@@ -15,8 +16,9 @@ public class NavMeshUpdate : MonoBehaviour
     {
         navMeshUpdateInstance = this;
     }
-    public void BuildNavMesh()
+    public async void BuildNavMesh(int delay = 0)
     {
+        await Task.Delay(delay);
         surface.BuildNavMesh();
     }
     //SIM EU SEI ISSO É UMA GAMBIARRA

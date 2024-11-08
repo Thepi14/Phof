@@ -13,11 +13,9 @@ MonoBehaviour:
   m_Name: Wall
   m_EditorClassIdentifier: 
   blockName: Wall
-  mesh: {fileID: 993649600057310089, guid: b9ef8fb21ebc8054795ebec42595faca, type: 3}
-  material: {fileID: 2100000, guid: 6976a6b5909f787439a4713c3059f5a4, type: 2}
-  blockSize: {x: -1, y: 1, z: 1}
-  blockRotation: {x: 90, y: 0, z: 0}
+  blockPrefab: {fileID: 900860881822338253, guid: 441fc65fe7c13a44186adfe16aef5e44, type: 3}
   isBlock: 0
+  isDoor: 0
   hasCollider: 1
   isDestructible: 0
   hitPoints: 0

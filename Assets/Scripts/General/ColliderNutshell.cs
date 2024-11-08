@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
-#pragma strict
 
 [AddComponentMenu("Physics/Collider Nutshell", 0)]
 [RequireComponent(typeof(Collider))]

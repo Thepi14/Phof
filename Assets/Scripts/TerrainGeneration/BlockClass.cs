@@ -7,11 +7,8 @@ public class BlockClass : ScriptableObject
 {
     [Header("Geral", order = 0)]
     public string blockName;
-    public Mesh mesh;
-    public Material material;
+    public GameObject blockPrefab;
     [Header("Física", order = 1)]
-    public Vector3 blockSize = Vector3.one;
-    public Vector3 blockRotation = Vector3.zero;
     public bool isBlock = true;
     public bool isDoor = false;
     public bool hasCollider = true;

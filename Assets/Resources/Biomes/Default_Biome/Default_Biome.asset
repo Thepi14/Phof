@@ -20,5 +20,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2937238f7934d36428f4bcff0191ef44, type: 2}
   doorBlock: {fileID: 11400000, guid: 8ee39a7a32302364ab545f9735fca1a1, type: 2}
   doorAnimationController: {fileID: 9100000, guid: 2d426d199aa051e47a70310b26c40c42, type: 2}
+  generalBlocks:
+  - {fileID: 11400000, guid: 530c76b397b17be40b390163d9f4ced7, type: 2}
+  - {fileID: 11400000, guid: 1585c1811d6cc104c8c50a01c0bc8172, type: 2}
+  - {fileID: 11400000, guid: 2937238f7934d36428f4bcff0191ef44, type: 2}
+  - {fileID: 11400000, guid: bcfc4810f8691754eb05527663be3199, type: 2}
   defaultRoom: {fileID: 11400000, guid: cc7699f8c13314f4d9a47b834edb2b83, type: 2}
-  rooms: []
+  rooms:
+  - {fileID: 11400000, guid: 380834f3e14660143a535900f41f6d8a, type: 2}
+  - {fileID: 11400000, guid: 544e955a332a3c441b4a95268d8fd519, type: 2}
+  - {fileID: 11400000, guid: 11112afe8720dd34795ba005a3d8039b, type: 2}

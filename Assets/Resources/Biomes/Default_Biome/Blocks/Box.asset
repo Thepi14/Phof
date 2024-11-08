@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60fdbe94cbbbb984fa5c31fd526039bf, type: 3}
+  m_Name: Box
+  m_EditorClassIdentifier: 
+  blockName: Box
+  blockPrefab: {fileID: 7656383755178519521, guid: cae200b22b91a2542b6c06b3c237ca81, type: 3}
+  isBlock: 0
+  isDoor: 0
+  hasCollider: 1
+  isDestructible: 1
+  hitPoints: 10

@@ -17,11 +17,13 @@ public class MainMenuManager : MonoBehaviour
 {
     public GameObject langTab;
 
+    #region Main panel
     private GameObject MainPanel => GetGameObject(gameObject, "Mainpanel");
     private TextMeshProUGUI HotText => GetGameObjectComponent<TextMeshProUGUI>(MainPanel, "Hottext");
     private Button PlayButton => GetGameObjectComponent<Button>(MainPanel, "Playbutton");
     private Button LangButton => GetGameObjectComponent<Button>(MainPanel, "Languagebutton");
     private Button ExitButton => GetGameObjectComponent<Button>(MainPanel, "Exitbutton");
+    #endregion
 
     #region New game panel
     private GameObject NewGamePanel => GetGameObject(gameObject, "Newgamepanel");
@@ -31,15 +33,25 @@ public class MainMenuManager : MonoBehaviour
     private Toggle Toggle100 => GetGameObjectComponent<Toggle>(NewGamePanel, "Toggle100");
     private Toggle Toggle150 => GetGameObjectComponent<Toggle>(NewGamePanel, "Toggle150");
     private Toggle Toggle200 => GetGameObjectComponent<Toggle>(NewGamePanel, "Toggle200");
+    private Toggle ToggleEasy => GetGameObjectComponent<Toggle>(NewGamePanel, "Toggleeasy");
+    private Toggle ToggleNormal => GetGameObjectComponent<Toggle>(NewGamePanel, "Togglenormal");
+    private Toggle ToggleHard => GetGameObjectComponent<Toggle>(NewGamePanel, "Togglehard");
+    private Toggle ToggleLunatic => GetGameObjectComponent<Toggle>(NewGamePanel, "Togglelunatic");
     #endregion
 
     #region Language panel
     private ScrollConfigurator LanguagePanel => GetGameObjectComponent<ScrollConfigurator>(gameObject, "Languagepanel");
     #endregion
 
+    #region Load panel
+    private GameObject LoadPanel => GetGameObject(gameObject, "Loadpanel");
+    private Slider LoadBar => GetGameObjectComponent<Slider>(LoadPanel, "Loadbar");
+    #endregion
+
     private GameObject[] PanelList = new GameObject[3];
     private int selectedMapWidth;
     private int selectedMapHeight;
+    private string selectedDifficulty;
 
     [SerializeField]
     [Serializable]
@@ -77,9 +89,11 @@ public class MainMenuManager : MonoBehaviour
             PlayerPrefs.SetInt("DEFAULTED", 1);
             MakeDefaultConfig();
         }
+        LoadPanel.SetActive(false);
 
-        selectedMapWidth = PlayerPrefs.GetInt("MAP_WIDTH", 100);
-        selectedMapHeight = PlayerPrefs.GetInt("MAP_HEIGHT", 100);
+        selectedMapWidth = 100;
+        selectedMapHeight = 100;
+        selectedDifficulty = "Normal";
 
         GetLanguage();
 
@@ -101,6 +115,7 @@ public class MainMenuManager : MonoBehaviour
         PanelList[2] = (LanguagePanel.gameObject);
 
         SetAllLang();
+        GetGameObjectComponent<TextMeshProUGUI>(MainPanel, "Version").text = "v" + Application.version;
 
         PlayButton.onClick.AddListener(() => { OpenMenu(Panel.Newgamepanel); });
         LangButton.onClick.AddListener(() => { OpenMenu(Panel.LanguagePanel); });
@@ -114,12 +129,18 @@ public class MainMenuManager : MonoBehaviour
 
         SeedInput.onEndEdit.AddListener((text) => { if (text.Length == 0 || !int.TryParse(text, out var a)) { SeedInput.text = UnityEngine.Random.Range(10000, 999999) + ""; } });
 
-        Toggle80.onValueChanged.AddListener((a) => { DeactivateAllToggles(); Toggle80.SetIsOnWithoutNotify(true); selectedMapWidth = 80; selectedMapHeight = 80; });
-        Toggle100.onValueChanged.AddListener((a) => { DeactivateAllToggles(); Toggle100.SetIsOnWithoutNotify(true); selectedMapWidth = 100; selectedMapHeight = 100; });
-        Toggle150.onValueChanged.AddListener((a) => { DeactivateAllToggles(); Toggle150.SetIsOnWithoutNotify(true); selectedMapWidth = 150; selectedMapHeight = 150; });
-        Toggle200.onValueChanged.AddListener((a) => { DeactivateAllToggles(); Toggle200.SetIsOnWithoutNotify(true); selectedMapWidth = 200; selectedMapHeight = 200; });
+        Toggle80.onValueChanged.AddListener((a) => { DeactivateAllMapSizeToggles(); Toggle80.SetIsOnWithoutNotify(true); selectedMapWidth = 80; selectedMapHeight = 80; });
+        Toggle100.onValueChanged.AddListener((a) => { DeactivateAllMapSizeToggles(); Toggle100.SetIsOnWithoutNotify(true); selectedMapWidth = 100; selectedMapHeight = 100; });
+        Toggle150.onValueChanged.AddListener((a) => { DeactivateAllMapSizeToggles(); Toggle150.SetIsOnWithoutNotify(true); selectedMapWidth = 150; selectedMapHeight = 150; });
+        Toggle200.onValueChanged.AddListener((a) => { DeactivateAllMapSizeToggles(); Toggle200.SetIsOnWithoutNotify(true); selectedMapWidth = 200; selectedMapHeight = 200; });
+
+        ToggleEasy.onValueChanged.AddListener((a) => { DeactivateAllDifficultyToggles(); ToggleEasy.SetIsOnWithoutNotify(true); selectedDifficulty = "Easy"; });
+        ToggleNormal.onValueChanged.AddListener((a) => { DeactivateAllDifficultyToggles(); ToggleNormal.SetIsOnWithoutNotify(true); selectedDifficulty = "Normal"; });
+        ToggleHard.onValueChanged.AddListener((a) => { DeactivateAllDifficultyToggles(); ToggleHard.SetIsOnWithoutNotify(true); selectedDifficulty = "Hard"; });
+        ToggleLunatic.onValueChanged.AddListener((a) => { DeactivateAllDifficultyToggles(); ToggleLunatic.SetIsOnWithoutNotify(true); selectedDifficulty = "Lunatic"; });
 
         Toggle100.isOn = true;
+        ToggleNormal.isOn = true;
 
         SeedInput.text = UnityEngine.Random.Range(10000, 999999) + "";
 
@@ -161,15 +182,34 @@ public class MainMenuManager : MonoBehaviour
         PlayerPrefs.SetInt("MAP_HEIGHT", selectedMapHeight);
         PlayerPrefs.SetInt("STAGE_OFFSET", PlayerPrefs.GetInt("MAP_WIDTH", 100));
         PlayerPrefs.SetInt("CURRENT_STAGE", 1);
+        PlayerPrefs.SetString("DIFFICULTY", selectedDifficulty);
         PlayerPrefs.Save();
-        SceneManager.LoadScene(1);
+        StartCoroutine(LoadAsyncGame(1));
     }
-    private void DeactivateAllToggles()
+    private IEnumerator LoadAsyncGame(int index)
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(index);
+        LoadPanel.SetActive(true);
+
+        while (!asyncLoad.isDone)
+        {
+            LoadBar.value = asyncLoad.progress;
+            yield return null;
+        }
+    }
+    private void DeactivateAllMapSizeToggles()
     {
         Toggle80.SetIsOnWithoutNotify(false);
         Toggle100.SetIsOnWithoutNotify(false);
         Toggle150.SetIsOnWithoutNotify(false);
         Toggle200.SetIsOnWithoutNotify(false);
+    }
+    private void DeactivateAllDifficultyToggles()
+    {
+        ToggleEasy.SetIsOnWithoutNotify(false);
+        ToggleNormal.SetIsOnWithoutNotify(false);
+        ToggleHard.SetIsOnWithoutNotify(false);
+        ToggleLunatic.SetIsOnWithoutNotify(false);
     }
     private void MakeDefaultConfig()
     {

@@ -22,3 +22,8 @@ MonoBehaviour:
   generate: Generate
   mapSize: Map size
   seed: Seed
+  generatingWorld: Generating world...
+  habilityInfosList:
+  - ID: Slash
+    name: Slash
+    description: Slash boy

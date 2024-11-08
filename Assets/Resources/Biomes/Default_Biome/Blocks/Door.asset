@@ -13,10 +13,7 @@ MonoBehaviour:
   m_Name: Door
   m_EditorClassIdentifier: 
   blockName: Door
-  mesh: {fileID: 7202019439985978107, guid: 59bdec339f42ae34b9fc5593df4ca40d, type: 3}
-  material: {fileID: 2100000, guid: 6976a6b5909f787439a4713c3059f5a4, type: 2}
-  blockSize: {x: 1, y: 1, z: 1}
-  blockRotation: {x: 90, y: 0, z: 0}
+  blockPrefab: {fileID: 900860881822338253, guid: a59ca9d6151ad1544a38fc81382cfe0b, type: 3}
   isBlock: 0
   isDoor: 1
   hasCollider: 1

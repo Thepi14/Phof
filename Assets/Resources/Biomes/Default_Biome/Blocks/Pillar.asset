@@ -13,11 +13,9 @@ MonoBehaviour:
   m_Name: Pillar
   m_EditorClassIdentifier: 
   blockName: Pillar
-  mesh: {fileID: 2495703381458242797, guid: 04a8596f9456783408706d52f766979f, type: 3}
-  material: {fileID: 2100000, guid: d8596e717aa4253498d71023bf1690c0, type: 2}
-  blockSize: {x: 1, y: -1, z: 1}
-  blockRotation: {x: -90, y: 0, z: -270}
+  blockPrefab: {fileID: 7656383755178519521, guid: 5426c248137b787479fa0d59e1c20c76, type: 3}
   isBlock: 0
+  isDoor: 0
   hasCollider: 1
   isDestructible: 0
   hitPoints: 0

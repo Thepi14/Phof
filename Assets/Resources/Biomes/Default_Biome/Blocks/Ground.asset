@@ -13,10 +13,9 @@ MonoBehaviour:
   m_Name: Ground
   m_EditorClassIdentifier: 
   blockName: Ground
-  mesh: {fileID: 5159557868297216081, guid: 73c1ae02814fb3842b1e2ab98c7b6dd0, type: 3}
-  material: {fileID: 2100000, guid: 150d35f6173dd00479d6897529581fe9, type: 2}
-  blockSize: {x: 1, y: 1, z: 1}
+  blockPrefab: {fileID: 8415529354840271061, guid: bbe5d47f9d68fa541b81395799c181a5, type: 3}
   isBlock: 0
+  isDoor: 0
   hasCollider: 1
   isDestructible: 0
   hitPoints: 0

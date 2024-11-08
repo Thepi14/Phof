@@ -11,10 +11,13 @@ public class Biome : ScriptableObject
     public List<BlockClass> groundBlocks;
     public List<BlockClass> wallBlocks;
     public List<BlockClass> pillarBlocks;
+    [Header("Door configuration", order = 1)]
     public BlockClass doorBlock;
     public RuntimeAnimatorController doorAnimationController;
+    [Header("General blocks configuration", order = 2)]
+    public List<BlockClass> generalBlocks;
 
-    [Header("Room configuration", order = 1)]
+    [Header("Room configuration", order = 3)]
     public RoomInfo defaultRoom;
     public List<RoomInfo> rooms;
 

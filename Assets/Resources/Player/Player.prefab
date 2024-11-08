@@ -660,7 +660,6 @@ MonoBehaviour:
     defense: 2
     speed: 5
     attackSpeedMultipliyer: 1
-    habilities: []
     maxHealth: 0
     maxStamina: 0
     maxMana: 0
@@ -681,6 +680,7 @@ MonoBehaviour:
       level: 0
       currentTick: 0
       stackable: 0
+      effectVFX: {fileID: 0}
       frameAdded: 0
     currentAttackItem: {fileID: 11400000, guid: 89ef9aa054aa1104c975852c204c2530, type: 2}
     attackDistance: 0.7
@@ -694,6 +694,7 @@ MonoBehaviour:
     inRange: 0
     damaged: 0
     dead: 0
+    canAttack: 1
   _onDeathEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -702,6 +703,7 @@ MonoBehaviour:
       m_Calls: []
   velocity: {x: 0, y: 0, z: 0}
   XZInput: {x: 0, y: 0}
+  playerTarget: {x: 0, y: 0, z: 0}
 --- !u!114 &6813995179876145116
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -749,6 +751,8 @@ GameObject:
   - component: {fileID: 3980773533436824205}
   - component: {fileID: 3449936481190906857}
   - component: {fileID: 5028544229465254675}
+  - component: {fileID: 3862799814982777381}
+  - component: {fileID: 8386621689224190431}
   m_Layer: 12
   m_Name: AttackArea
   m_TagString: GamePlayer
@@ -821,3 +825,53 @@ MonoBehaviour:
   lastTriggerContact: {fileID: 0}
   lastColliderContact: {fileID: 0}
   triggerList: []
+--- !u!33 &3862799814982777381
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5836442930941546240}
+  m_Mesh: {fileID: 4341091208801120557, guid: 2ec3ba925c8c63a4bbfffdb1749c31fb, type: 3}
+--- !u!23 &8386621689224190431
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5836442930941546240}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 5fc405a72d5cd6c49910df83a71a2b7f, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}

@@ -6,9 +6,12 @@ using System.Linq;
 using EntityDataSystem;
 using static GamePlayer;
 using static TerrainGeneration;
+using static CanvasGameManager;
 using ObjectUtils;
 using RoomSystem;
 using UnityEngine.SceneManagement;
+using LangSystem;
+using System.Threading.Tasks;
 
 namespace GameManagerSystem
 {
@@ -21,6 +24,7 @@ namespace GameManagerSystem
 
         [Header("General", order = 0)]
         public GameObject playerPrefab;
+        public GameObject targetObject;
 
         [Header("Current Status", order = 1)]
         public RoomNode currentRoom;
@@ -41,9 +45,17 @@ namespace GameManagerSystem
         {
             gameManagerInstance = this;
         }
-        private void Awake()
+        private async void Awake()
         {
             gameManagerInstance = this;
+            Language.GetLanguage();
+            reWaitLang:
+            if (Language.currentLanguage == null)
+            {
+                await Task.Delay(1);
+                goto reWaitLang;
+            }
+            Language.currentLanguage.SetLanguageDescsLists();
         }
         private void Update()
         {
@@ -124,6 +136,7 @@ namespace GameManagerSystem
                 {
                     if (effect.level == 0)
                         Debug.LogWarning("Efeito com nível 0 não tem efeito.");
+                    Destroy(effect.effectVFX);
                     entity.EntityData.currentEffects.Remove(effect);
                     continue;
                 }
@@ -182,6 +195,7 @@ namespace GameManagerSystem
                     case "stun":
                         effect.currentTick = 0;
                         entity.EntityData.currentSpeed = 0;
+                        entity.EntityData.attackSpeedMultipliyer = 0;
                         if (!entity.EntityData.damaged)
                             ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 2) + (Color.gray / 2));
                         break;
@@ -195,6 +209,18 @@ namespace GameManagerSystem
                             entity.EntityData.currentHealth = Mathf.Min(entity.EntityData.maxHealth, entity.EntityData.currentHealth + effect.level);
                             ChangeEntityColor(entity, Color.green, 0.4f);
                         }
+                        break;
+                    case "berserk":
+                        effect.currentTick = 0;
+                        entity.EntityData.currentStrength = entity.EntityData.currentStrength + ((int)(entity.EntityData.currentStrength * 0.5f * effect.level));
+                        entity.EntityData.currentSpeed = entity.EntityData.currentSpeed + (entity.EntityData.currentSpeed * 0.15f * effect.level);
+                        entity.EntityData.currentDefense = (int)(entity.EntityData.currentStrength * 0.7f);
+                        if (effect.effectVFX == null)
+                        {
+                            effect.effectVFX = Instantiate(Resources.Load<GameObject>("VFX/Effects/BerserkAura"), entity.EntityData.gameObject.transform);
+                            effect.effectVFX.transform.position = entity.EntityData.gameObject.transform.position;
+                        }
+                        ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 2) + (Color.red / 2));
                         break;
                     default:
                         throw new Exception("Efeito desconhecido, nome: " + effect.name);
@@ -240,7 +266,22 @@ namespace GameManagerSystem
         public void NextStage()
         {
             PlayerPrefs.SetInt("CURRENT_STAGE", PlayerPrefs.GetInt("CURRENT_STAGE", 1) + 1);
-            SceneManager.LoadScene(1);
+            StartCoroutine(LoadAsyncGame(1));
+        }
+        private IEnumerator LoadAsyncGame(int index)
+        {
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(index);
+            canvasInstance.LoadPanel.SetActive(true);
+
+            while (!asyncLoad.isDone)
+            {
+                canvasInstance.LoadBar.value = asyncLoad.progress;
+                yield return null;
+            }
+        }
+        public void SetTargetPosition(Vector2 pos)
+        {
+            targetObject.transform.position = new Vector3(pos.x, 1, pos.y);
         }
     }
 }

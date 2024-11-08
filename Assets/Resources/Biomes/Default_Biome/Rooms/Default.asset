@@ -19,3 +19,4 @@ MonoBehaviour:
   entityDensity: 0.1
   size: {x: 0, y: 0}
   universal: 1
+  blocks: []

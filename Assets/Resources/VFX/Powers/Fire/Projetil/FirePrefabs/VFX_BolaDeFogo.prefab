@@ -19715,3 +19715,10 @@ MonoBehaviour:
   _sender: {fileID: 0}
   _explosionPrefab: {fileID: 3403416188412860455, guid: 1c0c929c648c23f4bb82be80202ada6e, type: 3}
   _projectileProperties: {fileID: 11400000, guid: 7958a0dc051be8f47849e5f04706baa6, type: 2}
+  _damageAdd: 0
+  bulletExclusionType: 2
+  maxTimeAlive: 5
+  maxDistance: 20
+  startPosition: {x: 0, y: 0, z: 0}
+  condition: 0
+  explodeWithoutHitting: 0

@@ -16,13 +16,18 @@ MonoBehaviour:
   itemSprite: {fileID: 21300000, guid: d3fbc7c933928b842a9e8cc5a90f4e38, type: 3}
   animatorController: {fileID: 9100000, guid: 6d04b7b3269a3aa4a864a361ecfbb9d6, type: 2}
   positionOffSet: {x: 0.3, y: 0}
+  manaUse: 4
+  staminaUse: 0
   type: 2
   reloadTime: 3
   attackDistance: 6
   maxStack: 1
   minDamage: 2
   maxDamage: 4
+  manaDamage: 0
+  staminaDamage: 0
   impulse: 1
   effects: []
   bulletPrefab: {fileID: 7661328709117412688, guid: af4f0bdbe27ac0e4586d290b757b831f, type: 3}
   muzzlePrefab: {fileID: 7647464709602969788, guid: 8bf60532958004a4281891c561fcb428, type: 3}
+  customAttackIndex: 0
