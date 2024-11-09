@@ -304,7 +304,9 @@ public class TerrainGeneration : MonoBehaviour
                     }
                     if (generateWall && walls[x, z] == null)
                     {
-                        PlaceBlock(x, DEFAULT_GROUND_HEIGHT, z, biome.groundBlocks[0]);
+                        var ground = PlaceBlock(x, DEFAULT_GROUND_HEIGHT, z, biome.groundBlocks[0]);
+                        if (roomGrid[x, z] > -1 && ground != null)
+                            rooms[roomGrid[x, z] - 1].blocks.Add(ground);
                         if (physicalMap.GetPixel(x - 1, z) == Color.white)
                         {
                             PlaceBlock(x, 1.5f, z, biome.wallBlocks[0], true, new Vector3(0, 0, -90), null);
@@ -320,7 +322,13 @@ public class TerrainGeneration : MonoBehaviour
                     }
                     else if (generateWall && floors[x, z] == null)
                     {
-                        PlaceBlock(x, DEFAULT_GROUND_HEIGHT, z, biome.groundBlocks[0]);
+                        var ground = PlaceBlock(x, DEFAULT_GROUND_HEIGHT, z, biome.groundBlocks[0]);
+                        /*if (roomGrid[x, z] != -1 && ground != null)
+                        {
+                            Debug.Log(roomGrid[x, z]);
+                            Debug.Log(rooms.Count);
+                            rooms[roomGrid[x, z]].blocks.Add(ground);
+                        }*/
                     }
                 }
             }
@@ -594,8 +602,8 @@ public class TerrainGeneration : MonoBehaviour
                         if (!room.info.universal)
                             room.SetRoomInfo();
 
-                    roomObj.transform.position = new Vector3(room.LeftDownCornerPosition.x + (room.width / 2f), 1.5f, room.LeftDownCornerPosition.y + (room.height / 2f));
-                    roomObj.AddComponent<BoxCollider>().size = new Vector3(room.width - 2f, 2, room.height - 2f);
+                    roomObj.transform.position = new Vector3(room.LeftDownCornerPositionInternal.x + (room.width / 2f), 1.5f, room.LeftDownCornerPositionInternal.y + (room.height / 2f));
+                    roomObj.AddComponent<BoxCollider>().size = new Vector3(room.width, 2, room.height);
                     roomObj.GetComponent<BoxCollider>().isTrigger = true;
 
                     rooms.Add(room);

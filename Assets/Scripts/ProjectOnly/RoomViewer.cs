@@ -55,7 +55,6 @@ public class RoomViewer : MonoBehaviour
     public void OnValidate() => runInEditMode = true;
     public void Start()
     {
-        Debug.Log("here");
         TetoKasaneLiarDance = false;
         ClearBlocks();
     }
