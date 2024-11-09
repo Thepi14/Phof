@@ -65,11 +65,13 @@ namespace RoomSystem
                     var xP = x + LeftDownCornerPositionInternal.x;
                     var yP = y + LeftDownCornerPositionInternal.y;
 
+                    Instance.spawnTiles[xP, yP] = info.grid[x, y].entityCanSpawn;
+
                     if (info.grid[x, y].id == 0)
                         continue;
                     var gInfo = info.grid[x, y];
                     var block = Instance.biome.generalBlocks[gInfo.id - 1];
-                    Instance.PlaceBlock(new Vector3(xP, gInfo.height + 1f, yP), block, true);
+                    Instance.PlaceBlock(new Vector3(xP, gInfo.height + 1f, yP), block, true, gInfo.rotation, gInfo.scale);
                 }
             }
         }
@@ -139,7 +141,7 @@ namespace RoomSystem
                 x = UnityEngine.Random.Range(LeftDownCornerPositionInternal.x, RightUpCornerPositionInternal.x);
                 y = UnityEngine.Random.Range(LeftDownCornerPositionInternal.y, RightUpCornerPositionInternal.y);
 
-                if (posList.Contains(new Vector2Int(x, y)))
+                if (posList.Contains(new Vector2Int(x, y)) || Instance.spawnTiles[x, y])
                     goto returnV;
 
                 if (info.entities.Count > 0)

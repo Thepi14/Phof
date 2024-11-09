@@ -72,7 +72,8 @@ public class TerrainGeneration : MonoBehaviour
     {
         Instance = this;
 
-        if (configSeed)
+        //não se confunda, M'cos...
+        if (!configSeed)
         {
             seed = PlayerPrefs.GetInt("CURRENT_SEED", DEFAULT_SEED);
             MapWidth = PlayerPrefs.GetInt("MAP_WIDTH", 100);
@@ -154,6 +155,14 @@ public class TerrainGeneration : MonoBehaviour
 
         physicalMap = OtherColorsToTwo(dotMap, true);
         physicalMap = ExpandWhiteSquare(physicalMap, corridorSize);
+
+        for (int x = 0; x < MapWidth; x++)
+        {
+            for (int z = 0; z < MapHeight; z++)
+            {
+                spawnTiles.SetGridObject(x, z, physicalMap.GetPixel(x, z) == Color.white);
+            }
+        }
 
         Texture2D[] list = new Texture2D[2];
         list[0] = physicalMap;
@@ -565,7 +574,7 @@ public class TerrainGeneration : MonoBehaviour
                     roomObj.layer = 2;
 
                     var room = roomObj.AddComponent<RoomNode>();
-                    room.NewRoomNode(currentID, new Vector2Int(x, y), -Left + Right + 2, -Down + Up + 2);
+                    room.NewRoomNode(currentID, new Vector2Int(x, y), -Left + Right, -Down + Up);
                     room.info = biome.defaultRoom;
 
                     foreach (var rInfo in biome.rooms)
@@ -573,6 +582,7 @@ public class TerrainGeneration : MonoBehaviour
                         if (rInfo.size.x == room.width && rInfo.size.y == room.height)
                         {
                             room.info = rInfo;
+                            Debug.Log(rInfo.name);
                             break;
                         }
                     }

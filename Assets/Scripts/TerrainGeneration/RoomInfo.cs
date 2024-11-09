@@ -24,8 +24,6 @@ public class RoomInfo : ScriptableObject
     [SerializeField]
     [Tooltip("CUIDADO! Esse booleano vai resetar as configurações da sala para o padrão, ele não salva antes de excluir.")]
     private bool resetRoom = false;
-    [HideInInspector]
-    public bool startedViewer = false;
 
     private void OnValidate()
     {
@@ -79,7 +77,8 @@ public class RoomInfo : ScriptableObject
                     block.entityCanSpawn = false;
                 else if (previousBlocks[blocks.IndexOf(block)].id != 0)
                     block.entityCanSpawn = true;
-                if (block != previousBlocks[blocks.IndexOf(block)] && !startedViewer)
+
+                if (block != previousBlocks[blocks.IndexOf(block)])
                 {
                     previousBlocks[blocks.IndexOf(block)].id = block.id;
                 }

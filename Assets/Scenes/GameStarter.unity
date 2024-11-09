@@ -321,7 +321,7 @@ Transform:
   m_GameObject: {fileID: 442438341}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 147, y: 0.5, z: 144}
+  m_LocalPosition: {x: 150, y: 0.5, z: 150}
   m_LocalScale: {x: 50, y: 1, z: 50}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3011,7 +3011,7 @@ MonoBehaviour:
   corridorMap: {fileID: 0}
   DEFAULT_MESH: {fileID: 5159557868297216081, guid: 73c1ae02814fb3842b1e2ab98c7b6dd0, type: 3}
   DEFAULT_MATERIAL: {fileID: 2100000, guid: a00251c2ebd815c49bbdaf97a4691fc7, type: 2}
-  seed: 25661
+  seed: 25552
   frequency: 0.2
   limit: 0.9
   scattering: 0
@@ -3021,7 +3021,7 @@ MonoBehaviour:
   _mapHeight: 200
   corridorSize: 1
   minimumDistanceBetweenRooms: 24
-  configSeed: 0
+  configSeed: 1
   mapLoaded: 0
 --- !u!1001 &2022744305
 PrefabInstance:
@@ -3798,13 +3798,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5963304651498649797}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: 99.476364, y: 0, z: 113.92276}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 26.638, y: 26.638, z: 26.638}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1871006072}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!224 &6603555595888444720
 RectTransform:
   m_ObjectHideFlags: 0

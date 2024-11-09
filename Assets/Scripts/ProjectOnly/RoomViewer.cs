@@ -17,6 +17,7 @@ public class RoomViewer : MonoBehaviour
     public GameObject spawnTilePrefab;
     public Material red;
     public Material green;
+    public GameObject Camera => GameObject.Find("Main Camera");
     [Header("Status", order = 1)]
     public List<GameObject> blocks = new List<GameObject>();
     public bool showSpawnTiles = false;
@@ -55,7 +56,6 @@ public class RoomViewer : MonoBehaviour
     public void Start()
     {
         Debug.Log("here");
-        info.startedViewer = true;
         TetoKasaneLiarDance = false;
         ClearBlocks();
     }
@@ -126,13 +126,14 @@ public class RoomViewer : MonoBehaviour
         info.changed = false;
         create = false;
         destroy = false;
-        info.startedViewer = false;
 
         previousInfo = info;
         previousBiome = biome;
 
         bool detectCorner(int x, int y) => (x == -1 && y == -1) || (x == -1 && y == info.size.y) || (x == info.size.x && y == -1) || (x == info.size.x && y == info.size.y);
         bool detectWall(int x, int y) => (x == -1) || (y == info.size.y) || (y == -1) || (x == info.size.x);
+
+        Camera.transform.position = new Vector3((info.size.x / 2f) - 0.5f, Camera.transform.position.y, Camera.transform.position.z);
     }
     public GameObject PlaceBlock(BlockClass blockClass, float x, float y, float z, Vector3? rotation = null, Vector3? scale = null)
     {
