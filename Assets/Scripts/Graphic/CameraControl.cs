@@ -34,14 +34,14 @@ public class CameraControl : MonoBehaviour
     public bool lerp;
     public float moveSpeed = 2f;
 
-    public void OnValidate()
-    {
-        MainCameraControl = this;
-    }
     void Awake()
     {
-        MainCameraControl = this;
+        if (MainCameraControl == null)
+            MainCameraControl = this;
+        else
+            Destroy(gameObject);
         DefaultCameraFieldView = cam.fieldOfView;
+        DontDestroyOnLoad(gameObject);
     }
     private void Update()
     {

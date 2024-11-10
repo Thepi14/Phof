@@ -18,12 +18,23 @@ MonoBehaviour:
   enterNumber: "Coloque n\xFAmero"
   exit: Sair
   exitGame: Sair do jogo
+  loading: 
   generateNewWorld: Gerar novo mundo
   generate: Gerar
   mapSize: Tamanho do mapa
   seed: Semente
   generatingWorld: Gerando mundo...
+  chooseCard: 
   habilityInfosList:
   - ID: Slash
     name: Slash
-    description: Slash man
+    description: "Use o slash para atacar grupos de \ninimigos na dire\xE7\xE3o que
+      voc\xEA clicar, eles\nlevar\xE3o um grande empurr\xE3o."
+  - ID: GroundSlash
+    name: Slash Terrestre
+    description: "Use o slash terrestre para atacar grupos\nde inimigos na dire\xE7\xE3o
+      que voc\xEA atacar,\ntodos os inimigos afetados ser\xE3o\natordoados.\n"
+  - ID: Berserk
+    name: Berserk
+    description: "Use berserk para entrar em um estado\nde f\xFAria que te d\xE1
+      mais for\xE7a e velocidade,\nmas que te deixa mais vulner\xE1vel."

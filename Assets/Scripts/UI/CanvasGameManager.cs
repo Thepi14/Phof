@@ -16,6 +16,7 @@ public class CanvasGameManager : MonoBehaviour
 {
     public bool seeingMap = false;
     public static CanvasGameManager canvasInstance;
+    public GameObject MainPanel => GetGameObject(gameObject, "Mainpanel");
     public RectTransform LifeBar => GetGameObjectComponent<RectTransform>(gameObject, "Mainpanel/LifeBar/Bar");
     public RectTransform StaminaBar => GetGameObjectComponent<RectTransform>(gameObject, "Mainpanel/StaminaBar/Bar");
     public RectTransform ManaBar => GetGameObjectComponent<RectTransform>(gameObject, "Mainpanel/ManaBar/Bar");
@@ -35,10 +36,26 @@ public class CanvasGameManager : MonoBehaviour
     public GameObject cardGamePrefab;
 
     public List<GameObject> cards = new List<GameObject>();
+    public List<string> currentPlayerCards
+    {
+        get
+        {
+            var newList = new List<string>();
+            foreach (var items in player.EntityData.habilities)
+            {
+                newList.Add(items.Key);
+            }
+            return newList;
+        }
+    }
 
     private void Start()
     {
-        canvasInstance = this;
+        if (canvasInstance == null)
+            canvasInstance = this;
+        else
+            Destroy(gameObject);
+        DontDestroyOnLoad(gameObject);
         sword.onClick.AddListener(() => { player.SetItem(swordItem); });
         staff.onClick.AddListener(() => { player.SetItem(staffItem); });
     }
@@ -56,6 +73,35 @@ public class CanvasGameManager : MonoBehaviour
             ManaBar.localScale = new Vector3(Mathf.Max((float)player.EntityData.currentMana / player.EntityData.maxMana, 0), 1, 1);
         }
         BlockCards();
+    }
+    public enum GameMenu : byte
+    {
+        MainPanel = 0,
+        CardsPanel = 1,
+        LoadPanel = 2,
+    }
+    public GameMenu currentMenu;
+    public void OpenMenu(GameMenu menu)
+    {
+        CloseAllPanels();
+        switch (menu)
+        {
+            case GameMenu.MainPanel:
+                MainPanel.SetActive(true);
+                break;
+            case GameMenu.CardsPanel:
+                CardPanel.SetActive(true);
+                break;
+            case GameMenu.LoadPanel:
+                LoadPanel.SetActive(true);
+                break;
+        }
+    }
+    public void CloseAllPanels()
+    {
+        MainPanel.SetActive(false);
+        CardPanel.SetActive(false);
+        LoadPanel.SetActive(false);
     }
     public GameObject AddCard(HabilityBehaviour hability)
     {
@@ -90,5 +136,23 @@ public class CanvasGameManager : MonoBehaviour
         cards.Remove(hability.card);
         Destroy(player.EntityData.habilities[hability.habilityID]);
         player.EntityData.habilities.Remove(hability.habilityID);
+    }
+    public void RandomizeCards()
+    {
+        var cardObjList = new List<CardChoice>();
+        for (int i = 0; i < CardPanelExibition.transform.childCount; i++)
+        {
+            cardObjList.Add(CardPanelExibition.transform.GetChild(i).GetComponent<CardChoice>());
+        }
+        foreach (CardChoice choice in cardObjList)
+        {
+        remakeCard:;
+            string id = CardChoice.habilitiesIDs[UnityEngine.Random.Range(0, CardChoice.habilitiesIDs.Count)];
+            if (currentPlayerCards.Contains(id) && currentPlayerCards.Count <= CardChoice.habilitiesIDs.Count - 3)
+            {
+                goto remakeCard;
+            }
+            choice.SetCard(id);
+        }
     }
 }

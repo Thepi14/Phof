@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using HabilitySystem;
 using UnityEngine;
+using System.IO;
+using Unity.VisualScripting;
 
 namespace LangSystem
 {
@@ -62,6 +64,7 @@ namespace LangSystem
         public void OnValidate()
         {
             SetLanguageDescsLists();
+            var index = 0;
         }
         public void SetLanguageDescsLists()
         {
@@ -70,12 +73,8 @@ namespace LangSystem
             foreach (var info in habilityInfosList)
             {
                 habilityInfos.Add(info.ID, info);
+                //Debug.Log(habilityInfos[info.ID].TrueDescription);
             }
-        }
-        public void AddSerializableInfo(string ID, HabilityInfo info)
-        {
-            habilityInfosList.Add(new HabilityInfoSerializable(ID, info.name, info.description));
-            SetLanguageDescsLists();
         }
     }
 }

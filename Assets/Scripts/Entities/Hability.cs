@@ -6,6 +6,9 @@ using HabilitySystem;
 using static LangSystem.Language;
 using UnityEngine;
 using static CanvasGameManager;
+using UnityEditor;
+using System.Text.RegularExpressions;
+using UnityEngine.Windows;
 
 namespace HabilitySystem
 {
@@ -50,7 +53,7 @@ namespace HabilitySystem
         public virtual void SetHability(string ID, int cooldown, HabilityType type)
         {
             habilityID = ID;
-            habilitySprite = Resources.Load<Sprite>("Cards/" + habilityID);
+            habilitySprite = Resources.Load<Sprite>("CardSprites/" + habilityID);
             if (currentLanguage.habilityInfos.ContainsKey(habilityID))
                 habilityInfo = currentLanguage.habilityInfos[habilityID];
             cooldownTimer = cooldown;
@@ -107,7 +110,7 @@ namespace HabilitySystem
         /// <param name="info"></param>
         public static implicit operator HabilityInfo(HabilityInfoSerializable info)
         {
-            return new HabilityInfo(info.name, info.description);
+            return new HabilityInfo(info.name, info.TrueDescription);
         }
     }
     /// <summary>
@@ -118,13 +121,22 @@ namespace HabilitySystem
     {
         public string ID;
         public string name;
-        public string description;
+        [Multiline(10, order = 1)]
+        [SerializeField]
+        private string description;
+        public string TrueDescription => Regex.Replace(description, @"\r\n?|\n", " ");
 
-        public HabilityInfoSerializable(string ID, string name, string description)
+        public HabilityInfoSerializable(string ID, string name, string textAsset)
         {
             this.ID = ID;
             this.name = name;
-            this.description = description;
+            description = textAsset;
+            OnGUI();
+        }
+        readonly void OnGUI()
+        {
+            GUI.skin.button.wordWrap = true;
+            EditorStyles.textField.wordWrap = true;
         }
     }
 }

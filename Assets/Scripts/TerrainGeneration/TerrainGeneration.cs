@@ -352,12 +352,15 @@ public class TerrainGeneration : MonoBehaviour
         }
 
         navMeshUpdateInstance.BuildNavMesh();
+
         if (GameManager.gameManagerInstance == null)
             throw new System.Exception("Manager is null");
         if (GameManager.gameManagerInstance.playerPrefab == null)
             throw new System.Exception("Manager player prefab is null");
-
-        Instantiate(GameManager.gameManagerInstance.playerPrefab, new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z), Quaternion.identity, transform.parent);
+        if (GamePlayer.player == null)
+            Instantiate(GameManager.gameManagerInstance.playerPrefab, new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z), Quaternion.identity, null);
+        else
+            GamePlayer.player.transform.position = new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z);
         mapLoaded = true;
         return;
     }

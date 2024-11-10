@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using static Unity.Collections.AllocatorManager;
@@ -14,15 +15,18 @@ public class RoomViewer : MonoBehaviour
     private Biome previousBiome;
     public RoomInfo info;
     private RoomInfo previousInfo;
+    [Header("Configuration", order = 1)]
     public GameObject spawnTilePrefab;
+    public GameObject coordPrefab;
     public Material red;
     public Material green;
     public GameObject Camera => GameObject.Find("Main Camera");
-    [Header("Status", order = 1)]
+    [Header("Status", order = 2)]
     public List<GameObject> blocks = new List<GameObject>();
     public bool showSpawnTiles = false;
-    [HelpAttribute("Aqui você clica nas booleanas para modificar diretamente os blocos do mapa caso algo dê errado.", order = 2)]
-    [Header("Room regen", order = 3)]
+    public bool showCoordTiles = false;
+    [HelpAttribute("Aqui você clica nas booleanas para modificar diretamente os blocos do mapa caso algo dê errado.", order = 3)]
+    [Header("Room regen", order = 4)]
     public bool create = false;
     public bool destroy = false;
     #region Teto
@@ -111,6 +115,11 @@ public class RoomViewer : MonoBehaviour
                     {
                         tile.GetComponent<MeshRenderer>().material = red;
                     }
+                }
+                if (coordPrefab != null && showCoordTiles)
+                {
+                    var tile = Instantiate(coordPrefab, new Vector3(block.x, 0.516f, block.y), Quaternion.Euler(90, 0, 0), transform);
+                    tile.GetComponent<TextMeshPro>().text = $"x: {block.x}\ny: {block.y}";
                 }
                 if (block.id == 0 || block.id > biome.generalBlocks.Count)
                     continue;

@@ -41,21 +41,24 @@ namespace GameManagerSystem
         [SerializeField]
         private bool Tick;
 
-        private void OnValidate()
-        {
-            gameManagerInstance = this;
-        }
         private async void Awake()
         {
-            gameManagerInstance = this;
-            Language.GetLanguage();
-            reWaitLang:
-            if (Language.currentLanguage == null)
+            if (gameManagerInstance == null)
             {
-                await Task.Delay(1);
-                goto reWaitLang;
+                gameManagerInstance = this;
+
+                Language.GetLanguage();
+            reWaitLang:
+                if (Language.currentLanguage == null)
+                {
+                    await Task.Delay(1);
+                    goto reWaitLang;
+                }
+                Language.currentLanguage.SetLanguageDescsLists();
+                DontDestroyOnLoad(gameObject);
             }
-            Language.currentLanguage.SetLanguageDescsLists();
+            else
+                Destroy(gameObject);
         }
         private void Update()
         {
@@ -270,7 +273,9 @@ namespace GameManagerSystem
         }
         private IEnumerator LoadAsyncGame(int index)
         {
+            yield return new WaitForSeconds(2.5f);
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(index);
+            canvasInstance.CloseAllPanels();
             canvasInstance.LoadPanel.SetActive(true);
 
             while (!asyncLoad.isDone)
@@ -278,6 +283,9 @@ namespace GameManagerSystem
                 canvasInstance.LoadBar.value = asyncLoad.progress;
                 yield return null;
             }
+
+            canvasInstance.CardPanel.SetActive(true);
+            canvasInstance.RandomizeCards();
         }
         public void SetTargetPosition(Vector2 pos)
         {

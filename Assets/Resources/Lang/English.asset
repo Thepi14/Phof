@@ -18,12 +18,20 @@ MonoBehaviour:
   enterNumber: Enter number
   exit: Exit
   exitGame: Exit to desktop
+  loading: 
   generateNewWorld: Generate new world
   generate: Generate
   mapSize: Map size
   seed: Seed
   generatingWorld: Generating world...
+  chooseCard: 
   habilityInfosList:
   - ID: Slash
     name: Slash
-    description: Slash boy
+    description: 
+  - ID: GroundSlash
+    name: Ground Slash
+    description: 
+  - ID: Berserk
+    name: Berserk
+    description: 

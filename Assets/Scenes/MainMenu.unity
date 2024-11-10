@@ -7511,11 +7511,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3948566411191242440, guid: 47f1a336c5f553c4ea4a8cc877858fb8, type: 3}
       propertyPath: m_SizeDelta.x
-      value: -97.2298
+      value: 50.877
       objectReference: {fileID: 0}
     - target: {fileID: 3948566411191242440, guid: 47f1a336c5f553c4ea4a8cc877858fb8, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -63.9669
+      value: 43.245
       objectReference: {fileID: 0}
     - target: {fileID: 3948566411191242440, guid: 47f1a336c5f553c4ea4a8cc877858fb8, type: 3}
       propertyPath: m_LocalPosition.x

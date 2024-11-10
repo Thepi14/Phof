@@ -58,9 +58,12 @@ public class GamePlayer : MonoBehaviour, IEntity
     }
     public void Awake()
     {
-        EntityData.attackReloaded = true;
+        if (player == null)
+            player = this;
+        else
+            Destroy(gameObject);
 
-        player = this;
+        EntityData.attackReloaded = true;
         EntityData.gameObject = gameObject;
         MainCameraControl.spriteRenderers.Add(SpriteObj);
         gameManagerInstance.entities.Add(gameObject);
@@ -76,10 +79,12 @@ public class GamePlayer : MonoBehaviour, IEntity
 
         SetItem(EntityData.currentAttackItem);
         gameManagerInstance.allies.Add(gameObject);
+
+        DontDestroyOnLoad(gameObject);
     }
     public void FixedUpdate()
     {
-        if (EntityData.dead)
+        if (EntityData.dead || !Instance.mapLoaded)
             return;
         CalculateStatusRegen();
 
@@ -99,7 +104,7 @@ public class GamePlayer : MonoBehaviour, IEntity
     private bool canAttackByHeld = true;
     public void Update()
     {
-        if (EntityData.dead)
+        if (EntityData.dead || !Instance.mapLoaded)
             return;
 
         if (RB.velocity.x > 0.1f || RB.velocity.x < -0.1f)
