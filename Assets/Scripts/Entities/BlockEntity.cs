@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using EntityDataSystem;
 using ItemSystem;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static NavMeshUpdate;
 
 public class BlockEntity : MonoBehaviour, IEntity
@@ -47,7 +48,7 @@ public class BlockEntity : MonoBehaviour, IEntity
             currentStamina = 0,
 
             defense = 1,
-            resistence = 1,
+            resistance = 1,
             currentDefense = 1,
             currentResistence = 1,
         };
@@ -66,6 +67,7 @@ public class BlockEntity : MonoBehaviour, IEntity
     public void Damage(DamageData damageData)
     {
         EntityData.currentHealth -= damageData.damage;
+        EntityData.currentImpulse = damageData.impulse;
         if (EntityData.currentHealth < 0) Die(damageData.sender);
     }
 
@@ -73,11 +75,11 @@ public class BlockEntity : MonoBehaviour, IEntity
     {
         navMeshUpdateInstance.BuildNavMesh(100);
         if (destructionPrefabVFX == null) return;
-        var vfx = Instantiate(destructionPrefabVFX, transform, false);
+        var vfx = Instantiate(destructionPrefabVFX, transform.position, Quaternion.identity);
         foreach (var piece in ObjectUtils.GameObjectGeneral.GetGameObjectChildren(vfx))
         {
             if (piece.GetComponent<Rigidbody>() == null) return;
-            piece.GetComponent<Rigidbody>().velocity = -new Vector3(EntityData.currentImpulse.x, 0, EntityData.currentImpulse.y);
+            piece.GetComponent<Rigidbody>().AddForce(-new Vector3(EntityData.currentImpulse.x, 0, EntityData.currentImpulse.y) * 70);
         }
         Destroy(gameObject);
     }

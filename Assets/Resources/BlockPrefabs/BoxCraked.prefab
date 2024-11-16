@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8510449579758810395}
   - component: {fileID: 1885645483169136768}
   - component: {fileID: 2571296480027045957}
-  m_Layer: 0
+  m_Layer: 29
   m_Name: Chao.001_cell.005
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -131,7 +131,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -7155270296402914441, guid: 4afe733c23a460b44a0406a100e71464, type: 3}
 --- !u!1 &2023816833369519462
@@ -147,7 +147,7 @@ GameObject:
   - component: {fileID: 3304154866777444220}
   - component: {fileID: 8717525781959002305}
   - component: {fileID: 1828958227888124334}
-  m_Layer: 0
+  m_Layer: 29
   m_Name: Chao.001_cell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -265,7 +265,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 5406132562063507282, guid: 4afe733c23a460b44a0406a100e71464, type: 3}
 --- !u!1 &2099791152406203669
@@ -281,7 +281,7 @@ GameObject:
   - component: {fileID: 6287197353588808517}
   - component: {fileID: 7303220989494596353}
   - component: {fileID: 7527429379738076827}
-  m_Layer: 0
+  m_Layer: 29
   m_Name: Chao.001_cell.009
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -399,7 +399,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 2055610793562417213, guid: 4afe733c23a460b44a0406a100e71464, type: 3}
 --- !u!1 &4293514161887833683
@@ -415,7 +415,7 @@ GameObject:
   - component: {fileID: 9050190694066602064}
   - component: {fileID: 7694588857108127872}
   - component: {fileID: 8707938247559602360}
-  m_Layer: 0
+  m_Layer: 29
   m_Name: Chao.001_cell.007
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -533,7 +533,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -3906749482915672602, guid: 4afe733c23a460b44a0406a100e71464, type: 3}
 --- !u!1 &4344798451518457663
@@ -549,7 +549,7 @@ GameObject:
   - component: {fileID: 6936594707450665986}
   - component: {fileID: 93569944478097497}
   - component: {fileID: 1988939702095658722}
-  m_Layer: 0
+  m_Layer: 29
   m_Name: Chao.001_cell.010
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -667,7 +667,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 8844232661423868280, guid: 4afe733c23a460b44a0406a100e71464, type: 3}
 --- !u!1 &4389531640258025272
@@ -683,7 +683,7 @@ GameObject:
   - component: {fileID: 1844464719496788651}
   - component: {fileID: 2047902827939905467}
   - component: {fileID: 5688222967908980273}
-  m_Layer: 0
+  m_Layer: 29
   m_Name: Chao.001_cell.008
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -801,7 +801,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 6959390812148800786, guid: 4afe733c23a460b44a0406a100e71464, type: 3}
 --- !u!1 &4928193267066208807
@@ -817,7 +817,7 @@ GameObject:
   - component: {fileID: 4759584912168470256}
   - component: {fileID: 5954917794995984360}
   - component: {fileID: 3804893417639795144}
-  m_Layer: 0
+  m_Layer: 29
   m_Name: Chao.001_cell.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -935,7 +935,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -6137697060706096439, guid: 4afe733c23a460b44a0406a100e71464, type: 3}
 --- !u!1 &7300763544219887320
@@ -951,7 +951,7 @@ GameObject:
   - component: {fileID: 8063587206927594201}
   - component: {fileID: 3563192267246692885}
   - component: {fileID: 6409263915209387311}
-  m_Layer: 0
+  m_Layer: 29
   m_Name: Chao.001_cell.011
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1069,7 +1069,7 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -1875641659543205819, guid: 4afe733c23a460b44a0406a100e71464, type: 3}
 --- !u!1 &9079003876500461564
@@ -1081,7 +1081,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2970592887791894558}
-  m_Layer: 0
+  - component: {fileID: 5970302658808526810}
+  - component: {fileID: 4471767997613143653}
+  m_Layer: 29
   m_Name: BoxCraked
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1111,3 +1113,29 @@ Transform:
   - {fileID: 6924692716577465241}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5970302658808526810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9079003876500461564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d9b304de0709c342be081c035a6e4c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeAlive: 5
+--- !u!114 &4471767997613143653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9079003876500461564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a924874f23a7144782fee1728dfe73f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeAlive: 3

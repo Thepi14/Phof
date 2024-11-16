@@ -34,8 +34,15 @@ namespace LangSystem
         public string generatingWorld;
 
         [Header("Game")]
+        public string level;
+        public string strength;
+        public string resistance;
+        public string intelligence;
+        public string defense;
+        public string speed;
         public string chooseCard;
         public string habilityIsNotReloaded;
+
 
         [Header("Options")]
         public string configurations;

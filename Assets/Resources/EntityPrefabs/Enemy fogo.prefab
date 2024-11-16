@@ -530,7 +530,7 @@ MonoBehaviour:
     name: Fire Skeleton Wizard
     level: 2
     strength: 2
-    resistence: 2
+    resistance: 3
     intelligence: 1
     defense: 1
     speed: 3.5

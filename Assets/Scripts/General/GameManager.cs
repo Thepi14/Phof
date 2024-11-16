@@ -163,7 +163,7 @@ namespace GameManagerSystem
                     case "poison":
                         if (ticked)
                         {
-                            if (entity.EntityData.currentHealth - (effect.level * 7) + (entity.EntityData.resistence) <= 0)
+                            if (entity.EntityData.currentHealth - (effect.level * 7) + (entity.EntityData.resistance) <= 0)
                                 effect.currentTick = effect.tickDelay;
                             else
                                 entity.Damage(new DamageData(effect.level * 2, true));
@@ -175,7 +175,7 @@ namespace GameManagerSystem
                         RemoveEffectByName(entity, "freezed", effect.frameAdded);
                         RemoveEffectByName(entity, "coldness", effect.frameAdded);
                         if (ticked)
-                            entity.Damage(new DamageData((effect.level * 6) + (entity.EntityData.resistence) + ((effect.level / 2) * UnityEngine.Random.Range(0, 6))));
+                            entity.Damage(new DamageData((effect.level * 6) + (entity.EntityData.resistance) + ((effect.level / 2) * UnityEngine.Random.Range(0, 6))));
                         if (!entity.EntityData.damaged)
                             ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 2) + (new Color(1, 0.5f, 0) / 2));
                         break;
@@ -183,7 +183,7 @@ namespace GameManagerSystem
                         RemoveEffectByName(entity, "on fire", effect.frameAdded);
                         entity.EntityData.currentSpeed = entity.EntityData.currentSpeed * (EFFECT_CHANGER / effect.level);
                         if (ticked)
-                            entity.Damage(new DamageData((effect.level * 8) + (entity.EntityData.resistence)));
+                            entity.Damage(new DamageData((effect.level * 8) + (entity.EntityData.resistance)));
                         if (!entity.EntityData.damaged)
                             ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 2) + (Color.blue / 2));
                         break;
@@ -191,7 +191,7 @@ namespace GameManagerSystem
                         RemoveEffectByName(entity, "on fire", effect.frameAdded);
                         entity.EntityData.currentSpeed = 0;
                         if (ticked)
-                            entity.Damage(new DamageData((effect.level * 12) + (entity.EntityData.resistence)));
+                            entity.Damage(new DamageData((effect.level * 12) + (entity.EntityData.resistance)));
                         if (!entity.EntityData.damaged)
                             ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 3) + (Color.blue / 1.5f));
                         break;

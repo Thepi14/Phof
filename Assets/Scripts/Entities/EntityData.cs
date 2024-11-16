@@ -30,7 +30,7 @@ namespace EntityDataSystem
         [Header("Atributos")]
         public int level = 1;
         public int strength = 1;
-        public int resistence = 1;
+        public int resistance = 1;
         public int intelligence = 1;
         public int defense = 1;
         public float speed = 2.5f;
@@ -84,7 +84,7 @@ namespace EntityDataSystem
             currentStamina = maxStamina;
 
             currentStrength = strength;
-            currentResistence = resistence;
+            currentResistence = resistance;
             currentIntelligence = intelligence;
             currentDefense = defense;
             currentSpeed = speed;
@@ -92,7 +92,7 @@ namespace EntityDataSystem
         public void ResetAttributesStatus()
         {
             currentStrength = strength;
-            currentResistence = resistence;
+            currentResistence = resistance;
             currentIntelligence = intelligence;
             currentDefense = defense;
             currentSpeed = speed;
@@ -103,8 +103,8 @@ namespace EntityDataSystem
         /// </summary>
         public void CalculateStatus()
         {
-            maxHealth = (resistence * 10) + (level * 4) + 10;
-            maxStamina = (resistence + strength) + (level * 2) + 5;
+            maxHealth = (resistance * 10) + (level * 4) + 10;
+            maxStamina = (resistance + strength) + (level * 2) + 5;
             maxMana = (intelligence * 10) + (level * 4) + 5;
         }
         /// <summary>

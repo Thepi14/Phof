@@ -655,7 +655,7 @@ MonoBehaviour:
     name: 
     level: 2
     strength: 3
-    resistence: 4
+    resistance: 3
     intelligence: 1
     defense: 2
     speed: 5
