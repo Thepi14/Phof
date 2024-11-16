@@ -18,13 +18,14 @@ MonoBehaviour:
   enterNumber: Enter number
   exit: Exit
   exitGame: Exit to desktop
-  loading: 
+  loading: Loading
   generateNewWorld: Generate new world
   generate: Generate
   mapSize: Map size
   seed: Seed
   generatingWorld: Generating world...
-  chooseCard: 
+  chooseCard: Choose a Card
+  habilityIsNotReloaded: The \ hability is not reloaded.
   habilityInfosList:
   - ID: Slash
     name: Slash

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.IO;
 using System;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// Classe que lida com operações envolvendo texturas.
@@ -917,8 +918,9 @@ public class TextureFunction
                     continue;
                 }
                 if (newTex.GetPixel(x, y).r == 1)
-                    for (int eX = -distance; eX < distance; eX++)
-                        for (int eY = -distance; eY < distance; eY++)
+                {
+                    for (int eX = -distance; eX <= distance; eX++)
+                        for (int eY = -distance; eY <= distance; eY++)
                         {
                             if (eX == 0 && eY == 0)
                                 continue;
@@ -926,6 +928,8 @@ public class TextureFunction
                                 if (newTex.GetPixel(x + eX, y + eY).r == 1)
                                     newTex.SetPixel(x + eX, y + eY, Color.black);
                         }
+                    newTex.Apply();
+                }
             }
         }
         newTex.Apply();
@@ -1291,5 +1295,45 @@ public class TextureFunction
         }
         texture.Apply();
         return texture;
+    }
+    public static Texture2D SetTextureColor(Texture2D texture, Color color)
+    {
+        var newTex = GetTexture(texture);
+        for (int x = 0; x < texture.width; x++)
+        {
+            for (int y = 0; y < texture.height; y++)
+            {
+                newTex.SetPixel(x, y, color);
+            }
+        }
+        newTex.Apply();
+        return newTex;
+    }
+    public static Texture2D MakePointsSeparated(Texture2D texture, ushort separation)
+    {
+        var newTex = GetTexture(texture);
+        newTex = SetTextureColor(newTex, Color.black);
+        ushort offsetX = separation;
+        for (int x = 0; x < texture.width; x++)
+        {
+            ushort offsetY = separation;
+            offsetX--;
+            if (offsetX == 0)
+            {
+                offsetX = separation;
+                for (int y = 0; y < texture.height; y++)
+                {
+                    offsetY--;
+                    if (offsetY == 0)
+                    {
+                        offsetY = separation;
+                        newTex.SetPixel(x, y, Color.white);
+                    }
+                }
+            }
+        }
+
+        newTex.Apply();
+        return newTex;
     }
 }

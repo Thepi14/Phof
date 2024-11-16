@@ -10,20 +10,8 @@ using System.Linq;
 using ItemSystem;
 using System.Threading.Tasks;
 
-public class GamePlayer : MonoBehaviour, IEntity
+public class GamePlayer : BaseEntityBehaviour, IEntity
 {
-    [SerializeField]
-    private EntityData _entityData;
-    public EntityData EntityData { get => _entityData; set => _entityData = value; }
-
-    [SerializeField]
-    private DeathEvent _onDeathEvent;
-    public DeathEvent OnDeathEvent { get => _onDeathEvent; set => _onDeathEvent = value; }
-
-    [SerializeField]
-    private DamageEvent _onDamageEvent;
-    public DamageEvent OnDamageEvent { get => _onDamageEvent; set => _onDamageEvent = value; }
-
     #region Variáveis obrigatórias
     public static GamePlayer player;
     #endregion
@@ -33,29 +21,17 @@ public class GamePlayer : MonoBehaviour, IEntity
 
     [SerializeField]
     private Vector3 velocity;
-    public Vector2 XZInput; //X vector (vertical) = Z input, Y vector (horizontal) = X inpu
+    public Vector2 XZInput; //X vector (vertical) = Z input, Y vector (horizontal) = X input
     public Vector3 playerTarget;
     #endregion
 
     #region Variáveis pré-definidas
-    public Rigidbody RB => GetComponent<Rigidbody>();
-    public Collider Collid => GetComponent<Collider>();
     public GameObject GroundDetectorObj => transform.Find("GroundDetector").gameObject;
     public ColliderNutshell GroundDetector => GroundDetectorObj.GetComponent<ColliderNutshell>();
-    public GameObject SpriteObj => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject");
-    public GameObject ItemSpriteOffset => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject\\ItemOffset");
-    public GameObject ItemSpriteObj => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject\\ItemOffset\\Item");
-    public SpriteRenderer SpriteRenderer => SpriteObj.GetComponent<SpriteRenderer>();
-    public SpriteRenderer ItemSpriteRenderer => ItemSpriteObj.GetComponent<SpriteRenderer>();
-    public Animator ItemSpriteAnimator => ItemSpriteObj.GetComponent<Animator>();
     public GameObject AttackArea => transform.Find("AttackArea").gameObject;
 
     #endregion
 
-    public void OnValidate()
-    {
-        EntityData.gameObject = gameObject;
-    }
     public void Awake()
     {
         if (player == null)
@@ -159,7 +135,7 @@ public class GamePlayer : MonoBehaviour, IEntity
                 break;
         }
     }
-    public void Damage(DamageData damageData)
+    public override void Damage(DamageData damageData)
     {
         OnDamageEvent.Invoke(EntityData, damageData.sender);
 
@@ -180,7 +156,7 @@ public class GamePlayer : MonoBehaviour, IEntity
             Die(damageData.sender);
         }
     }
-    public void SetItem(Item item)
+    public override void SetItem(Item item)
     {
         EntityData.currentAttackItem = item;
         ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
@@ -196,7 +172,7 @@ public class GamePlayer : MonoBehaviour, IEntity
         SpriteRenderer.color = Color.white;
     }
 
-    public void Die(GameObject killer)
+    public override void Die(GameObject killer)
     {
         if (EntityData.dead)
             return;
@@ -223,7 +199,7 @@ public class GamePlayer : MonoBehaviour, IEntity
             ItemSpriteRenderer.color = Color.clear;
         }
     }
-    public void Attack()
+    public override void Attack()
     {
         StartCoroutine(_Attack());
     }
@@ -304,7 +280,7 @@ public class GamePlayer : MonoBehaviour, IEntity
     }
     private float manaTimer;
     private float staminaTimer;
-    public void CalculateStatusRegen()
+    public override void CalculateStatusRegen()
     {
         manaTimer += Time.fixedDeltaTime;
         staminaTimer += Time.fixedDeltaTime;

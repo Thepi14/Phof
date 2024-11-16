@@ -12,15 +12,12 @@ public class BlockClass : ScriptableObject
     public bool isBlock = true;
     public bool isDoor = false;
     public bool hasCollider = true;
-    public bool isDestructible = false;
-    public int hitPoints = 0;
 
     public void OnValidate()
     {
         if (isDoor)
         {
             isBlock = false;
-            isDestructible = false;
             hasCollider = true;
         }
     }

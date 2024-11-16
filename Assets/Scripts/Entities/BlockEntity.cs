@@ -18,6 +18,7 @@ public class BlockEntity : MonoBehaviour, IEntity
     [SerializeField]
     private DamageEvent _onDamageEvent;
     public DamageEvent OnDamageEvent { get => _onDamageEvent; set => _onDamageEvent = value; }
+    public GameObject destructionPrefabVFX;
 
     public void Awake() 
     {
@@ -48,7 +49,7 @@ public class BlockEntity : MonoBehaviour, IEntity
             defense = 1,
             resistence = 1,
             currentDefense = 1,
-            currentResistence = 1
+            currentResistence = 1,
         };
     }
 
@@ -71,6 +72,13 @@ public class BlockEntity : MonoBehaviour, IEntity
     public void Die(GameObject killer)
     {
         navMeshUpdateInstance.BuildNavMesh(100);
+        if (destructionPrefabVFX == null) return;
+        var vfx = Instantiate(destructionPrefabVFX, transform, false);
+        foreach (var piece in ObjectUtils.GameObjectGeneral.GetGameObjectChildren(vfx))
+        {
+            if (piece.GetComponent<Rigidbody>() == null) return;
+            piece.GetComponent<Rigidbody>().velocity = -new Vector3(EntityData.currentImpulse.x, 0, EntityData.currentImpulse.y);
+        }
         Destroy(gameObject);
     }
 

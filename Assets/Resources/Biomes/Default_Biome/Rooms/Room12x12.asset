@@ -324,11 +324,11 @@ MonoBehaviour:
   - name: x 3, y 2
     x: 3
     y: 2
-    id: 0
+    id: 5
     height: 0
-    rotation: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: -90, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 1
+    entityCanSpawn: 0
   - name: x 3, y 3
     x: 3
     y: 3
@@ -380,11 +380,11 @@ MonoBehaviour:
   - name: x 3, y 9
     x: 3
     y: 9
-    id: 0
+    id: 5
     height: 0
-    rotation: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: -90, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 1
+    entityCanSpawn: 0
   - name: x 3, y 10
     x: 3
     y: 10
@@ -804,11 +804,11 @@ MonoBehaviour:
   - name: x 8, y 2
     x: 8
     y: 2
-    id: 0
+    id: 5
     height: 0
-    rotation: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 90, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 1
+    entityCanSpawn: 0
   - name: x 8, y 3
     x: 8
     y: 3
@@ -860,11 +860,11 @@ MonoBehaviour:
   - name: x 8, y 9
     x: 8
     y: 9
-    id: 0
+    id: 5
     height: 0
-    rotation: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 90, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 1
+    entityCanSpawn: 0
   - name: x 8, y 10
     x: 8
     y: 10
@@ -1171,4 +1171,3 @@ MonoBehaviour:
     entityCanSpawn: 1
   changed: 0
   resetRoom: 0
-  startedViewer: 0

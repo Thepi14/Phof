@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: cef68c9c6a957754fb9528c5376151ad
+guid: 444ae06da8456cf4bbf564493cccb5d1
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,12 +7,12 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Materiais
-    second: {fileID: 2100000, guid: c0785c7451770ec4283c759409d16d2b, type: 2}
+      name: WallPixelART
+    second: {fileID: 2100000, guid: 6976a6b5909f787439a4713c3059f5a4, type: 2}
   materials:
     materialImportMode: 2
-    materialName: 1
-    materialSearch: 0
+    materialName: 0
+    materialSearch: 1
     materialLocation: 1
   animations:
     legacyGenerateAnimations: 4

@@ -26,12 +26,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 262294493860372284}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.009}
-  m_LocalScale: {x: 0.78979, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.0089998245}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8732257183548883315}
+  m_Father: {fileID: 2162731304393970446}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!198 &7183663603126367177
 ParticleSystem:
@@ -4918,7 +4918,12 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.78979, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 8127804797922252573}
+  - {fileID: 6671794681393994518}
+  - {fileID: 1383023351179335725}
+  - {fileID: 8455215955789213828}
+  - {fileID: 8287334661797155033}
   m_Father: {fileID: 8732257183548883315}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!198 &3006909537953235223
@@ -9939,11 +9944,11 @@ Transform:
   m_GameObject: {fileID: 1647225839136638465}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.10000038}
+  m_LocalScale: {x: 1.2661594, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8732257183548883315}
+  m_Father: {fileID: 2162731304393970446}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!198 &1000016736821968863
 ParticleSystem:
@@ -19608,11 +19613,11 @@ Transform:
   m_GameObject: {fileID: 2876425777517648169}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.6, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.7596957, y: 0, z: 0}
+  m_LocalScale: {x: 1.2661594, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8732257183548883315}
+  m_Father: {fileID: 2162731304393970446}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!198 &8392832126064408046
 ParticleSystem:
@@ -24447,11 +24452,11 @@ Transform:
   m_GameObject: {fileID: 4187358081022232597}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.6, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.7596957, y: 0, z: 0}
+  m_LocalScale: {x: 1.2661594, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8732257183548883315}
+  m_Father: {fileID: 2162731304393970446}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!198 &7033962820241914476
 ParticleSystem:
@@ -29421,12 +29426,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5817987058329034782}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.107}
-  m_LocalScale: {x: 0.78322196, y: 1, z: 0.9064649}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.10700035}
+  m_LocalScale: {x: 0.99168384, y: 1, z: 0.9064649}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8732257183548883315}
+  m_Father: {fileID: 2162731304393970446}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!198 &3061329667980773148
 ParticleSystem:
@@ -39146,16 +39151,11 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2162731304393970446}
-  - {fileID: 8127804797922252573}
-  - {fileID: 6671794681393994518}
   - {fileID: 2411056816553901027}
   - {fileID: 2583094721403264016}
   - {fileID: 2988693597501162774}
   - {fileID: 4911475525071342589}
   - {fileID: 3835500729815794752}
-  - {fileID: 1383023351179335725}
-  - {fileID: 8455215955789213828}
-  - {fileID: 8287334661797155033}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 180, y: 0, z: 0}
 --- !u!54 &7520000828648845256
@@ -39222,6 +39222,7 @@ MonoBehaviour:
   _explosionPrefab: {fileID: 0}
   _projectileProperties: {fileID: 11400000, guid: 3cefdf86cdb9a8c479cb03cccfbd0154, type: 2}
   _damageAdd: 6
+  destroyingProcess: 0
 --- !u!1 &7935694947140365353
 GameObject:
   m_ObjectHideFlags: 0

@@ -22,16 +22,28 @@ namespace HabilitySystem
         }
         public void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Mouse0) && selecting && !IsPointerOverUIElement())
+            if (selected == false)
             {
-                selectedTarget = true;
+                selectedTarget = false;
                 selecting = false;
-                ExecuteHability();
             }
-            else if (Input.GetKeyDown(KeyCode.Mouse0) && selecting && IsPointerOverUIElement())
+            if (gameObject.layer == 8)
             {
-                selecting = false;
-                ExecuteHability();
+                if (Input.GetKeyDown(KeyCode.Mouse0) && selecting && !IsPointerOverUIElement())
+                {
+                    selectedTarget = true;
+                    selecting = false;
+                    ExecuteHability();
+                }
+                else if (Input.GetKeyDown(KeyCode.Mouse0) && selecting && IsPointerOverUIElement())
+                {
+                    selecting = false;
+                    ExecuteHability();
+                }
+            }
+            else
+            {
+
             }
 
             CountReload();
@@ -39,7 +51,12 @@ namespace HabilitySystem
         public override async void ExecuteHability(GameObject target = null)
         {
             if (!reloaded)
+            {
+                WarningTextManager.ShowWarning(ReturnNotReloadedHabilityText(), 3f, 1f);
                 return;
+            }
+            selected = true;
+            UnselectCards();
             if (!selectedTarget && !selecting && IsPointerOverUIElement())
             {
                 selecting = true;
@@ -53,27 +70,13 @@ namespace HabilitySystem
                 GetComponent<IEntity>().EntityData.canAttack = true;
                 return;
             }
-            cooldownTimer = 0;
-            var eTarget = GetComponent<GamePlayer>().playerTarget;
 
-            switch (gameObject.layer)
-            {
-                //ENEMY
-                case 10:
-                    eTarget = GetComponent<IEntity>().EntityData.target.transform.position;
-                    var slash = Instantiate(slashPrefab, new Vector3(transform.position.x, IEntity.DEFAULT_SHOT_Y_POSITION, transform.position.z), Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, new Vector3(eTarget.x, IEntity.DEFAULT_SHOT_Y_POSITION, eTarget.z)) * Mathf.Rad2Deg) - 90, 0), GameManager.gameManagerInstance.gameObject.transform);
-                    slashPrefab.layer = 11;
-                    slashPrefab.GetComponent<IBullet>().damageAdd = GetComponent<IEntity>().EntityData.currentStrength * 2;
-                    slashPrefab.GetComponent<IBullet>().sender = gameObject;
-                    break;
-                //PLAYER
-                case 8:
-                    slash = Instantiate(slashPrefab, new Vector3(transform.position.x, IEntity.DEFAULT_SHOT_Y_POSITION, transform.position.z), Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, new Vector3(eTarget.x, IEntity.DEFAULT_SHOT_Y_POSITION, eTarget.z)) * Mathf.Rad2Deg) - 90, 0), GameManager.gameManagerInstance.gameObject.transform);
-                    slashPrefab.layer = 12;
-                    slashPrefab.GetComponent<IBullet>().damageAdd = GetComponent<IEntity>().EntityData.currentStrength * 2;
-                    slashPrefab.GetComponent<IBullet>().sender = gameObject;
-                    break;
-            }
+            cooldownTimer = 0;
+            Vector3 eTarget = gameObject.layer == 10 ? eTarget = GetComponent<IEntity>().EntityData.target.transform.position : eTarget = GetComponent<GamePlayer>().playerTarget;
+            var slash = Instantiate(slashPrefab, new Vector3(transform.position.x, IEntity.DEFAULT_SHOT_Y_POSITION, transform.position.z), Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, new Vector3(eTarget.x, IEntity.DEFAULT_SHOT_Y_POSITION, eTarget.z)) * Mathf.Rad2Deg) - 90, 0), GameManager.gameManagerInstance.gameObject.transform);
+            slash.GetComponent<IBullet>().damageAdd = GetComponent<IEntity>().EntityData.currentStrength * 2;
+            slash.GetComponent<IBullet>().sender = gameObject;
+            slash.layer = gameObject.layer == 8 ? 12 : 11;
             selecting = false;
             selectedTarget = false;
             await Task.Delay(100);

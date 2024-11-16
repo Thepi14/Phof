@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 3830375043487185943}
   - component: {fileID: 2467337939223063245}
   - component: {fileID: 8407821715019365451}
+  - component: {fileID: 324745070083218832}
+  - component: {fileID: 3267789115586257347}
   m_Layer: 0
   m_Name: Box
   m_TagString: Untagged
@@ -28,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1, y: 1.5, z: -1}
-  m_LocalScale: {x: 1, y: -1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -83,3 +85,81 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &324745070083218832
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7656383755178519521}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -3262789968867269347, guid: 9980ad6c58386484099f7a4c2dc8547d, type: 3}
+--- !u!114 &3267789115586257347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7656383755178519521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2fbf421aac0cab418da12d6b85e6c87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _entityData:
+    gameObject: {fileID: 0}
+    name: Box
+    level: 1
+    strength: 1
+    resistence: 1
+    intelligence: 1
+    defense: 1
+    speed: 2.5
+    attackSpeedMultipliyer: 1
+    maxHealth: 10
+    maxStamina: 0
+    maxMana: 0
+    currentHealth: 10
+    currentStamina: 0
+    currentMana: 0
+    currentStrength: 0
+    currentResistence: 0
+    currentIntelligence: 0
+    currentDefense: 0
+    currentSpeed: 0
+    currentAttackSpeedMultipliyer: 0
+    currentImpulse: {x: 0, y: 0}
+    currentEffects: []
+    currentAttackItem: {fileID: 0}
+    attackDistance: 0.5
+    attackDelay: 1
+    visionRadius: 10
+    prioritizePlayer: 0
+    inCombat: 0
+    target: {fileID: 0}
+    attackReloaded: 1
+    canMove: 1
+    inRange: 0
+    damaged: 0
+    dead: 0
+    canAttack: 1
+  _onDeathEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  _onDamageEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  destructionPrefabVFX: {fileID: 9079003876500461564, guid: 3e7a7d220e6ddb94786e6f7330a10641, type: 3}

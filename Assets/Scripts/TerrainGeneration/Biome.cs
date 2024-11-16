@@ -11,6 +11,7 @@ public class Biome : ScriptableObject
     public List<BlockClass> groundBlocks;
     public List<BlockClass> wallBlocks;
     public List<BlockClass> pillarBlocks;
+    public BlockClass torchBlock;
     [Header("Door configuration", order = 1)]
     public BlockClass doorBlock;
     public RuntimeAnimatorController doorAnimationController;

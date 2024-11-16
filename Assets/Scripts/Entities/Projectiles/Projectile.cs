@@ -78,11 +78,13 @@ namespace ProjectileSystem
                         break;
                     //PLAYER
                     case 8 when gameObject.layer == 11:
-                        obj.GetComponent<IEntity>().Damage(damageData);
+                        if (!RayCastTargetIsBehindWall(obj))
+                            obj.GetComponent<IEntity>().Damage(damageData);
                         break;
                     //ENEMY
                     case 10 when gameObject.layer == 12:
-                        obj.GetComponent<IEntity>().Damage(damageData);
+                        if (!RayCastTargetIsBehindWall(obj))
+                            obj.GetComponent<IEntity>().Damage(damageData);
                         break;
                     default:
                         break;

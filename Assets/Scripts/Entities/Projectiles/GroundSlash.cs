@@ -8,9 +8,10 @@ using UnityEngine;
 public class GroundSlash : BaseBulletBehaviour
 {
     private Rigidbody RB => GetComponent<Rigidbody>();
-    private List<GameObject> entitiesAffected = new List<GameObject>();
-    private float timer = 3;
+    private List<GameObject> entitiesAffected = new();
+    private float timer = 6;
     private float timerTime = 0;
+    private List<GameObject> wallList = new();
 
     private void OnValidate()
     {
@@ -22,13 +23,17 @@ public class GroundSlash : BaseBulletBehaviour
     }
     private void Update()
     {
-        if (!started)
+        if (!started && !destroyingProcess)
             return;
         RB.velocity = new Vector3((transform.forward * projectileProperties.speed).x, RB.velocity.y, (transform.forward * projectileProperties.speed).z);
         //transform.rotation = Quaternion.LookRotation(RB.velocity.normalized);
     }
     private void OnTriggerEnter(Collider collider)
     {
+        if (destroyingProcess)
+            return;
+        if (collider.gameObject.layer == 6 && collider.GetComponent<IEntity>() == null && !destroyingProcess)
+            wallList.Add(collider.gameObject);
         if (collider.gameObject == null || collider.GetComponent<IEntity>() == null) return;
         if (entitiesAffected.Contains(collider.gameObject)) return;
 
@@ -37,15 +42,37 @@ public class GroundSlash : BaseBulletBehaviour
             (collider.gameObject.layer == 6))//WALL
         {
             entitiesAffected.Add(collider.gameObject);
-            collider.gameObject.GetComponent<IEntity>().Damage(new DamageData(gameObject, Random.Range(projectileProperties.minDamage + damageAdd, projectileProperties.maxDamage + damageAdd), MathEx.AngleVectors(transform.position, collider.gameObject.transform.position) * projectileProperties.impulseForce, projectileProperties.effects, true));
+            collider.gameObject.GetComponent<IEntity>().Damage(new DamageData(sender, Random.Range(projectileProperties.minDamage + damageAdd, projectileProperties.maxDamage + damageAdd), MathEx.AngleVectors(transform.position, collider.gameObject.transform.position) * projectileProperties.impulseForce, projectileProperties.effects, true));
         }
     }
     private void FixedUpdate()
     {
         timerTime += Time.fixedDeltaTime;
+        foreach (var wall in wallList)
+        {
+            if (wall.gameObject == null) continue;
+            if (Vector3.Distance(MathEx.SetZeroY(transform.position), MathEx.SetZeroY(wall.transform.position)) < GetComponent<SphereCollider>().radius / 2f)
+            {
+                Destroy(gameObject);
+            }
+        }
         if (timerTime > timer)
         {
-            Destroy(gameObject);
+            AutoDestruction();
         }
+    }
+    protected sealed override IEnumerator AutoDestructionCoroutine(float timer = 0)
+    {
+        yield return new WaitForSeconds(0.1f);
+        if (gameObject == null)
+            yield break;
+        transform.Find("Beam").gameObject.SetActive(false);
+        RB.velocity = Vector3.zero;
+        RB.constraints = RigidbodyConstraints.FreezeAll;
+        transform.position = transform.position - new Vector3(0, 5f, 0);
+        yield return new WaitForSeconds(5f);
+        if (gameObject == null)
+            yield break;
+        Destroy(gameObject);
     }
 }

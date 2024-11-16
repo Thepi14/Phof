@@ -169,6 +169,9 @@ public class MainMenuManager : MonoBehaviour
         //language menu
         GetGameObjectComponent<TextMeshProUGUI>(LanguagePanel.gameObject, "Title").text = currentLanguage.language;
         GetGameObjectComponent<TextMeshProUGUI>(LanguagePanel.gameObject, "Exitbutton/Text").text = currentLanguage.exit;
+
+        //loading panel
+        LoadPanel.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = currentLanguage.loading;
     }
     public void OpenMenu(Panel panel)
     {

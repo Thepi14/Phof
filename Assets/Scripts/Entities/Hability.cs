@@ -32,6 +32,7 @@ namespace HabilitySystem
         public HabilityType type;
         public float cooldown = 5f;
         public float cooldownTimer = 0f;
+        public bool selected = false;
         public GameObject card;
 
         public abstract void ExecuteHability(GameObject target = null);
@@ -44,6 +45,7 @@ namespace HabilitySystem
             gameObject.GetComponent<IEntity>().EntityData.habilities.Remove(habilityID);
             Destroy(this);
         }
+        public virtual string ReturnNotReloadedHabilityText() => currentLanguage.HabilityIsNotReloadedPlusName(currentLanguage.habilityInfos[habilityID].name);
         /// <summary>
         /// Define os valores base da habilidade, pode ser trocado por outro método por override.
         /// </summary>
@@ -61,7 +63,29 @@ namespace HabilitySystem
             this.type = type;
             canvasInstance.AddCard(this);
         }
-        public virtual void OnValidate()
+        public virtual void UnselectCards()
+        {
+            if (gameObject.layer == LayerMask.NameToLayer("Player"))
+            {
+                foreach (var hability in GetComponent<IEntity>().EntityData.habilities)
+                {
+                    if (hability.Value == this)
+                        continue;
+                    hability.Value.selected = false;
+                }
+            }
+            else if (gameObject.layer == LayerMask.NameToLayer("Enemy"))
+            {
+                foreach (var hability in GetComponent<IEntity>().EntityData.habilities)
+                {
+                    if (hability.Value == this)
+                        continue;
+                    hability.Value.selected = false;
+                }
+            }
+            this.selected = true;
+        }
+        public void OnValidate()
         {
             /*foreach (var lang in Language.languages)
             {

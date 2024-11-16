@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: cef68c9c6a957754fb9528c5376151ad
+guid: 4afe733c23a460b44a0406a100e71464
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,12 +7,12 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Materiais
-    second: {fileID: 2100000, guid: c0785c7451770ec4283c759409d16d2b, type: 2}
+      name: Materiais.008
+    second: {fileID: 2100000, guid: c01f1873b0b530948bb251e083e9a2e9, type: 2}
   materials:
     materialImportMode: 2
-    materialName: 1
-    materialSearch: 0
+    materialName: 0
+    materialSearch: 1
     materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
@@ -46,7 +46,7 @@ ModelImporter:
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
     importPhysicalCameras: 1
-    importVisibility: 1
+    importVisibility: 0
     importBlendShapes: 1
     importCameras: 0
     importLights: 0

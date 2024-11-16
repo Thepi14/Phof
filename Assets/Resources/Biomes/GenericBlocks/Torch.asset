@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 60fdbe94cbbbb984fa5c31fd526039bf, type: 3}
-  m_Name: Wall
+  m_Name: Torch
   m_EditorClassIdentifier: 
-  blockName: Wall
-  blockPrefab: {fileID: 900860881822338253, guid: 441fc65fe7c13a44186adfe16aef5e44, type: 3}
-  isBlock: 0
+  blockName: Torch
+  blockPrefab: {fileID: 7359289033505088175, guid: eee4b92e5c1e37a488c0966780ea338a, type: 3}
+  isBlock: 1
   isDoor: 0
-  hasCollider: 1
+  hasCollider: 0

@@ -131,6 +131,15 @@ namespace ObjectUtils
                 throw new System.ArgumentNullException("Component was not been found in child of name \'" + childName + "\' of parent \'" + parent.name + "\'");
             return parent.transform.Find(childName).GetComponent<T>();
         }
+        public static GameObject[] GetGameObjectChildren(GameObject gameObject)
+        {
+            var list = new List<GameObject>();
+            for (int i = 0; i < gameObject.transform.childCount; i++)
+            {
+                list.Add(gameObject.transform.GetChild(i).gameObject);
+            }
+            return list.ToArray();
+        }
     }
     public static class UIGeneral
     {
@@ -218,5 +227,6 @@ namespace ObjectUtils
         {
             return Mathf.Atan2(a.z - b.z, a.x - b.x);
         }
+        public static Vector3 SetZeroY(Vector3 pos) => new Vector3(pos.x, 0, pos.z);
     }
 }

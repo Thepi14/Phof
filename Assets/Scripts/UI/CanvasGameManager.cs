@@ -6,7 +6,7 @@ using static GamePlayer;
 using UnityEngine.UI;
 using ItemSystem;
 using System;
-using static WarningTextManager;
+using static LangSystem.Language;
 using ObjectUtils;
 using static ObjectUtils.GameObjectGeneral;
 using HabilitySystem;
@@ -35,7 +35,9 @@ public class CanvasGameManager : MonoBehaviour
     public GameObject cardPrefab;
     public GameObject cardGamePrefab;
 
-    public List<GameObject> cards = new List<GameObject>();
+    public List<GameObject> currentCards = new List<GameObject>();
+    public List<string> cardsAlreadyGotList = new List<string>();
+
     public List<string> currentPlayerCards
     {
         get
@@ -55,9 +57,14 @@ public class CanvasGameManager : MonoBehaviour
             canvasInstance = this;
         else
             Destroy(gameObject);
+        SetLang();
         DontDestroyOnLoad(gameObject);
         sword.onClick.AddListener(() => { player.SetItem(swordItem); });
         staff.onClick.AddListener(() => { player.SetItem(staffItem); });
+    }
+    public void SetLang()
+    {
+        LoadPanel.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = currentLanguage.loading;
     }
     private void Update()
     {
@@ -106,7 +113,7 @@ public class CanvasGameManager : MonoBehaviour
     public GameObject AddCard(HabilityBehaviour hability)
     {
         var card = Instantiate(cardGamePrefab, CardsMain.transform);
-        cards.Add(card);
+        currentCards.Add(card);
         card.transform.Find("Image").GetComponent<Image>().sprite = hability.habilitySprite;
         hability.gameObject.GetComponent<IEntity>().EntityData.habilities.Add(hability.habilityID, hability);
         hability.card = card;
@@ -133,26 +140,33 @@ public class CanvasGameManager : MonoBehaviour
     public void RemoveCard(HabilityBehaviour hability)
     {
         Destroy(hability.card);
-        cards.Remove(hability.card);
+        currentCards.Remove(hability.card);
         Destroy(player.EntityData.habilities[hability.habilityID]);
         player.EntityData.habilities.Remove(hability.habilityID);
     }
     public void RandomizeCards()
     {
+        Debug.Log($"{cardsAlreadyGotList.Count}, {CardChoice.habilitiesIDs.Count - 2}, {CardPanelExibition.transform.childCount}");
+        if (cardsAlreadyGotList.Count >= CardChoice.habilitiesIDs.Count - 2 && CardPanelExibition.transform.childCount > 1)
+        {
+            Destroy(CardPanelExibition.transform.GetChild(1).gameObject);
+        }
         var cardObjList = new List<CardChoice>();
         for (int i = 0; i < CardPanelExibition.transform.childCount; i++)
         {
             cardObjList.Add(CardPanelExibition.transform.GetChild(i).GetComponent<CardChoice>());
         }
-        foreach (CardChoice choice in cardObjList)
-        {
-        remakeCard:;
-            string id = CardChoice.habilitiesIDs[UnityEngine.Random.Range(0, CardChoice.habilitiesIDs.Count)];
-            if (currentPlayerCards.Contains(id) && currentPlayerCards.Count <= CardChoice.habilitiesIDs.Count - 3)
+        if (cardsAlreadyGotList.Count < CardChoice.habilitiesIDs.Count)
+            foreach (CardChoice choice in cardObjList)
             {
-                goto remakeCard;
+            remakeCard:;
+                string id = CardChoice.habilitiesIDs[UnityEngine.Random.Range(0, CardChoice.habilitiesIDs.Count)];
+                if (currentPlayerCards.Contains(id))
+                {
+                    goto remakeCard;
+                }
+                cardsAlreadyGotList.Add(id);
+                choice.SetCard(id);
             }
-            choice.SetCard(id);
-        }
     }
 }

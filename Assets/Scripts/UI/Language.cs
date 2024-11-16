@@ -35,6 +35,17 @@ namespace LangSystem
 
         [Header("Game")]
         public string chooseCard;
+        public string habilityIsNotReloaded;
+
+        [Header("Options")]
+        public string configurations;
+        public string volume;
+        public string keybind;
+
+        /// <summary>
+        /// \\ == hability name 
+        /// </summary>
+        public string HabilityIsNotReloadedPlusName(string name) => habilityIsNotReloaded.Replace("\\", name);
 
         [Header("Habilities")]
         public Dictionary<string, HabilityInfo> habilityInfos;
@@ -64,7 +75,6 @@ namespace LangSystem
         public void OnValidate()
         {
             SetLanguageDescsLists();
-            var index = 0;
         }
         public void SetLanguageDescsLists()
         {

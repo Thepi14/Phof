@@ -18,13 +18,14 @@ MonoBehaviour:
   enterNumber: "Coloque n\xFAmero"
   exit: Sair
   exitGame: Sair do jogo
-  loading: 
+  loading: Carregando
   generateNewWorld: Gerar novo mundo
   generate: Gerar
   mapSize: Tamanho do mapa
   seed: Semente
   generatingWorld: Gerando mundo...
-  chooseCard: 
+  chooseCard: Escolha uma Carta
+  habilityIsNotReloaded: "A habilidade \\ n\xE3o recarregou."
   habilityInfosList:
   - ID: Slash
     name: Slash

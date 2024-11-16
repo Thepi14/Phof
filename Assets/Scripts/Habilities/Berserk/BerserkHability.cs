@@ -16,7 +16,11 @@ public class BerserkHability : HabilityBehaviour
     }
     public override void ExecuteHability(GameObject target = null)
     {
-        cooldownTimer = 0;
-        GetComponent<IEntity>().EntityData.GiveEffect(new Effect("Berserk", 15f, 0, false, 1));
+        if (reloaded)
+        {
+            UnselectCards();
+            cooldownTimer = 0;
+            GetComponent<IEntity>().EntityData.GiveEffect(new Effect("Berserk", 15f, 0, false, 1));
+        }
     }
 }

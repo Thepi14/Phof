@@ -9,6 +9,10 @@ using static LangSystem.Language;
 
 public class OptionsPanel : MonoBehaviour
 {
+    public Button ConfigPanel => GetGameObjectComponent<Button>(gameObject, "Configpanel");
+    public Button VolumePanel => GetGameObjectComponent<Button>(gameObject, "Volumepanel");
+    public Button KeybindPanel => GetGameObjectComponent<Button>(gameObject, "Keybindpanel");
+
     public Button ConfigButton => GetGameObjectComponent<Button>(gameObject, "Subpanel\\Configbutton");
     public Button VolumeButton => GetGameObjectComponent<Button>(gameObject, "Subpanel\\Volumebutton");
     public Button KeybindButton => GetGameObjectComponent<Button>(gameObject, "Subpanel\\Keybindbutton");

@@ -21,8 +21,12 @@ public class WarningTextManager : MonoBehaviour
 
     void Start()
     {
-        warningTextManagerInstance = this;
+        if (warningTextManagerInstance == null)
+            warningTextManagerInstance = this;
+        else
+            Destroy(gameObject);
         warningText.color = new Color(1, 1, 1, 0);
+        DontDestroyOnLoad(warningTextManagerInstance);
     }
     /// <summary>
     /// Mostra uma mensagem de aviso na tela por um dado tempo.
@@ -31,23 +35,23 @@ public class WarningTextManager : MonoBehaviour
     /// <param name="time">Tem em que o texto ficará na tela, tirando o tempo do fade.</param>
     /// <param name="fade">Tempo do efeito de fade in e fade out.</param>
     /// <param name="col">Cor do texto.</param>
-    public void ShowWarning(string text, float time, float fade = 0, Color? col = null)
+    public static void ShowWarning(string text, float time, float fade = 0, Color? col = null)
     {
-        StopAllCoroutines();
+        warningTextManagerInstance.StopAllCoroutines();
 
         if (col == null)
             col = Color.white;
 
-        if (currentMsg != text)
+        if (warningTextManagerInstance.currentMsg != text)
         {
-            msgRepetition = 1;
-            currentMsg = text;
+            warningTextManagerInstance.msgRepetition = 1;
+            warningTextManagerInstance.currentMsg = text;
         }
         else
         {
-            msgRepetition++;
+            warningTextManagerInstance.msgRepetition++;
         }
-        StartCoroutine(_ShowWarning(text, time, fade, (Color)col));
+        warningTextManagerInstance.StartCoroutine(warningTextManagerInstance._ShowWarning(text, time, fade, (Color)col));
     }
     private IEnumerator _ShowWarning(string text, float time, float fade, Color col)
     {
@@ -80,24 +84,24 @@ public class WarningTextManager : MonoBehaviour
     /// <param name="text">Texto exibido.</param>
     /// <param name="fade">Tempo do efeito do fade in.</param>
     /// <param name="col">Cor do texto.</param>
-    public void ShowAndKeepWarning(string text, float fade = 0, Color? col = null)
+    public static void ShowAndKeepWarning(string text, float fade = 0, Color? col = null)
     {
-        StopAllCoroutines();
+        warningTextManagerInstance.StopAllCoroutines();
 
         if (col == null)
             col = Color.white;
 
-        if (currentMsg != text)
+        if (warningTextManagerInstance.currentMsg != text)
         {
-            msgRepetition = 1;
-            currentMsg = text;
+            warningTextManagerInstance.msgRepetition = 1;
+            warningTextManagerInstance.currentMsg = text;
         }
         else
         {
-            msgRepetition++;
+            warningTextManagerInstance.msgRepetition++;
         }
 
-        StartCoroutine(_ShowAndKeepWarning(text, fade, (Color)col));
+        warningTextManagerInstance.StartCoroutine(warningTextManagerInstance._ShowAndKeepWarning(text, fade, (Color)col));
     }
     private IEnumerator _ShowAndKeepWarning(string text, float fade, Color col)
     {
@@ -115,19 +119,19 @@ public class WarningTextManager : MonoBehaviour
     /// Retira a mensagem de aviso da tela.
     /// </summary>
     /// <param name="fade">Tempo do efeito do fade out.</param>
-    public void HideWarning(float fade = 0)
+    public static void HideWarning(float fade = 0)
     {
         if (fade > 0)
         {
-            StopAllCoroutines();
-            StartCoroutine(FadeOut(fade));
+            warningTextManagerInstance.StopAllCoroutines();
+            warningTextManagerInstance.StartCoroutine(warningTextManagerInstance.FadeOut(fade));
         }
         else
         {
-            StopAllCoroutines();
-            warningText.color = new Color(1, 1, 1, 0);
-            warningText.text = "";
-            msgRepetition = 0;
+            warningTextManagerInstance.StopAllCoroutines();
+            warningTextManagerInstance.warningText.color = new Color(1, 1, 1, 0);
+            warningTextManagerInstance.warningText.text = "";
+            warningTextManagerInstance.msgRepetition = 0;
         }
     }
     private IEnumerator FadeOut(float fade)

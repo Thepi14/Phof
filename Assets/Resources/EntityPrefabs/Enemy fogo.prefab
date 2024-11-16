@@ -236,7 +236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42b934db360563a49baa6be69f9bc482, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &4772440476005004602
+--- !u!1 &5158716071483724443
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -244,38 +244,38 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3668959361021008998}
-  - component: {fileID: 813773363767144038}
-  - component: {fileID: 8580787842352252156}
+  - component: {fileID: 5444674770460339530}
+  - component: {fileID: 3908558193592407713}
+  - component: {fileID: 5245698355621951794}
   m_Layer: 11
   m_Name: AttackArea
-  m_TagString: Untagged
+  m_TagString: GamePlayer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3668959361021008998
+--- !u!4 &5444674770460339530
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4772440476005004602}
+  m_GameObject: {fileID: 5158716071483724443}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.12, y: 1.0899999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6372259321148836672}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &813773363767144038
-BoxCollider:
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+--- !u!64 &3908558193592407713
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4772440476005004602}
+  m_GameObject: {fileID: 5158716071483724443}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -287,21 +287,38 @@ BoxCollider:
   m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.5, z: 0.7}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8580787842352252156
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4341091208801120557, guid: 2ec3ba925c8c63a4bbfffdb1749c31fb, type: 3}
+--- !u!114 &5245698355621951794
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4772440476005004602}
+  m_GameObject: {fileID: 5158716071483724443}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a52d7a4c7be2bf4c9e97f74ecc2534c, type: 3}
+  m_Script: {fileID: 11500000, guid: b9143614b23326543a2b668a46fe0750, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showDebugMessages: 0
+  showOnCollisionMessages: 0
+  showDebugColliders: 0
+  enteredCollision: 0
+  onCollision: 0
+  exitedCollision: 0
+  enteredTrigger: 0
+  onTrigger: 0
+  exitedTrigger: 0
+  triggerIsActive: 0
+  colliderIsActive: 0
+  triggerContact: {fileID: 0}
+  colliderContact: {fileID: 0}
+  lastTriggerContact: {fileID: 0}
+  lastColliderContact: {fileID: 0}
+  triggerList: []
 --- !u!1 &7862899535366655742
 GameObject:
   m_ObjectHideFlags: 0
@@ -437,12 +454,12 @@ Transform:
   m_GameObject: {fileID: 9115972594183510498}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 50.3, y: 1, z: 52}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 233740927283780584}
-  - {fileID: 3668959361021008998}
+  - {fileID: 5444674770460339530}
   - {fileID: 7221287721354723570}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -518,7 +535,6 @@ MonoBehaviour:
     defense: 1
     speed: 3.5
     attackSpeedMultipliyer: 1
-    habilities: []
     maxHealth: 0
     maxStamina: 0
     maxMana: 0
@@ -545,6 +561,7 @@ MonoBehaviour:
     inRange: 0
     damaged: 0
     dead: 0
+    canAttack: 1
   _onDeathEvent:
     m_PersistentCalls:
       m_Calls: []

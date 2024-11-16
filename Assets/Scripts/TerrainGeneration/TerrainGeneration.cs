@@ -20,16 +20,20 @@ public class TerrainGeneration : MonoBehaviour
 
     public List<RoomNode> rooms;
 
+    public Texture2D noiseMap;
     public Texture2D dotMap;
     public Texture2D physicalMap;
     public Texture2D roomsMap;
     public Texture2D roomDetectionMap;
     public Texture2D corridorMap;
+    public Texture2D torchMap;
 
     public Mesh DEFAULT_MESH;
     public Material DEFAULT_MATERIAL;
 
     public int seed; public float frequency, limit, scattering;
+    public ushort torchOffset = 3;
+    public int torchMinDistance = 1;
 
     public int minRoomSize = 3;
     public int maxRoomSize = 6;
@@ -93,39 +97,42 @@ public class TerrainGeneration : MonoBehaviour
     public float generationProgress { get; private set; } = 0;
     public async void RoomOcclusion(int roomIndex)
     {
-        var maxWaitTime = 0.01f;
-        if (roomIndex == -1)
+        if (roomIndex > -1)
         {
-            await TickAll(true);
+            for (int x = 0; x < MapWidth; x++)
+            {
+                for (int z = 0; z < MapHeight; z++)
+                {
+                    if (roomGrid.GetGridObject(x, z) == roomIndex)
+                        continue;
+                    if (GetWallObj(x, z) != null)
+                        GetWallObj(x, z).SetActive(false);
+                    if (GetFloorObj(x, z) != null)
+                        GetFloorObj(x, z).SetActive(false);
+                }
+            }
         }
         else
         {
-            await TickAll(false);
-            foreach (var block in rooms[roomIndex - 1].blocks)
+            for (int x = 0; x < MapWidth; x++)
             {
-                if (Time.unscaledDeltaTime > maxWaitTime)
-                    await Task.Delay(50);
-                block.SetActive(true);
-            }
-            navMeshUpdateInstance.BuildNavMesh();
-        }
-        async Task TickAll(bool activate)
-        {
-            foreach (var wall in walls.GridToList())
-            {
-                if (Time.unscaledDeltaTime > maxWaitTime)
-                    await Task.Delay(50);
-                if (wall == null) continue;
-                wall.SetActive(activate);
-            }
-            foreach (var floors in floors.GridToList())
-            {
-                if (Time.unscaledDeltaTime > maxWaitTime)
-                    await Task.Delay(50);
-                if (floors == null) continue;
-                floors.SetActive(activate);
+                for (int z = 0; z < MapHeight; z++)
+                {
+                    if (GetWallObj(x, z) != null)
+                        GetWallObj(x, z).SetActive(true);
+                    if (GetFloorObj(x, z) != null)
+                        GetFloorObj(x, z).SetActive(true);
+                }
             }
         }
+        navMeshUpdateInstance.BuildNavMesh();
+    }
+    public void OnValidate()
+    {
+        noiseMap = new Texture2D(MapWidth, MapHeight);
+        noiseMap = GenerateNoiseTexture(MapWidth, MapHeight, seed, frequency, limit, scattering, true, StageOffSet * CurrentStage, StageOffSet * CurrentStage);
+        torchMap = new Texture2D(MapWidth, MapHeight);
+        torchMap = MakePointsSeparated(torchMap, torchOffset);
     }
     private async Task _GenerateLevel()
     {
@@ -138,13 +145,15 @@ public class TerrainGeneration : MonoBehaviour
         spawnTiles = new Grid<bool>(MapWidth, MapHeight, (spawntiles, x, y) => { return false; });
         roomGrid = new Grid<int>(MapWidth, MapHeight, (grid, x, y) => { return -1; });
 
+        noiseMap = new Texture2D(MapWidth, MapHeight);
         dotMap = new Texture2D(MapWidth, MapHeight);
         physicalMap = new Texture2D(MapWidth, MapHeight);
         roomDetectionMap = new Texture2D(MapWidth, MapHeight);
+        torchMap = new Texture2D(MapWidth, MapHeight);
 
-        dotMap = GenerateNoiseTexture(MapWidth, MapHeight, seed, frequency, limit, scattering, true, StageOffSet * CurrentStage, StageOffSet * CurrentStage);
+        noiseMap = GenerateNoiseTexture(MapWidth, MapHeight, seed, frequency, limit, scattering, true, StageOffSet * CurrentStage, StageOffSet * CurrentStage);
 
-        dotMap = SeparateWhiteDots(dotMap, minimumDistanceBetweenRooms, maxRoomSize + 4);
+        dotMap = SeparateWhiteDots(noiseMap, minimumDistanceBetweenRooms, maxRoomSize + 4);
 
         roomsMap = ExpandWhiteDotsRandomly(dotMap, minRoomSize, minRoomSize, maxRoomSize, maxRoomSize, 3);
 
@@ -323,31 +332,86 @@ public class TerrainGeneration : MonoBehaviour
                     else if (generateWall && floors[x, z] == null)
                     {
                         var ground = PlaceBlock(x, DEFAULT_GROUND_HEIGHT, z, biome.groundBlocks[0]);
-                        /*if (roomGrid[x, z] != -1 && ground != null)
+                        if (roomGrid[x, z] != -1 && ground != null)
                         {
-                            Debug.Log(roomGrid[x, z]);
-                            Debug.Log(rooms.Count);
-                            rooms[roomGrid[x, z]].blocks.Add(ground);
-                        }*/
+                            /*Debug.Log(roomGrid[x, z]);
+                            Debug.Log(rooms.Count);*/
+                            rooms[roomGrid[x, z] - 1].blocks.Add(ground);
+                        }
                     }
                 }
             }
 
-            GenOffset2 += 0.7f / MapWidth;
+            GenOffset2 += 0.6f / MapWidth;
             generationProgress = genOffset + GenOffset2;
             await Task.Delay(1);
         }
+        genOffset = 0.9f;
+        GenOffset2 = 0;
 
+        //generates torchs
+        //torchMap = MakePointsSeparated(torchMap, torchOffset);
+        torchMap = GenerateNoiseTexture(MapWidth, MapHeight, seed, 0.8f, 0.6f, 0f, true);
+
+        for (int x = 0; x < MapWidth; x++)
+        {
+            for (int z = 0; z < MapHeight; z++)
+            {
+                if (torchMap.GetPixel(x, z) == Color.black || physicalMap.GetPixel(x, z) == Color.black || walls[x, z] != null || (roomGrid[x, z] != -1 && !rooms[roomGrid[x, z] - 1].info.universal))
+                    continue;
+                for (int ex = -torchMinDistance; ex <= torchMinDistance; ex++)
+                {
+                    for (int ez = -torchMinDistance; ez <= torchMinDistance; ez++)
+                    {
+                        if (ex == 0 && ez == 0)
+                            continue;
+                        if (IsInside2DArray(x, z, roomGrid.GetArray()))
+                        {
+                            if (walls[x + ex, z + ez] != null)
+                                if (walls[x + ex, z + ez].gameObject.name.Contains(biome.torchBlock.blockPrefab.name) || walls[x + ex, z + ez].gameObject.name.Contains(biome.doorBlock.blockPrefab.name))
+                                    goto exitTorch;
+                        }
+                        else
+                            goto exitTorch;
+                    }
+                }
+
+                if (walls[x + 1, z] != null && !walls[x + 1, z].name.Contains(biome.torchBlock.blockPrefab.name))
+                {
+                    PlaceBlock(x, 1.5f, z, biome.torchBlock, true, new Vector3(0, 90f, 0));
+                }
+                else if (walls[x - 1, z] != null && !walls[x - 1, z].name.Contains(biome.torchBlock.blockPrefab.name))
+                {
+                    PlaceBlock(x, 1.5f, z, biome.torchBlock, true, new Vector3(0, -90f, 0));
+                }
+                else if (walls[x, z + 1] != null && !walls[x, z + 1].name.Contains(biome.torchBlock.blockPrefab.name))
+                {
+                    PlaceBlock(x, 1.5f, z, biome.torchBlock, true);
+                }
+                else if (walls[x, z - 1] != null && !walls[x, z - 1].name.Contains(biome.torchBlock.blockPrefab.name))
+                {
+                    PlaceBlock(x, 1.5f, z, biome.torchBlock, true, new Vector3(0, -180f, 0));
+                }
+            exitTorch:;
+            }
+
+            GenOffset2 += 0.1f / MapWidth;
+            generationProgress = genOffset + GenOffset2;
+
+            await Task.Delay(1);
+        }
+        //rooms reconstitution?
         for (int x = 0; x < MapWidth; x++)
         {
             for (int z = 0; z < MapHeight; z++)
             {
                 if (roomGrid.GetGridObject(x, z) == -1)
                     continue;
-                if (GetWallObj(x, z) != null)
-                    rooms[roomGrid.GetGridObject(x, z) - 1].blocks.Add(GetWallObj(x, z));
-                else if (GetFloorObj(x, z) != null)
-                    rooms[roomGrid.GetGridObject(x, z) - 1].blocks.Add(GetFloorObj(x, z));
+                var room = rooms[roomGrid.GetGridObject(x, z) - 1];
+                if (GetWallObj(x, z) != null && !room.blocks.Contains(GetWallObj(x, z)))
+                    room.blocks.Add(GetWallObj(x, z));
+                if (GetFloorObj(x, z) != null && !room.blocks.Contains(GetFloorObj(x, z)))
+                    room.blocks.Add(GetFloorObj(x, z));
             }
         }
 
@@ -361,6 +425,7 @@ public class TerrainGeneration : MonoBehaviour
             Instantiate(GameManager.gameManagerInstance.playerPrefab, new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z), Quaternion.identity, null);
         else
             GamePlayer.player.transform.position = new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z);
+
         mapLoaded = true;
         return;
     }
@@ -419,12 +484,12 @@ public class TerrainGeneration : MonoBehaviour
             block.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             block.GetComponent<Rigidbody>().isKinematic = true;
             block.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.Continuous;
-            if (type.isDestructible)
+            /*if (type.isDestructible)
             {
                 block.AddComponent<BlockEntity>();
                 block.GetComponent<BlockEntity>().EntityData.maxHealth = type.hitPoints;
                 block.GetComponent<BlockEntity>().EntityData.currentHealth = type.hitPoints;
-            }
+            }*/
         }
 
         if (!wall)
@@ -441,7 +506,11 @@ public class TerrainGeneration : MonoBehaviour
                 block.transform.parent = wallParent.transform;
             }
             else
+            {
+                walls.SetGridObject(x, z, block);
+                rooms[roomGrid[x, z] - 1].blocks.Add(block);
                 parent.transform.parent = wallParent.transform;
+            }
             block.layer = 6;
         }
 
@@ -449,8 +518,8 @@ public class TerrainGeneration : MonoBehaviour
         //return Task.FromResult(block);
     }
     public GameObject PlaceBlock(Vector3 coord, BlockClass type, bool wall = false, Vector3? rotation = null, Vector3? scale = null) => PlaceBlock((int)coord.x, coord.y, (int)coord.z, type, wall, rotation, scale);
-    public GameObject GetWallObj(int x, int y) => walls[x, y];
-    public GameObject GetFloorObj(int x, int y) => floors[x, y];
+    public GameObject GetWallObj(int x, int y) => walls.GetGridObject(x, y);
+    public GameObject GetFloorObj(int x, int y) => floors.GetGridObject(x, y);
     /// <summary>
     /// Gera caminhos entre pixeis brancos, ótimo para gerar Dungeons!
     /// </summary>
