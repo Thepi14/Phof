@@ -17,15 +17,31 @@ MonoBehaviour:
   enterText: Coloque texto
   enterNumber: "Coloque n\xFAmero"
   exit: Sair
-  exitGame: Sair do jogo
   loading: Carregando
   generateNewWorld: Gerar novo mundo
   generate: Gerar
   mapSize: Tamanho do mapa
   seed: Semente
   generatingWorld: Gerando mundo...
+  level: "N\xEDvel"
+  strength: "For\xE7a"
+  resistance: "Resist\xEAncia"
+  intelligence: "Intelig\xEAncia"
+  defense: Defesa
+  speed: Velocidade
   chooseCard: Escolha uma Carta
   habilityIsNotReloaded: "A habilidade \\ n\xE3o recarregou."
+  options: "Op\xE7\xF5es"
+  configurations: "Configura\xE7\xF5es"
+  volume: Volume
+  masterVolume: Volume principal
+  musicVolume: "Volume da m\xFAsica"
+  soundEffectVolume: Volume de efeitos sonoros
+  UIVolume: "Volume da interface de usu\xE1rio"
+  keybind: Controles
+  exitOptionsMenu: Sair do menu
+  returnToMainMenu: Voltar ao menu principal
+  exitGame: Sair do jogo
   habilityInfosList:
   - ID: Slash
     name: Slash

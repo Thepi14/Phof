@@ -6,38 +6,111 @@ using static ObjectUtils.GameObjectGeneral;
 using UnityEngine.UI;
 using TMPro;
 using static LangSystem.Language;
+using UnityEngine.SceneManagement;
 
 public class OptionsPanel : MonoBehaviour
 {
-    public Button ConfigPanel => GetGameObjectComponent<Button>(gameObject, "Configpanel");
-    public Button VolumePanel => GetGameObjectComponent<Button>(gameObject, "Volumepanel");
-    public Button KeybindPanel => GetGameObjectComponent<Button>(gameObject, "Keybindpanel");
+    public GameObject SubPanel => GetGameObject(gameObject, "Subpanel");
+    public GameObject ConfigPanel => GetGameObject(gameObject, "Configurationspanel");
+    public GameObject VolumePanel => GetGameObject(gameObject, "Volumepanel");
+    public GameObject KeybindPanel => GetGameObject(gameObject, "Keybindpanel");
 
-    public Button ConfigButton => GetGameObjectComponent<Button>(gameObject, "Subpanel\\Configbutton");
-    public Button VolumeButton => GetGameObjectComponent<Button>(gameObject, "Subpanel\\Volumebutton");
-    public Button KeybindButton => GetGameObjectComponent<Button>(gameObject, "Subpanel\\Keybindbutton");
-    public Button ExitButton => GetGameObjectComponent<Button>(gameObject, "Subpanel\\Exitbutton");
+    public Button ConfigButton => GetGameObjectComponent<Button>(SubPanel, "Configbutton");
+    public Button VolumeButton => GetGameObjectComponent<Button>(SubPanel, "Volumebutton");
+    public Button KeybindButton => GetGameObjectComponent<Button>(SubPanel, "Keybindbutton");
+    public Button ExitButton => GetGameObjectComponent<Button>(SubPanel, "Exitbutton");
+
+    public Slider MasterVolume => GetGameObjectComponent<Slider>(VolumePanel, "Mastervolume");
+    public Slider MusicVolume => GetGameObjectComponent<Slider>(VolumePanel, "Musicvolume");
+    public Slider SoundEffectsVolume => GetGameObjectComponent<Slider>(VolumePanel, "Soundeffectsvolume");
+    public Slider UIVolume => GetGameObjectComponent<Slider>(VolumePanel, "UIvolume");
+    public Button VolumeExitButton => GetGameObjectComponent<Button>(VolumePanel, "Exitbutton");
 
     public Button QuitGameButton;
+    public Button ReturnToMainMenuButton;
 
+    public enum Panel : byte
+    {
+        None = 0,
+        ConfigurationsPanel = 1,
+        VolumePanel = 2,
+        KeybindPanel = 3,
+    }
+    public Panel currentPanel;
+    public void OpenPanel(Panel panel)
+    {
+        currentPanel = panel;
+        CloseAllPanels();
+        GetGameObjectChildren(gameObject)[(byte)panel].SetActive(true);
+    }
+    public void CloseAllPanels()
+    {
+        SubPanel.SetActive(false);
+        ConfigPanel.SetActive(false);
+        VolumePanel.SetActive(false);
+        KeybindPanel.SetActive(false);
+    }
+    public void ExitMenu()
+    {
+        OpenPanel(0);
+        gameObject.SetActive(false);
+    }
     void Start()
     {
-        ConfigButton.onClick.AddListener(() => { });
-        VolumeButton.onClick.AddListener(() => { });
-        KeybindButton.onClick.AddListener(() => { });
-        ExitButton.onClick.AddListener(() => { gameObject.SetActive(false); });
+        ConfigButton.onClick.AddListener(() => { OpenPanel(Panel.ConfigurationsPanel); });
+        VolumeButton.onClick.AddListener(() => { OpenPanel(Panel.VolumePanel); });
+        KeybindButton.onClick.AddListener(() => { OpenPanel(Panel.KeybindPanel); });
+        ExitButton.onClick.AddListener(() => { ExitMenu(); });
 
-        //Lang
-        ExitButton.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = currentLanguage.exit;
+        MasterVolume.onValueChanged.AddListener((value) => { PlayerPrefs.SetFloat("MASTER_VOLUME", value); });
+        MusicVolume.onValueChanged.AddListener((value) => { PlayerPrefs.SetFloat("MUSIC_VOLUME", value); });
+        SoundEffectsVolume.onValueChanged.AddListener((value) => { PlayerPrefs.SetFloat("SOUND_EFFECTS_VOLUME", value); });
+        UIVolume.onValueChanged.AddListener((value) => { PlayerPrefs.SetFloat("UI_VOLUME", value); });
+        VolumeExitButton.onClick.AddListener(() => { OpenPanel(0); });
+
+        MasterVolume.value = PlayerPrefs.GetFloat("MASTER_VOLUME", 0.8f);
+        MusicVolume.value = PlayerPrefs.GetFloat("MUSIC_VOLUME", 1f);
+        SoundEffectsVolume.value = PlayerPrefs.GetFloat("SOUND_EFFECTS_VOLUME", 1f);
+        UIVolume.value = PlayerPrefs.GetFloat("UI_VOLUME", 1f);
+
+        SetAllLang();
 
         if (QuitGameButton != null)
         {
             QuitGameButton.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = currentLanguage.exitGame;
             QuitGameButton.onClick.AddListener(() => { Application.Quit(); });
         }
+        if (ReturnToMainMenuButton != null)
+        {
+            ReturnToMainMenuButton.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = currentLanguage.returnToMainMenu;
+            ReturnToMainMenuButton.onClick.AddListener(() => { SceneManager.LoadSceneAsync(0); });
+        }
+
+        OpenPanel(0);
+    }
+    private void SetAllLang()
+    {
+        SubPanel.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = currentLanguage.options;
+        ConfigButton.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = currentLanguage.configurations;
+        VolumeButton.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = currentLanguage.volume;
+        KeybindButton.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = currentLanguage.keybind;
+        ExitButton.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = currentLanguage.exitOptionsMenu;
+
+        //volume panel
+        VolumePanel.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = currentLanguage.volume;
+        MasterVolume.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = currentLanguage.masterVolume;
+        MusicVolume.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = currentLanguage.musicVolume;
+        SoundEffectsVolume.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = currentLanguage.soundEffectVolume;
+        UIVolume.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = currentLanguage.UIVolume;
     }
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (currentPanel != 0)
+                OpenPanel(0);
+            else
+                ExitMenu();
+        }
     }
 }

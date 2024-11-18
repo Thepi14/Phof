@@ -17,22 +17,51 @@ MonoBehaviour:
   enterText: Enter text
   enterNumber: Enter number
   exit: Exit
-  exitGame: Exit to desktop
   loading: Loading
   generateNewWorld: Generate new world
   generate: Generate
   mapSize: Map size
   seed: Seed
   generatingWorld: Generating world...
+  level: Level
+  strength: Strength
+  resistance: Resistance
+  intelligence: Intelligence
+  defense: Defense
+  speed: Speed
   chooseCard: Choose a Card
   habilityIsNotReloaded: The \ hability is not reloaded.
+  options: Options
+  configurations: Configurations
+  volume: Volume
+  masterVolume: Master volume
+  musicVolume: Music volume
+  soundEffectVolume: Sound effect volume
+  UIVolume: User interface volume
+  keybind: Keybind
+  exitOptionsMenu: Exit options menu
+  returnToMainMenu: Return to main menu
+  exitGame: Exit to desktop
   habilityInfosList:
   - ID: Slash
     name: Slash
-    description: 
+    description: "Use slash to attack groups of \r\nenemies in the direction you
+      click, they\r\nwill get a big push."
   - ID: GroundSlash
     name: Ground Slash
-    description: 
+    description: 'Use ground slash to attack groups
+
+      of enemies in the direction
+      you attack,
+
+      all affected enemies will be
+
+      stunned.'
   - ID: Berserk
     name: Berserk
-    description: 
+    description: 'Use berserk to enter a state
+
+      of fury that gives you more
+      strength and speed,
+
+      but it makes you more vulnerable.'

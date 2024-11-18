@@ -57,10 +57,10 @@ public class CanvasGameManager : MonoBehaviour
             canvasInstance = this;
         else
             Destroy(gameObject);
-        SetLang();
         DontDestroyOnLoad(gameObject);
+        SetLang();
         sword.onClick.AddListener(() => { player.SetItem(swordItem); });
-        staff.onClick.AddListener(() => { player.SetItem(staffItem); });
+        staff.onClick.AddListener(() => { player.SetItem(staffItem); }); 
     }
     public void SetLang()
     {

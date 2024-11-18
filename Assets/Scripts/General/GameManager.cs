@@ -21,6 +21,7 @@ namespace GameManagerSystem
     public class GameManager : MonoBehaviour
     {
         public static GameManager gameManagerInstance;
+        public GameObject optionsMenu;
 
         [Header("General", order = 0)]
         public GameObject playerPrefab;
@@ -74,6 +75,8 @@ namespace GameManagerSystem
                         break;
                 }
             }
+            if (Input.GetKeyDown(KeyCode.Escape) && !optionsMenu.activeSelf)
+                optionsMenu.SetActive(true);
         }
         public void SpawnEntity(Vector2 position, GameObject entity)
         {

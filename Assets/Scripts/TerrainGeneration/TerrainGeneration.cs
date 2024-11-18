@@ -131,8 +131,6 @@ public class TerrainGeneration : MonoBehaviour
     {
         noiseMap = new Texture2D(MapWidth, MapHeight);
         noiseMap = GenerateNoiseTexture(MapWidth, MapHeight, seed, frequency, limit, scattering, true, StageOffSet * CurrentStage, StageOffSet * CurrentStage);
-        torchMap = new Texture2D(MapWidth, MapHeight);
-        torchMap = MakePointsSeparated(torchMap, torchOffset);
     }
     private async Task _GenerateLevel()
     {
@@ -351,7 +349,7 @@ public class TerrainGeneration : MonoBehaviour
 
         //generates torchs
         //torchMap = MakePointsSeparated(torchMap, torchOffset);
-        torchMap = GenerateNoiseTexture(MapWidth, MapHeight, seed, 0.8f, 0.6f, 0f, true);
+        torchMap = GenerateNoiseTexture(MapWidth, MapHeight, seed, 0.8f, 0.5f, 0f, true);
 
         for (int x = 0; x < MapWidth; x++)
         {

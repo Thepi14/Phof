@@ -109,10 +109,6 @@ namespace RoomSystem
                     {
                         if (!isFirstRoom)
                         {
-                            foreach (Door door in doors)
-                            {
-                                door.doorBlock.GetComponent<Animator>().Play("DoorClose");
-                            }
                             OnRoomStart.Invoke();
                         }
                         GameManager.gameManagerInstance.currentRoom = this;
@@ -152,11 +148,16 @@ namespace RoomSystem
                 posList.Add(new Vector2Int(x, y));
             }
 
+            foreach (Door door in doors)
+            {
+                door.doorBlock.GetComponent<Animator>().Play("DoorClose");
+            }
             foreach (var entity in GameManager.gameManagerInstance.enemies)
             {
                 entity.GetComponent<IEntity>().OnDeathEvent.AddListener((a, b) => { if (GameManager.gameManagerInstance.enemies.Count == 0) CompleteRoom(); });
             }
 
+            SoundManager.PlayMusic("No_Mercy");
             Instance.RoomOcclusion(id);
         }
         private void RoomCompletionFunction()
@@ -167,6 +168,7 @@ namespace RoomSystem
                 door.doorBlock.GetComponent<Animator>().Play("DoorOpen");
             }
 
+            SoundManager.StopMusic();
             Instance.RoomOcclusion(-1);
         }
         public void CompleteRoom()

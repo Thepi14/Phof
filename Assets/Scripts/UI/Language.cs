@@ -23,7 +23,6 @@ namespace LangSystem
         public string enterText;
         public string enterNumber;
         public string exit;
-        public string exitGame;
         public string loading;
 
         [Header("New game world")]
@@ -43,11 +42,21 @@ namespace LangSystem
         public string chooseCard;
         public string habilityIsNotReloaded;
 
-
         [Header("Options")]
+        public string options;
+
         public string configurations;
+
         public string volume;
+        public string masterVolume;
+        public string musicVolume;
+        public string soundEffectVolume;
+        public string UIVolume;
+
         public string keybind;
+        public string exitOptionsMenu;
+        public string returnToMainMenu;
+        public string exitGame;
 
         /// <summary>
         /// \\ == hability name 

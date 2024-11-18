@@ -15,6 +15,8 @@ public class SoundManager : MonoBehaviour
     public bool goToNextClip = false;
     public bool playRandomOnList = true;
     public float currentFade = 5f;
+    public float currentVolume;
+    public static float musicVolumeMultipliyer => PlayerPrefs.GetFloat("MASTER_VOLUME", 0.8f) * PlayerPrefs.GetFloat("MUSIC_VOLUME", 1f);
 
     private void Start()
     {
@@ -24,7 +26,7 @@ public class SoundManager : MonoBehaviour
             Destroy(gameObject);
 
         musicDictionary = new Dictionary<string, AudioClipMod>();
-        foreach (AudioClip clip in musicList)
+        foreach (AudioClipMod clip in musicList)
         {
             musicDictionary.Add(clip.name, clip);
         }
@@ -44,11 +46,20 @@ public class SoundManager : MonoBehaviour
                 goto newMusic;
             PlayMusic(nextClip);
         }
+        if (currentMusic != null)
+            AudioSource.volume = currentMusic.volume * currentVolume * musicVolumeMultipliyer;
         goToNextClip = false;
     }
-    public void StopMusic()
+    public static void StopMusic(float fade = 0f)
     {
-        AudioSource.Stop();
+        if (fade > 0f)
+        {
+            SoundManagerInst.StartCoroutine(SoundManagerInst.FadeOutCoroutine(fade));
+        }
+        else
+        {
+            SoundManagerInst.StartCoroutine(SoundManagerInst.FadeOutCoroutine(SoundManagerInst.currentFade));
+        }
     }
     /*private void OnValidate()
     {
@@ -58,60 +69,71 @@ public class SoundManager : MonoBehaviour
             musicDictionary.Add(clip.name, clip);
         }
     }*/
-    public void PlayMusic(string name, float fade = 0f)
+    public static void PlayMusic(string name, float fade = 0f)
     {
-        AudioSource.volume = musicDictionary[name].volume;
-        currentMusic = musicDictionary[name].clip;
+        SoundManagerInst.AudioSource.volume = SoundManagerInst.musicDictionary[name].volume * musicVolumeMultipliyer;
+        SoundManagerInst.currentMusic = SoundManagerInst.musicDictionary[name];
+        SoundManagerInst.StopCoroutine("FadeCoroutine");
+        if (fade > 0f)
+        {
+            SoundManagerInst.StartCoroutine(SoundManagerInst.FadeInCoroutine(fade));
+        }
+        else
+        {
+            SoundManagerInst.StartCoroutine(SoundManagerInst.FadeInCoroutine(SoundManagerInst.currentFade));
+        }
+    }
+    public static void PlayMusic(AudioClipMod clip, float fade = 0f)
+    {
+        SoundManagerInst.AudioSource.volume = clip.volume * musicVolumeMultipliyer;
+        SoundManagerInst.currentMusic = clip;
+        SoundManagerInst.StopCoroutine("FadeCoroutine");
+        if (fade > 0f)
+        {
+            SoundManagerInst.StartCoroutine(SoundManagerInst.FadeInCoroutine(fade));
+        }
+        else
+        {
+            SoundManagerInst.StartCoroutine(SoundManagerInst.FadeInCoroutine(SoundManagerInst.currentFade));
+        }
+    }
+    private IEnumerator FadeInCoroutine(float time)
+    {
+        time *= 100f;
+        AudioSource.clip = currentMusic.clip;
+        AudioSource.volume = 0f;
         AudioSource.Play();
-        StopCoroutine("FadeCoroutine");
-        if (fade > 0f)
-        {
-            StartCoroutine(FadeCoroutine(fade));
-        }
-        else
-        {
-            StartCoroutine(FadeCoroutine(currentFade));
-        }
-    }
-    public void PlayMusic(AudioClipMod clip, float fade = 0f)
-    {
-        AudioSource.volume = clip.volume;
-        currentMusic = clip;
-        StopCoroutine("FadeCoroutine");
-        if (fade > 0f)
-        {
-            StartCoroutine(FadeCoroutine(fade));
-        }
-        else
-        {
-            StartCoroutine(FadeCoroutine(currentFade));
-        }
-    }
-    private IEnumerator FadeCoroutine(float time)
-    {
-        time *= 100;
-
         for (float a = 1f; a > 0f; a -= 1f / time)
         {
-            AudioSource.volume = (currentMusic.volume * a);
+            currentVolume = 1f - a;
+            yield return new WaitForSeconds(0.01f);
+        }
+        AudioSource.volume = currentMusic.volume * currentVolume * musicVolumeMultipliyer;
+    }
+    private IEnumerator FadeOutCoroutine(float time)
+    {
+        time *= 100f;
+        AudioSource.volume = currentMusic.volume * currentVolume * musicVolumeMultipliyer;
+        for (float a = 1f; a > 0f; a -= 1f / time)
+        {
+            currentVolume = a;
             yield return new WaitForSeconds(0.01f);
         }
         AudioSource.volume = 0f;
-        AudioSource.clip = currentMusic;
-        AudioSource.Play();
-        for (float a = 1f; a > 0f; a -= 1f / time)
-        {
-            AudioSource.volume = (currentMusic.volume * (1f - a));
-            yield return new WaitForSeconds(0.01f);
-        }
-        AudioSource.volume = currentMusic.volume;
+        AudioSource.Stop();
     }
-    public void PlaySound(string name, Vector3? position = null)
+
+    public static void PlaySound(string name, SoundType type, Vector3? position = null)
     {
         if (position == null)
-            position = gameObject.transform.position;
+            position = SoundManagerInst.gameObject.transform.position;
+
+        var volumeMultipliyer = type == SoundType.Music ? PlayerPrefs.GetFloat("MUSIC_VOLUME", 1f) :
+            type == SoundType.SoundEffect ? PlayerPrefs.GetFloat("SOUND_EFFECTS_VOLUME", 1f) :
+            type == SoundType.UI ? PlayerPrefs.GetFloat("UI_VOLUME", 1f) : 1f;
+
         AudioClip clip = null;
-        foreach (var audio in SFXList)
+        foreach (var audio in SoundManagerInst.SFXList)
         {
             if (audio.name == name)
             {
@@ -119,11 +141,14 @@ public class SoundManager : MonoBehaviour
                 break;
             }
         }
+
         var obj = new GameObject(name, typeof(AudioSource));
         obj.GetComponent<AudioSource>().clip = clip;
+        obj.GetComponent<AudioSource>().volume = PlayerPrefs.GetFloat("MASTER_VOLUME", 0.8f) * volumeMultipliyer;
         obj.GetComponent<AudioSource>().Play();
         obj.transform.position = position.Value;
-        StartCoroutine(timer());
+        SoundManagerInst.StartCoroutine(timer());
+
         IEnumerator timer()
         {
             yield return new WaitForSeconds(clip.length + 0.1f);
@@ -144,4 +169,11 @@ public class SoundManager : MonoBehaviour
         GetComponent<AudioSource>().clip = clip;
         GetComponent<AudioSource>().Play();
     }*/
+    public enum SoundType
+    {
+        Any = 0,
+        Music = 1,
+        SoundEffect = 2,
+        UI = 3,
+    }
 }
