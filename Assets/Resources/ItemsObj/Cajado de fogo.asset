@@ -21,6 +21,7 @@ MonoBehaviour:
   type: 2
   reloadTime: 2
   attackDistance: 4
+  attackwidth: 1
   maxStack: 1
   minDamage: 2
   maxDamage: 4

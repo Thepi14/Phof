@@ -40,11 +40,13 @@ namespace EntityDataSystem
         public Dictionary<string, HabilityBehaviour> habilities = new Dictionary<string, HabilityBehaviour>();
 
         [Header("Valores máximos")]
+        public int maxKarma;
         public int maxHealth;
         public int maxStamina;
         public int maxMana;
 
         [Header("Status atual")]
+        public int currentKarma;
         public int currentHealth;
         public int currentStamina;
         public int currentMana;
