@@ -25,7 +25,6 @@ public class CanvasGameManager : MonoBehaviour
     public Slider KarmaBar => GameObjectGeneral.GetGameObjectComponent<Slider>(gameObject, "Mainpanel/KarmaBar/Bar");
     public RectTransform KarmaBarRect => GameObjectGeneral.GetGameObjectComponent<RectTransform>(gameObject, "Mainpanel/KarmaBar/Bar");
     public Image Bar => GameObjectGeneral.GetGameObjectComponent<Image>(gameObject, "Mainpanel/KarmaBar/Bar/FillArea/Fill");
-
     public GameObject CardsMain => GetGameObject(gameObject, "Mainpanel/Cards");
     public GameObject LoadPanel => GetGameObject(gameObject, "Loadpanel");
     public GameObject CardPanel => GetGameObject(gameObject, "Cardpanel");
@@ -91,8 +90,7 @@ public class CanvasGameManager : MonoBehaviour
             ManaBar.value = player.EntityData.currentMana;
             KarmaBar.value = Mathf.Abs(player.EntityData.currentKarma);
 
-            KarmaBarRect.localPosition = new Vector3(Mathf.Abs(KarmaBarRect.localPosition.x) * (player.EntityData.currentKarma < 0 ? 1 : -1), KarmaBarRect.localPosition.y, KarmaBarRect.localPosition.z);
-            KarmaBar.direction = player.EntityData.currentKarma >= 0 ? Slider.Direction.RightToLeft : Slider.Direction.LeftToRight;
+            KarmaBarRect.rotation = Quaternion.Euler(0, player.EntityData.currentKarma < 0 ? 180 : 0, 0);
             Bar.color = player.EntityData.currentKarma >= 0 ? Color.gray : Color.white;
 
             if (Input.GetKeyDown(KeyCode.E))
