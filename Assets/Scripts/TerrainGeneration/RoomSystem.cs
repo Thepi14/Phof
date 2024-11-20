@@ -34,8 +34,7 @@ namespace RoomSystem
         public Vector2Int LeftDownCornerPositionInternal => LeftDownCornerPosition + new Vector2Int(1, 1);
         public Vector2Int RightUpCornerPositionInternal => RightUpCornerPosition - new Vector2Int(1, 1);
 
-        public int width;
-        public int height;
+        public int size;
 
         public List<GameObject> blocks = new List<GameObject>();
 
@@ -47,20 +46,19 @@ namespace RoomSystem
         public BoxCollider RoomArea => GetComponent<BoxCollider>();
 
         #region Room config
-        public void NewRoomNode(byte id, Vector2Int position, int width, int height)
+        public void NewRoomNode(byte id, Vector2Int position, int size)
         {
             this.id = id;
             this.position = position;
-            this.width = width;
-            this.height = height;
+            this.size = size;
             doors = new List<Door>();
             blocks = new List<GameObject>();
         }
         public void SetRoomInfo()
         {
-            for (int x = 0; x <= width - 1; x++)
+            for (int x = 0; x <= size - 1; x++)
             {
-                for (int y = 0; y <= height - 1; y++)
+                for (int y = 0; y <= size - 1; y++)
                 {
                     var xP = x + LeftDownCornerPositionInternal.x;
                     var yP = y + LeftDownCornerPositionInternal.y;
@@ -81,10 +79,9 @@ namespace RoomSystem
             this.position = position;
             doors = new List<Door>();
         }
-        public void SetSize(int width, int height)
+        public void SetSize(int size)
         {
-            this.width = width;
-            this.height = height;
+            this.size = size;
             doors = new List<Door>();
         }
         #endregion
@@ -131,7 +128,7 @@ namespace RoomSystem
             var x = 0;
             var y = 0;
 
-            for (int i = 0; i < (width + height) * info.entityDensity; i++)
+            for (int i = 0; i < (size * 2) * info.entityDensity; i++)
             {
             returnV:;
                 x = UnityEngine.Random.Range(LeftDownCornerPositionInternal.x, RightUpCornerPositionInternal.x);
@@ -178,7 +175,7 @@ namespace RoomSystem
         }
         public override string ToString()
         {
-            return "Room ID: " + id + ", X: " + position.x + ", Y: " + position.y + ", W: " + width + ", H: " + height;
+            return "Room ID: " + id + ", X: " + position.x + ", Y: " + position.y + ", Size: " + size;
         }
     }
     [Serializable]

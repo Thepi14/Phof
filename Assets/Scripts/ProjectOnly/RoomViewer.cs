@@ -31,6 +31,7 @@ public class RoomViewer : MonoBehaviour
     [HelpAttribute("Aqui você clica nas booleanas para modificar diretamente os blocos do mapa caso algo dê errado.", order = 3)]
     [Header("Room regen", order = 4)]
     public bool create = false;
+    [HideInInspector]
     public bool destroy = false;
     #region Teto
     [HelpAttribute(
@@ -94,9 +95,9 @@ public class RoomViewer : MonoBehaviour
 
             ClearBlocks();
 
-            for (int x = -1; x <= info.size.x; x++)
+            for (int x = -1; x <= info.size; x++)
             {
-                for (int y = -1; y <= info.size.y; y++)
+                for (int y = -1; y <= info.size; y++)
                 {
                     if (detectCorner(x, y))
                     {
@@ -106,7 +107,7 @@ public class RoomViewer : MonoBehaviour
                     {
                         if (x == -1)
                             PlaceBlock(biome.wallBlocks[0], x, y, 1.5f, new Vector3(0, 0, 90));
-                        else if (x == info.size.x)
+                        else if (x == info.size)
                             PlaceBlock(biome.wallBlocks[0], x, y, 1.5f, new Vector3(0, 0, -90));
                         else
                             PlaceBlock(biome.wallBlocks[0], x, y, 1.5f);
@@ -164,13 +165,13 @@ public class RoomViewer : MonoBehaviour
 
         variableChanged = false;
         previousInfo = info;
-        previousGrid.ListToGrid(info.grid.GridToList(), (x, y, i) => { BlockInfo newBlock = new BlockInfo(x, y); return newBlock.CopyID(info.grid.GetGridObject(x, y)); }, info.size.x);
+        previousGrid.ListToGrid(info.grid.GridToList(), (x, y, i) => { BlockInfo newBlock = new BlockInfo(x, y); return newBlock.CopyID(info.grid.GetGridObject(x, y)); }, info.size);
         previousBiome = biome;
 
-        bool detectCorner(int x, int y) => (x == -1 && y == -1) || (x == -1 && y == info.size.y) || (x == info.size.x && y == -1) || (x == info.size.x && y == info.size.y);
-        bool detectWall(int x, int y) => (x == -1) || (y == info.size.y) || (y == -1) || (x == info.size.x);
+        bool detectCorner(int x, int y) => (x == -1 && y == -1) || (x == -1 && y == info.size) || (x == info.size && y == -1) || (x == info.size && y == info.size);
+        bool detectWall(int x, int y) => (x == -1) || (y == info.size) || (y == -1) || (x == info.size);
 
-        Camera.transform.position = new Vector3((info.size.x / 2f) - 0.5f, Camera.transform.position.y, Camera.transform.position.z);
+        Camera.transform.position = new Vector3((info.size / 2f) - 0.5f, Camera.transform.position.y, Camera.transform.position.z);
     }
     public GameObject PlaceBlock(BlockClass blockClass, float x, float y, float z, Vector3? rotation = null, Vector3? scale = null)
     {
