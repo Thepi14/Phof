@@ -73,10 +73,11 @@ public class RoomInfo : ScriptableObject
             foreach (var block in blocks)
             {
                 block.name = "x " + block.x + ", y " + block.y;
-                if (block.id != 0)
-                    block.entityCanSpawn = false;
-                else if (previousBlocks[blocks.IndexOf(block)].id != 0)
+
+                if (block.id == 0 && previousBlocks[blocks.IndexOf(block)].id != 0)
                     block.entityCanSpawn = true;
+                else if (block.id != 0 && previousBlocks[blocks.IndexOf(block)].id == 0)
+                    block.entityCanSpawn = false;
 
                 if (block != previousBlocks[blocks.IndexOf(block)])
                 {
@@ -120,7 +121,13 @@ public class RoomInfo : ScriptableObject
             rotation = Vector3.zero;
             entityCanSpawn = true;
         }
-
+        public BlockInfo CopyID(BlockInfo block)
+        {
+            x = block.x;
+            y = block.y;
+            id = block.id;
+            return this;
+        }
         public override bool Equals(object obj)
         {
             return obj is BlockInfo info &&
@@ -133,22 +140,18 @@ public class RoomInfo : ScriptableObject
                    scale.Equals(info.scale) &&
                    entityCanSpawn == info.entityCanSpawn;
         }
-
         public override int GetHashCode()
         {
             return HashCode.Combine(name, x, y, id, height, rotation, scale, entityCanSpawn);
         }
-
         public override string ToString()
         {
             return x + " " + y + " " + id;
         }
-
         public static bool operator ==(BlockInfo a, BlockInfo b)
         {
             return a.x == b.x && a.y == b.y && a.id == b.id;
         }
-
         public static bool operator !=(BlockInfo a, BlockInfo b)
         {
             return a.x != b.x || a.y != b.y || a.id != b.id;

@@ -4,7 +4,7 @@ using System.Linq;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
-using static Unity.Collections.AllocatorManager;
+using static RoomInfo;
 
 public class RoomViewer : MonoBehaviour
 {
@@ -15,7 +15,10 @@ public class RoomViewer : MonoBehaviour
     private Biome previousBiome;
     public RoomInfo info;
     private RoomInfo previousInfo;
-    [Header("Configuration", order = 1)]
+    [SerializeField]
+    private Grid<BlockInfo> previousGrid;
+    private bool variableChanged = false;
+    [Header("Interface", order = 1)]
     public GameObject spawnTilePrefab;
     public GameObject coordPrefab;
     public Material red;
@@ -56,7 +59,11 @@ public class RoomViewer : MonoBehaviour
     public bool TetoKasaneLiarDance = false;
     #endregion
 
-    public void OnValidate() => runInEditMode = true;
+    public void OnValidate()
+    {
+        runInEditMode = true;
+        variableChanged = true;
+    }
     public void Start()
     {
         TetoKasaneLiarDance = false;
@@ -73,12 +80,17 @@ public class RoomViewer : MonoBehaviour
             EditorApplication.Exit(404);
         }
         #endregion
-        if (Input.GetKeyDown(KeyCode.C) || create || info.changed || info != previousInfo || biome != previousBiome)
+        if (Input.GetKeyDown(KeyCode.C) || create || info.changed || biome != previousBiome || variableChanged)
         {
             if (biome == null)
                 throw new System.Exception("There's no biome!");
             else if (info == null)
                 throw new System.Exception("There's no room info!");
+            /*else if (previousGrid.IsNull())
+            {
+                Debug.Log("previous grid changed");
+                previousGrid.ListToGrid(info.grid.GridToList(), (x, y, i) => { BlockInfo newBlock = new BlockInfo(x, y); return newBlock.CopyID(info.grid.GetGridObject(x, y)); }, info.size.x);
+            }*/
 
             ClearBlocks();
 
@@ -104,6 +116,26 @@ public class RoomViewer : MonoBehaviour
             }
             foreach (var block in info.RetrieveList().ToList())
             {
+                if (coordPrefab != null && showCoordTiles)
+                {
+                    var tile = Instantiate(coordPrefab, new Vector3(block.x, 0.516f, block.y), Quaternion.Euler(90, 0, 0), transform);
+                    tile.GetComponent<TextMeshPro>().text = $"x: {block.x}\ny: {block.y}";
+                }
+                if (block.id > biome.generalBlocks.Count)
+                    continue;
+                /*if (previousGrid.GetGridObject(block.x, block.y).id != block.id)
+                {
+                    if (block.id == 0)
+                    {
+                        info.grid.SetGridObject(block.x, block.y, new BlockInfo(block.x, block.y){x = block.x, y = block.y, id = block.id, changed = false, entityCanSpawn = true, height = block.height, name = block.name, rotation = block.rotation, scale = block.scale});
+                        Debug.Log($"> {info.grid.GetGridObject(block.x, block.y).entityCanSpawn}");
+                    }
+                    else if (block.id != 0 && biome.generalBlocks[block.id - 1].blockPrefab.GetComponent<Collider>() != null)
+                    {
+                        info.grid.SetGridObject(block.x, block.y, new BlockInfo(block.x, block.y) { x = block.x, y = block.y, id = block.id, changed = false, entityCanSpawn = false, height = block.height, name = block.name, rotation = block.rotation, scale = block.scale });
+                        Debug.Log($"> {info.grid.GetGridObject(block.x, block.y).entityCanSpawn}");
+                    }
+                }*/
                 if (spawnTilePrefab != null && showSpawnTiles)
                 {
                     var tile = Instantiate(spawnTilePrefab, new Vector3(block.x, 5f, block.y), Quaternion.identity, transform);
@@ -116,12 +148,7 @@ public class RoomViewer : MonoBehaviour
                         tile.GetComponent<MeshRenderer>().material = red;
                     }
                 }
-                if (coordPrefab != null && showCoordTiles)
-                {
-                    var tile = Instantiate(coordPrefab, new Vector3(block.x, 0.516f, block.y), Quaternion.Euler(90, 0, 0), transform);
-                    tile.GetComponent<TextMeshPro>().text = $"x: {block.x}\ny: {block.y}";
-                }
-                if (block.id == 0 || block.id > biome.generalBlocks.Count)
+                if (block.id == 0)
                     continue;
                 PlaceBlock(biome.generalBlocks[block.id - 1], block.x, block.y, 1f + block.height, block.rotation, block.scale - Vector3.one);
             }
@@ -135,7 +162,9 @@ public class RoomViewer : MonoBehaviour
         create = false;
         destroy = false;
 
+        variableChanged = false;
         previousInfo = info;
+        previousGrid.ListToGrid(info.grid.GridToList(), (x, y, i) => { BlockInfo newBlock = new BlockInfo(x, y); return newBlock.CopyID(info.grid.GetGridObject(x, y)); }, info.size.x);
         previousBiome = biome;
 
         bool detectCorner(int x, int y) => (x == -1 && y == -1) || (x == -1 && y == info.size.y) || (x == info.size.x && y == -1) || (x == info.size.x && y == info.size.y);

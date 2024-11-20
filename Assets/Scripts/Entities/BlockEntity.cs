@@ -23,7 +23,7 @@ public class BlockEntity : MonoBehaviour, IEntity
 
     public void Awake() 
     {
-        EntityData = new EntityData
+        /*EntityData = new EntityData
         {
             currentEffects = null,
             currentAttackItem = null,
@@ -51,7 +51,7 @@ public class BlockEntity : MonoBehaviour, IEntity
             resistance = 1,
             currentDefense = 1,
             currentResistence = 1,
-        };
+        };*/
     }
 
     public void Attack()
@@ -73,15 +73,20 @@ public class BlockEntity : MonoBehaviour, IEntity
 
     public void Die(GameObject killer)
     {
-        navMeshUpdateInstance.BuildNavMesh(100);
-        if (destructionPrefabVFX == null) return;
-        var vfx = Instantiate(destructionPrefabVFX, transform.position, Quaternion.identity);
-        foreach (var piece in ObjectUtils.GameObjectGeneral.GetGameObjectChildren(vfx))
+        if (destructionPrefabVFX != null)
         {
-            if (piece.GetComponent<Rigidbody>() == null) return;
-            piece.GetComponent<Rigidbody>().AddForce(-new Vector3(EntityData.currentImpulse.x, 0, EntityData.currentImpulse.y) * 70);
+            var vfx = Instantiate(destructionPrefabVFX, transform.position, transform.rotation);
+            foreach (var piece in ObjectUtils.GameObjectGeneral.GetGameObjectChildren(vfx))
+            {
+                if (piece.GetComponent<Rigidbody>() == null) return;
+                piece.GetComponent<Rigidbody>().AddForce(-new Vector3(EntityData.currentImpulse.x, 0, EntityData.currentImpulse.y) * 70);
+            }
         }
         Destroy(gameObject);
+    }
+    public void OnDestroy()
+    {
+        navMeshUpdateInstance.BuildNavMesh(3500);
     }
 
     public void SetItem(Item item)

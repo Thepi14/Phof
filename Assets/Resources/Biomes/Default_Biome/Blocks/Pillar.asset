@@ -14,8 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockName: Pillar
   blockPrefab: {fileID: 7656383755178519521, guid: 5426c248137b787479fa0d59e1c20c76, type: 3}
-  isBlock: 0
   isDoor: 0
-  hasCollider: 1
-  isDestructible: 0
-  hitPoints: 0

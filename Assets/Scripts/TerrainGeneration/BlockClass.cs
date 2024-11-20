@@ -9,16 +9,13 @@ public class BlockClass : ScriptableObject
     public string blockName;
     public GameObject blockPrefab;
     [Header("Física", order = 1)]
-    public bool isBlock = true;
     public bool isDoor = false;
-    public bool hasCollider = true;
 
     public void OnValidate()
     {
         if (isDoor)
         {
-            isBlock = false;
-            hasCollider = true;
+
         }
     }
 }

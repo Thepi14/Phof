@@ -448,7 +448,6 @@ public class TerrainGeneration : MonoBehaviour
         GameObject block = Instantiate(type.blockPrefab, null, true);
         block.name = type.blockName + " " + x + " " + y + " " + z;
         GameObject parent = null;
-        //block.isStatic = true;
 
         if (type.isDoor)
         {
@@ -464,21 +463,9 @@ public class TerrainGeneration : MonoBehaviour
         block.transform.localScale = (Vector3)scale;
         block.transform.rotation = Quaternion.Euler(type.blockPrefab.transform.rotation.eulerAngles + (Vector3)rotation);
 
-        //block.transform.localScale = new Vector3(type.blockSize.x, type.blockSize.y, type.blockSize.z);
-
-        if (type.hasCollider)
+        if (block.GetComponent<Collider>() != null)
         {
-            if (type.isBlock)
-            {
-                block.AddComponent<BoxCollider>();
-                block.GetComponent<BoxCollider>().size += new Vector3(0.1f, 0, 0.1f);
-            }
-            else
-            {
-                block.AddComponent<MeshCollider>();
-            }
             block.AddComponent<Rigidbody>();
-            //block.GetComponent<Rigidbody>().freezeRotation = true;
             block.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             block.GetComponent<Rigidbody>().isKinematic = true;
             block.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.Continuous;
@@ -513,7 +500,6 @@ public class TerrainGeneration : MonoBehaviour
         }
 
         return block;
-        //return Task.FromResult(block);
     }
     public GameObject PlaceBlock(Vector3 coord, BlockClass type, bool wall = false, Vector3? rotation = null, Vector3? scale = null) => PlaceBlock((int)coord.x, coord.y, (int)coord.z, type, wall, rotation, scale);
     public GameObject GetWallObj(int x, int y) => walls.GetGridObject(x, y);
