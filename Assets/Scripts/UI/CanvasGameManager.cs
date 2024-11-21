@@ -11,7 +11,6 @@ using ObjectUtils;
 using static ObjectUtils.GameObjectGeneral;
 using HabilitySystem;
 using EntityDataSystem;
-using static UnityEditor.Progress;
 using static GameManagerSystem.GameManager;
 
 public class CanvasGameManager : MonoBehaviour
@@ -128,7 +127,6 @@ public class CanvasGameManager : MonoBehaviour
             else
             {
                 staffItem = slots.equipmentSlots[1].myItem.myItem;
-                gameManagerInstance.targetObject.SetActive(true);
                 iconStaff.sprite = staffItem.itemSprite;
                 iconStaff.color = new Color(1f, 1f, 1f, 1f);
             }
