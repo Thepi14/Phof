@@ -11,12 +11,13 @@ using ObjectUtils;
 using static ObjectUtils.GameObjectGeneral;
 using HabilitySystem;
 using EntityDataSystem;
+using static UnityEditor.Progress;
 
 public class CanvasGameManager : MonoBehaviour
 {
     public bool seeingMap = false, isActivated = false;
     public GameObject inventory => GameObjectGeneral.GetGameObject(gameObject, "Mainpanel/Inventory");
-    public Inventory slots;
+    public Inventory slots => GameObjectGeneral.GetGameObjectComponent<Inventory>(gameObject, "Mainpanel/Inventory");
     public static CanvasGameManager canvasInstance;
     public GameObject MainPanel => GetGameObject(gameObject, "Mainpanel");
     public Slider LifeBar => GameObjectGeneral.GetGameObjectComponent<Slider>(gameObject, "Mainpanel/LifeBar/Bar");
@@ -34,8 +35,8 @@ public class CanvasGameManager : MonoBehaviour
     public Button sword;
     public Button staff;
 
-    public Item swordItem;
-    public Item staffItem;
+    public ItemSystem.Item swordItem;
+    public ItemSystem.Item staffItem;
 
     public GameObject cardPrefab;
     public GameObject cardGamePrefab;
@@ -65,7 +66,9 @@ public class CanvasGameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         SetLang();
         sword.onClick.AddListener(() => { player.SetItem(swordItem); });
-        staff.onClick.AddListener(() => { player.SetItem(staffItem); }); 
+        staff.onClick.AddListener(() => { player.SetItem(staffItem); });
+        Instantiate(slots.itemPrefab, slots.equipmentSlots[0].transform).Initialize(slots.equipmentSlots[0], swordItem);
+        Instantiate(slots.itemPrefab, slots.equipmentSlots[1].transform).Initialize(slots.equipmentSlots[1], staffItem);
     }
     public void SetLang()
     {
@@ -99,19 +102,19 @@ public class CanvasGameManager : MonoBehaviour
                 player.EntityData.canAttack = !isActivated;
             }
 
-            inventory.SetActive(isActivated);
-
-            /*if (slots.inventorySlots[0].myItem != null)
-                swordItem = slots.inventorySlots[0].myItem.myItem;
-            else 
+            if(slots.equipmentSlots[0].myItem == null)
                 swordItem = null;
-
-            if (slots.inventorySlots[1].myItem != null)
-                staffItem = slots.inventorySlots[1].myItem.myItem;
             else
-                staffItem = null;*/
+                swordItem = slots.equipmentSlots[0].myItem.myItem;
+
+            if (slots.equipmentSlots[1].myItem == null)
+                staffItem = null;
+            else
+                staffItem = slots.equipmentSlots[1].myItem.myItem;
 
 
+
+            inventory.SetActive(isActivated);
             
         }
         BlockCards();

@@ -16,7 +16,7 @@ public class InventoryItem : MonoBehaviour, IPointerClickHandler
         itemIcon = GetComponent<Image>();
     }
 
-    public void Initialize(Item item, inventorySlot parent)
+    public void Initialize(inventorySlot parent, Item item = null)
     {
         activeSlot = parent;
         activeSlot.myItem = this;
