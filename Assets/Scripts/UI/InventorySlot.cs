@@ -23,7 +23,7 @@ public class inventorySlot : MonoBehaviour, IPointerClickHandler
     public void SetItem(InventoryItem item)
     {
         Inventory.carriedItem = null;
-        item.activeSlot.myItem = null;
+        //item.activeSlot.myItem = null;
 
         myItem = item;
         myItem.activeSlot = this;

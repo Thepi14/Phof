@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2a7c109d70754145af59f1c0eec3923, type: 3}
   m_Name: Room12x12
   m_EditorClassIdentifier: 
-  entities: []
-  entityDensity: 0.1
-  size: {x: 12, y: 12}
+  entities:
+  - {fileID: 7373959907178826108, guid: 815dcec7315378248b4e6eecf2feee68, type: 3}
+  - {fileID: 7373959907178826108, guid: 8754c407f51ddd94abebbd87ed8c01ff, type: 3}
+  entityDensity: 0.05
+  size: 12
   universal: 0
   blocks:
   - name: x 0, y 0
@@ -1169,5 +1171,5 @@ MonoBehaviour:
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
     entityCanSpawn: 1
-  changed: 0
+  changed: 1
   resetRoom: 0

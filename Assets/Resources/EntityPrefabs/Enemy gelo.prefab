@@ -355,9 +355,11 @@ MonoBehaviour:
     defense: 1
     speed: 3.5
     attackSpeedMultipliyer: 1
+    maxKarma: 0
     maxHealth: 0
     maxStamina: 0
     maxMana: 0
+    currentKarma: 35
     currentHealth: 0
     currentStamina: 0
     currentMana: 0

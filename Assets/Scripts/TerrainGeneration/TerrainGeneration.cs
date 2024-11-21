@@ -72,6 +72,10 @@ public class TerrainGeneration : MonoBehaviour
     private bool configSeed = false;
     public bool mapLoaded = false;
 
+    private void Awake()
+    {
+        Instance = this;
+    }
     void Start()
     {
         Instance = this;
@@ -84,9 +88,22 @@ public class TerrainGeneration : MonoBehaviour
             MapHeight = PlayerPrefs.GetInt("MAP_HEIGHT", 100);
         }
 
+        walls = new Grid<GameObject>(MapWidth, MapHeight, (grid, x, y) => { return null; });
+        floors = new Grid<GameObject>(MapWidth, MapHeight, (grid, x, y) => { return null; });
+        spawnTiles = new Grid<bool>(MapWidth, MapHeight, (spawntiles, x, y) => { return false; });
+        roomGrid = new Grid<int>(MapWidth, MapHeight, (grid, x, y) => { return -1; });
+
+        noiseMap = new Texture2D(MapWidth, MapHeight);
+        dotMap = new Texture2D(MapWidth, MapHeight);
+        physicalMap = new Texture2D(MapWidth, MapHeight);
+        roomDetectionMap = new Texture2D(MapWidth, MapHeight);
+        torchMap = new Texture2D(MapWidth, MapHeight);
+
         pathfinding = new Pathfinding(MapWidth, MapHeight);
 
         rooms = new List<RoomNode>();
+
+        Random.InitState(seed);
 
         GenerateLevel();
     }
@@ -135,25 +152,13 @@ public class TerrainGeneration : MonoBehaviour
     private async Task _GenerateLevel()
     {
         mapLoaded = false;
-        Random.InitState(seed);
         generationProgress = 0;
-
-        walls = new Grid<GameObject>(MapWidth, MapHeight, (grid, x, y) => { return null; });
-        floors = new Grid<GameObject>(MapWidth, MapHeight, (grid, x, y) => { return null; });
-        spawnTiles = new Grid<bool>(MapWidth, MapHeight, (spawntiles, x, y) => { return false; });
-        roomGrid = new Grid<int>(MapWidth, MapHeight, (grid, x, y) => { return -1; });
-
-        noiseMap = new Texture2D(MapWidth, MapHeight);
-        dotMap = new Texture2D(MapWidth, MapHeight);
-        physicalMap = new Texture2D(MapWidth, MapHeight);
-        roomDetectionMap = new Texture2D(MapWidth, MapHeight);
-        torchMap = new Texture2D(MapWidth, MapHeight);
 
         noiseMap = GenerateNoiseTexture(MapWidth, MapHeight, seed, frequency, limit, scattering, true, StageOffSet * CurrentStage, StageOffSet * CurrentStage);
 
         dotMap = SeparateWhiteDots(noiseMap, minimumDistanceBetweenRooms, maxRoomSize + 4);
 
-        roomsMap = ExpandWhiteDotsRandomly(dotMap, minRoomSize, minRoomSize, maxRoomSize, maxRoomSize, 3);
+        roomsMap = ExpandWhiteDotsRandomly(dotMap, minRoomSize, maxRoomSize, 3);
 
         roomDetectionMap = GenerateCrossesInMap(ExpandWhiteSquare(roomsMap, 4), dotMap);
 
@@ -608,7 +613,7 @@ public class TerrainGeneration : MonoBehaviour
     /// <param name="maxY">Tamanho máximo em y</param>
     /// <param name="space">Espaço máximo entre os retângulos.</param>
     /// <returns></returns>
-    public Texture2D ExpandWhiteDotsRandomly(Texture2D texture, int minX, int minY, int maxX, int maxY, int space)
+    public Texture2D ExpandWhiteDotsRandomly(Texture2D texture, int minX, int maxX, int space)
     {
         var newTex = GetTexture(texture);
         Color[,] colors = new Color[texture.width, texture.height];
@@ -627,47 +632,45 @@ public class TerrainGeneration : MonoBehaviour
                     newTex.SetPixel(x, y, Color.black);
                     newTex.Apply();
 
-                    int Left = UnityEngine.Random.Range(-minX, -maxX);
-                    int Right = UnityEngine.Random.Range(minX, maxX);
-
-                    int Up = UnityEngine.Random.Range(minY, maxY);
-                    int Down = UnityEngine.Random.Range(-minY, -maxY);
+                    int Size1 = UnityEngine.Random.Range(minX, maxX) / 2;
+                    int Size2 = UnityEngine.Random.Range(minX, maxX) / 2;
 
                     var roomObj = new GameObject("Room " + currentID);
                     roomObj.transform.SetParent(transform);
                     roomObj.layer = 2;
 
                     var room = roomObj.AddComponent<RoomNode>();
-                    room.NewRoomNode(currentID, new Vector2Int(x, y), -Left + Right, -Down + Up);
+                    room.NewRoomNode(currentID, new Vector2Int(x, y), Size1 + Size2);
                     room.info = biome.defaultRoom;
 
+                    RoomInfo info = null;
                     foreach (var rInfo in biome.rooms)
                     {
-                        if (rInfo.size.x == room.width && rInfo.size.y == room.height)
+                        if (rInfo.size == room.size)
                         {
-                            room.info = rInfo;
+                            info = rInfo;
                             Debug.Log(rInfo.name);
                             break;
                         }
                     }
 
-                    room.LeftDownCornerPosition = new Vector2Int(Left + x - 1, Down + y - 1);
-                    room.RightUpCornerPosition = new Vector2Int(Right + x + 0, Up + y + 0);
+                    room.LeftDownCornerPosition = new Vector2Int(-Size1 + x - 1, -Size1 + y - 1);
+                    room.RightUpCornerPosition = new Vector2Int(Size2 + x + 0, Size2 + y + 0);
 
                     if (room.info != null)
                         if (!room.info.universal)
-                            room.SetRoomInfo();
+                            room.SetRoomInfo(info);
 
-                    roomObj.transform.position = new Vector3(room.LeftDownCornerPositionInternal.x + (room.width / 2f), 1.5f, room.LeftDownCornerPositionInternal.y + (room.height / 2f));
-                    roomObj.AddComponent<BoxCollider>().size = new Vector3(room.width, 2, room.height);
+                    roomObj.transform.position = new Vector3(room.LeftDownCornerPositionInternal.x + (room.size / 2f), 1.5f, room.LeftDownCornerPositionInternal.y + (room.size / 2f));
+                    roomObj.AddComponent<BoxCollider>().size = new Vector3(room.size, 2, room.size);
                     roomObj.GetComponent<BoxCollider>().isTrigger = true;
 
                     rooms.Add(room);
                     //Debug.Log(room.ToString());
 
-                    for (int xE = Left + x; xE < Right + x; xE++)
+                    for (int xE = -Size1 + x; xE < Size2 + x; xE++)
                     {
-                        for (int yE = Down + y; yE < Up + y; yE++)
+                        for (int yE = -Size1 + y; yE < Size2 + y; yE++)
                         {
                             //ponto atual
                             if (!IsInside2DArray(xE, yE, colors) ||
@@ -695,9 +698,9 @@ public class TerrainGeneration : MonoBehaviour
                                 newTex.SetPixel(xE, yE, undefinedColor);
                         }
                     }
-                    for (int xE = Left - 1 + x; xE < Right + 1 + x; xE++)
+                    for (int xE = -Size1 - 1 + x; xE < Size2 + 1 + x; xE++)
                     {
-                        for (int yE = Down - 1 + y; yE < Up + 1 + y; yE++)
+                        for (int yE = -Size1 - 1 + y; yE < Size2 + 1 + y; yE++)
                         {
                             roomGrid.SetGridObject(xE, yE, currentID);
                         }

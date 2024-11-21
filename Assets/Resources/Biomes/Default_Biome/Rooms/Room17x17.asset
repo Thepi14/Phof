@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entities: []
   entityDensity: 0.1
-  size: {x: 17, y: 17}
+  size: 17
   universal: 0
   blocks:
   - name: x 0, y 0
@@ -48,7 +48,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: -90, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 0, y 4
     x: 0
     y: 4
@@ -80,7 +80,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: -90, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 0, y 8
     x: 0
     y: 8
@@ -112,7 +112,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: -90, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 0, y 12
     x: 0
     y: 12
@@ -488,12 +488,12 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 3, y 8
     x: 3
     y: 8
     id: 3
-    height: 0
+    height: 0.5
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
     entityCanSpawn: 0
@@ -504,7 +504,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 180, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 3, y 10
     x: 3
     y: 10
@@ -568,7 +568,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 180, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 4, y 1
     x: 4
     y: 1
@@ -696,7 +696,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 5, y 0
     x: 5
     y: 0
@@ -1112,7 +1112,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 180, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 8, y 1
     x: 8
     y: 1
@@ -1136,7 +1136,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 8, y 4
     x: 8
     y: 4
@@ -1174,7 +1174,7 @@ MonoBehaviour:
     y: 8
     id: 4
     height: 1
-    rotation: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 26.52, z: 0}
     scale: {x: 1, y: 1, z: 1}
     entityCanSpawn: 0
   - name: x 8, y 9
@@ -1240,7 +1240,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 9, y 0
     x: 9
     y: 0
@@ -1381,15 +1381,15 @@ MonoBehaviour:
     x: 10
     y: 0
     id: 3
-    height: 0
+    height: 0.5
     rotation: {x: 0, y: 90, z: 0}
-    scale: {x: 1, y: 1, z: 1.2}
+    scale: {x: 1.21, y: 1.21, z: 1.01}
     entityCanSpawn: 0
   - name: x 10, y 1
     x: 10
     y: 1
     id: 2
-    height: 0
+    height: 0.5
     rotation: {x: 0, y: 90, z: 0}
     scale: {x: 1, y: 1, z: 1}
     entityCanSpawn: 0
@@ -1397,7 +1397,7 @@ MonoBehaviour:
     x: 10
     y: 2
     id: 2
-    height: 0
+    height: 0.5
     rotation: {x: 0, y: 90, z: 0}
     scale: {x: 1, y: 1, z: 1}
     entityCanSpawn: 0
@@ -1405,7 +1405,7 @@ MonoBehaviour:
     x: 10
     y: 3
     id: 2
-    height: 0
+    height: 0.5
     rotation: {x: 0, y: 90, z: 0}
     scale: {x: 1, y: 1, z: 1}
     entityCanSpawn: 0
@@ -1413,7 +1413,7 @@ MonoBehaviour:
     x: 10
     y: 4
     id: 3
-    height: 0.3
+    height: 0.5
     rotation: {x: 0, y: 90, z: 0}
     scale: {x: 1, y: 1, z: 1}
     entityCanSpawn: 0
@@ -1519,8 +1519,8 @@ MonoBehaviour:
     id: 0
     height: 0
     rotation: {x: 0, y: 0, z: 0}
-    scale: {x: 1.2, y: 1.2, z: 1.2}
-    entityCanSpawn: 0
+    scale: {x: 1, y: 1, z: 1}
+    entityCanSpawn: 1
   - name: x 11, y 1
     x: 11
     y: 1
@@ -1549,7 +1549,7 @@ MonoBehaviour:
     x: 11
     y: 4
     id: 2
-    height: 0
+    height: 0.5
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
     entityCanSpawn: 0
@@ -1656,7 +1656,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 180, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 12, y 1
     x: 12
     y: 1
@@ -1680,14 +1680,14 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 12, y 4
     x: 12
     y: 4
     id: 3
-    height: 0
+    height: 0.75
     rotation: {x: 0, y: 0, z: 0}
-    scale: {x: 1, y: 1, z: 2.3}
+    scale: {x: 1, y: 1, z: 1.5}
     entityCanSpawn: 0
   - name: x 12, y 5
     x: 12
@@ -1784,7 +1784,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 13, y 0
     x: 13
     y: 0
@@ -1832,7 +1832,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 13, y 6
     x: 13
     y: 6
@@ -1848,12 +1848,12 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 13, y 8
     x: 13
     y: 8
     id: 3
-    height: 0
+    height: 0.5
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
     entityCanSpawn: 0
@@ -1864,7 +1864,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 180, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 13, y 10
     x: 13
     y: 10
@@ -1920,7 +1920,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 14, y 0
     x: 14
     y: 0
@@ -1928,7 +1928,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 180, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 14, y 1
     x: 14
     y: 1
@@ -2088,14 +2088,14 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 15, y 4
     x: 15
     y: 4
     id: 3
-    height: 0
+    height: 0.75
     rotation: {x: 0, y: 0, z: 0}
-    scale: {x: 1, y: 1, z: 2.3}
+    scale: {x: 1, y: 1, z: 1.5}
     entityCanSpawn: 0
   - name: x 15, y 5
     x: 15
@@ -2104,7 +2104,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 15, y 6
     x: 15
     y: 6
@@ -2224,14 +2224,14 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 90, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 16, y 4
     x: 16
     y: 4
     id: 2
-    height: 0
+    height: 0.5
     rotation: {x: 0, y: 0, z: 0}
-    scale: {x: 1, y: 1, z: 1}
+    scale: {x: 1.22, y: 1, z: 1}
     entityCanSpawn: 0
   - name: x 16, y 5
     x: 16
@@ -2256,7 +2256,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 90, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 16, y 8
     x: 16
     y: 8
@@ -2288,7 +2288,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 90, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 0
+    entityCanSpawn: 1
   - name: x 16, y 12
     x: 16
     y: 12

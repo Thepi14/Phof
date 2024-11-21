@@ -16,6 +16,7 @@ using UnityEngine.Events;
 using UnityEngine.AI;
 using System.Linq;
 using static UnityEngine.RuleTile.TilingRuleOutput;
+using UnityEngine.UIElements;
 
 namespace EntityDataSystem
 {
@@ -78,10 +79,23 @@ namespace EntityDataSystem
         public bool damaged = false;
         public bool dead = false;
         public bool canAttack = true;
-
+        public void SetMaxKarma() => maxKarma = level * 100 * (int)PlayerPreferences.GetDifficulty();
+        public void LevelUp()
+        {
+        repeat:;
+            if (currentKarma >= maxKarma)
+            {
+                currentKarma -= maxKarma;
+                level++;
+                SetMaxKarma();
+                CalculateStatus();
+                goto repeat;
+            }
+        }
         public void ResetStatus()
         {
             currentHealth = maxHealth;
+            currentKarma = 0;
             currentMana = maxMana;
             currentStamina = maxStamina;
 
@@ -105,6 +119,7 @@ namespace EntityDataSystem
         /// </summary>
         public void CalculateStatus()
         {
+            SetMaxKarma();
             maxHealth = (resistance * 10) + (level * 4) + 10;
             maxStamina = (resistance + strength) + (level * 2) + 5;
             maxMana = (intelligence * 10) + (level * 4) + 5;

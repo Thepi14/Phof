@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entities: []
   entityDensity: 0.1
-  size: {x: 15, y: 15}
+  size: 15
   universal: 0
   blocks:
   - name: x 0, y 0

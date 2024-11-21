@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using static TerrainGeneration;
 using static NavMeshUpdate;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RoomSystem
 {
@@ -20,9 +22,13 @@ namespace RoomSystem
         public RoomStartEvent OnRoomStart = new RoomStartEvent();
 
         public byte id;
+        [SerializeField]
+        private int _maxPoints;
+        public int maxPoints { set { _maxPoints = (int)(((size ^ 2) * (int)PlayerPreferences.GetDifficulty() * 100) * info.entityDensity); } get { return (int)(((size ^ 2) * (int)PlayerPreferences.GetDifficulty() * 100) * info.entityDensity); } }
+        public int usedPoints;
 
         public bool isFirstRoom => id == 1;
-        public bool isLastRoom => id == TerrainGeneration.Instance.rooms.Count;
+        public bool isLastRoom => id == Instance.rooms.Count;
 
         public bool roomEntered = false;
         public bool roomCompleted = false;
@@ -34,8 +40,7 @@ namespace RoomSystem
         public Vector2Int LeftDownCornerPositionInternal => LeftDownCornerPosition + new Vector2Int(1, 1);
         public Vector2Int RightUpCornerPositionInternal => RightUpCornerPosition - new Vector2Int(1, 1);
 
-        public int width;
-        public int height;
+        public int size;
 
         public List<GameObject> blocks = new List<GameObject>();
 
@@ -47,20 +52,21 @@ namespace RoomSystem
         public BoxCollider RoomArea => GetComponent<BoxCollider>();
 
         #region Room config
-        public void NewRoomNode(byte id, Vector2Int position, int width, int height)
+        public void NewRoomNode(byte id, Vector2Int position, int size)
         {
             this.id = id;
             this.position = position;
-            this.width = width;
-            this.height = height;
+            this.size = size;
             doors = new List<Door>();
             blocks = new List<GameObject>();
         }
-        public void SetRoomInfo()
+        public async void SetRoomInfo(RoomInfo info)
         {
-            for (int x = 0; x <= width - 1; x++)
+            this.info = info;
+            await Task.Delay(1);
+            for (int x = 0; x <= size - 1; x++)
             {
-                for (int y = 0; y <= height - 1; y++)
+                for (int y = 0; y <= size - 1; y++)
                 {
                     var xP = x + LeftDownCornerPositionInternal.x;
                     var yP = y + LeftDownCornerPositionInternal.y;
@@ -81,16 +87,17 @@ namespace RoomSystem
             this.position = position;
             doors = new List<Door>();
         }
-        public void SetSize(int width, int height)
+        public void SetSize(int size)
         {
-            this.width = width;
-            this.height = height;
+            this.size = size;
             doors = new List<Door>();
         }
         #endregion
 
         public void Start()
         {
+            usedPoints = 0;
+            maxPoints = maxPoints;
             OnRoomCompletion.AddListener(() => RoomCompletionFunction());
             OnRoomStart.AddListener(() => RoomStartFunction());
         }
@@ -130,22 +137,48 @@ namespace RoomSystem
             var posList = new List<Vector2Int>();
             var x = 0;
             var y = 0;
+            bool maxEntitiesReached = false;
+            List<GameObject> entityList = new List<GameObject>();
 
-            for (int i = 0; i < (width + height) * info.entityDensity; i++)
+            if (info.entities.Count > 0)
             {
-            returnV:;
+                entityList = info.entities.ToList();
+            }
+            else
+            {
+                entityList = Instance.biome.defaultRoom.entities.ToList();
+            }
+            while (maxEntitiesReached == false)
+            {
+                if (entityList.Count == 0)
+                    break;
+
+                returnV:;
                 x = UnityEngine.Random.Range(LeftDownCornerPositionInternal.x, RightUpCornerPositionInternal.x);
                 y = UnityEngine.Random.Range(LeftDownCornerPositionInternal.y, RightUpCornerPositionInternal.y);
-
                 if (posList.Contains(new Vector2Int(x, y)) || Instance.spawnTiles[x, y])
                     goto returnV;
-
-                if (info.entities.Count > 0)
-                    GameManager.gameManagerInstance.SpawnEntity(new Vector2(x + 0.5f, y + 0.5f), info.entities[UnityEngine.Random.Range(0, info.entities.Count)]);
-                else
-                    GameManager.gameManagerInstance.SpawnEntity(new Vector2(x + 0.5f, y + 0.5f), Instance.biome.defaultRoom.entities[UnityEngine.Random.Range(0, info.entities.Count)]);
-
                 posList.Add(new Vector2Int(x, y));
+
+                var random = UnityEngine.Random.Range(0, entityList.Count);
+                if (entityList[random] != null)
+                {
+                    if (entityList[random].GetComponent<IEntity>().EntityData.currentKarma == 0)
+                        throw new Exception("Entity has 0 karma, this is not allowed.");
+                    if (usedPoints + Mathf.Abs(entityList[random].GetComponent<IEntity>().EntityData.currentKarma) < maxPoints)
+                    {
+                        usedPoints += entityList[random].GetComponent<IEntity>().EntityData.currentKarma;
+                        GameManager.gameManagerInstance.SpawnEntity(new Vector2(x + 0.5f, y + 0.5f), entityList[random]);
+                    }
+                    else
+                    {
+                        entityList.RemoveAt(random);
+                    }
+                }
+                else
+                {
+                    entityList.RemoveAt(random);
+                }
             }
 
             foreach (Door door in doors)
@@ -169,6 +202,7 @@ namespace RoomSystem
             }
 
             SoundManager.StopMusic();
+            GameManager.UpdatePlayerMaxKarma(usedPoints);
             Instance.RoomOcclusion(-1);
         }
         public void CompleteRoom()
@@ -178,7 +212,7 @@ namespace RoomSystem
         }
         public override string ToString()
         {
-            return "Room ID: " + id + ", X: " + position.x + ", Y: " + position.y + ", W: " + width + ", H: " + height;
+            return "Room ID: " + id + ", X: " + position.x + ", Y: " + position.y + ", Size: " + size;
         }
     }
     [Serializable]

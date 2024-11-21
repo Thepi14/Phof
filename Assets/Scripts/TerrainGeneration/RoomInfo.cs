@@ -13,11 +13,12 @@ public class RoomInfo : ScriptableObject
     /// Calcula a densidade de entidades inimigas por quadrado.
     /// </summary>
     public float entityDensity = 0.1f;
-    public Vector2Int size;
+    public int size;
     public bool universal = false;
     [SerializeField]
     private List<BlockInfo> blocks = new List<BlockInfo>();
     private List<BlockInfo> previousBlocks = new List<BlockInfo>();
+    [SerializeField]
     public Grid<BlockInfo> grid;
     [HideInInspector]
     public bool changed = false;
@@ -36,32 +37,31 @@ public class RoomInfo : ScriptableObject
             }
         }
 
-        size.x = Mathf.Max(size.x, 0);
-        size.y = Mathf.Max(size.y, 0);
+        size = Mathf.Max(size, 0);
         universal = name.ToLower() == "default";
 
         if (!universal)
         {
             if (resetRoom)
             {
-                grid = new Grid<BlockInfo>(size.x, size.y, (grid, x, y) => { return new BlockInfo(x, y); });
+                grid = new Grid<BlockInfo>(size, size, (grid, x, y) => { return new BlockInfo(x, y); });
                 blocks = grid.GridToList();
             }
             else if (grid.IsNull())
             {
-                grid = new Grid<BlockInfo>(size.x, size.y, (grid, x, y) => { return new BlockInfo(x, y); });
-                grid.ListToGrid(blocks, size.y);
+                grid = new Grid<BlockInfo>(size, size, (grid, x, y) => { return new BlockInfo(x, y); });
+                grid.ListToGrid(blocks, size);
             }
             //Room size changed
-            if (grid.GetWidth() != size.x || grid.GetHeight() != size.y || grid.GridToList().Count != blocks.Count)
+            if (grid.GetWidth() != size || grid.GetHeight() != size || grid.GridToList().Count != blocks.Count)
             {
-                grid = new Grid<BlockInfo>(size.x, size.y, (grid, x, y) => { return new BlockInfo(x, y); });
-                grid.ResizeGrid(size.x, size.y);
+                grid = new Grid<BlockInfo>(size, size, (grid, x, y) => { return new BlockInfo(x, y); });
+                grid.ResizeGrid(size, size);
                 blocks = grid.GridToList();
             }
             else
             {
-                grid.ListToGrid(blocks, (x, y, i) => { blocks[i].x = x; blocks[i].y = y; return blocks[i]; }, size.x);
+                grid.ListToGrid(blocks, (x, y, i) => { blocks[i].x = x; blocks[i].y = y; return blocks[i]; }, size);
                 string text = "";
                 foreach (var blk in grid.GridToList()) text += blk.ToString() + ", ";
                 //Debug.Log(text);

@@ -23,6 +23,7 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
     private Vector3 velocity;
     public Vector2 XZInput; //X vector (vertical) = Z input, Y vector (horizontal) = X input
     public Vector3 playerTarget;
+    public int disponiblePoints = 0;
     #endregion
 
     #region Variáveis pré-definidas
@@ -96,7 +97,14 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
         }
          
         if(EntityData.currentAttackItem != null)
+        {
+            AttackArea.SetActive(true);
             AttackArea.transform.localScale = new Vector3(EntityData.currentAttackItem.attackwidth, EntityData.currentAttackItem.attackDistance, 1);
+        }
+        else
+        {
+            AttackArea.SetActive(false);
+        }
 
         attackHeldDown = Input.GetKey(KeyCode.Mouse0);
         if (attackHeldDown && !EntityData.canAttack)

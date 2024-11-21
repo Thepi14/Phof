@@ -12,20 +12,22 @@ using static ObjectUtils.GameObjectGeneral;
 using HabilitySystem;
 using EntityDataSystem;
 using static UnityEditor.Progress;
+using static GameManagerSystem.GameManager;
 
 public class CanvasGameManager : MonoBehaviour
 {
+    public int espada = 0;
     public bool seeingMap = false, isActivated = false;
     public GameObject inventory => GameObjectGeneral.GetGameObject(gameObject, "Mainpanel/Inventory");
     public Inventory slots => GameObjectGeneral.GetGameObjectComponent<Inventory>(gameObject, "Mainpanel/Inventory");
     public static CanvasGameManager canvasInstance;
     public GameObject MainPanel => GetGameObject(gameObject, "Mainpanel");
-    public Slider LifeBar => GameObjectGeneral.GetGameObjectComponent<Slider>(gameObject, "Mainpanel/LifeBar/Bar");
-    public Slider StaminaBar => GameObjectGeneral.GetGameObjectComponent<Slider>(gameObject, "Mainpanel/StaminaBar/Bar");
-    public Slider ManaBar => GameObjectGeneral.GetGameObjectComponent<Slider>(gameObject, "Mainpanel/ManaBar/Bar");
-    public Slider KarmaBar => GameObjectGeneral.GetGameObjectComponent<Slider>(gameObject, "Mainpanel/KarmaBar/Bar");
-    public RectTransform KarmaBarRect => GameObjectGeneral.GetGameObjectComponent<RectTransform>(gameObject, "Mainpanel/KarmaBar/Bar");
-    public Image Bar => GameObjectGeneral.GetGameObjectComponent<Image>(gameObject, "Mainpanel/KarmaBar/Bar/FillArea/Fill");
+    public Slider LifeBar => GetGameObjectComponent<Slider>(gameObject, "Mainpanel/LifeBar/Bar");
+    public Slider StaminaBar => GetGameObjectComponent<Slider>(gameObject, "Mainpanel/StaminaBar/Bar");
+    public Slider ManaBar => GetGameObjectComponent<Slider>(gameObject, "Mainpanel/ManaBar/Bar");
+    public Slider KarmaBar => GetGameObjectComponent<Slider>(gameObject, "Mainpanel/KarmaBar/Bar");
+    public RectTransform KarmaBarRect => GetGameObjectComponent<RectTransform>(gameObject, "Mainpanel/KarmaBar/Bar");
+    public Image Bar => GetGameObjectComponent<Image>(gameObject, "Mainpanel/KarmaBar/Bar/FillArea/Fill");
     public GameObject CardsMain => GetGameObject(gameObject, "Mainpanel/Cards");
     public GameObject LoadPanel => GetGameObject(gameObject, "Loadpanel");
     public GameObject CardPanel => GetGameObject(gameObject, "Cardpanel");
@@ -34,6 +36,9 @@ public class CanvasGameManager : MonoBehaviour
 
     public Button sword;
     public Button staff;
+
+    public Image iconSword;
+    public Image iconStaff;
 
     public ItemSystem.Item swordItem;
     public ItemSystem.Item staffItem;
@@ -65,8 +70,8 @@ public class CanvasGameManager : MonoBehaviour
             Destroy(gameObject);
         DontDestroyOnLoad(gameObject);
         SetLang();
-        sword.onClick.AddListener(() => { player.SetItem(swordItem); });
-        staff.onClick.AddListener(() => { player.SetItem(staffItem); });
+        sword.onClick.AddListener(() => { espada = 0; });
+        staff.onClick.AddListener(() => { espada = 1; });
         Instantiate(slots.itemPrefab, slots.equipmentSlots[0].transform).Initialize(slots.equipmentSlots[0], swordItem);
         Instantiate(slots.itemPrefab, slots.equipmentSlots[1].transform).Initialize(slots.equipmentSlots[1], staffItem);
     }
@@ -103,16 +108,43 @@ public class CanvasGameManager : MonoBehaviour
             }
 
             if(slots.equipmentSlots[0].myItem == null)
+            {
                 swordItem = null;
+                iconSword.color= new Color(1f, 1f, 1f, 0f);
+            }
             else
+            {
                 swordItem = slots.equipmentSlots[0].myItem.myItem;
-
+                iconSword.sprite = swordItem.itemSprite;
+                iconSword.color = new Color(1f, 1f, 1f, 1f);
+            }
             if (slots.equipmentSlots[1].myItem == null)
+            {
                 staffItem = null;
+                gameManagerInstance.targetObject.SetActive(false);
+                iconStaff.color = new Color(1f, 1f, 1f, 0f);
+            }
+
             else
+            {
                 staffItem = slots.equipmentSlots[1].myItem.myItem;
+                gameManagerInstance.targetObject.SetActive(true);
+                iconStaff.sprite = staffItem.itemSprite;
+                iconStaff.color = new Color(1f, 1f, 1f, 1f);
+            }
 
 
+            switch (espada)
+            {
+                case 0:
+                    player.SetItem(swordItem);
+                    break;
+                case 1:
+                    player.SetItem(staffItem);
+                    break;
+            }
+
+            
 
             inventory.SetActive(isActivated);
             
@@ -184,6 +216,7 @@ public class CanvasGameManager : MonoBehaviour
     }
     public void RandomizeCards()
     {
+        cardsAlreadyGotList = new List<string>();
         Debug.Log($"{cardsAlreadyGotList.Count}, {CardChoice.habilitiesIDs.Count - 2}, {CardPanelExibition.transform.childCount}");
         if (cardsAlreadyGotList.Count >= CardChoice.habilitiesIDs.Count - 2 && CardPanelExibition.transform.childCount > 1)
         {
@@ -197,10 +230,10 @@ public class CanvasGameManager : MonoBehaviour
         if (cardsAlreadyGotList.Count < CardChoice.habilitiesIDs.Count)
             foreach (CardChoice choice in cardObjList)
             {
-            remakeCard:;
-                string id = CardChoice.habilitiesIDs[UnityEngine.Random.Range(0, CardChoice.habilitiesIDs.Count)];
-                if (currentPlayerCards.Contains(id))
+            remakeCard: string id = CardChoice.habilitiesIDs[UnityEngine.Random.Range(0, CardChoice.habilitiesIDs.Count)];
+                if (currentPlayerCards.Contains(id) || cardsAlreadyGotList.Contains(id))
                 {
+                    Debug.Log(id);
                     goto remakeCard;
                 }
                 cardsAlreadyGotList.Add(id);

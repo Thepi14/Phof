@@ -17,6 +17,8 @@ MonoBehaviour:
   - {fileID: 7373959907178826108, guid: c18b4c207ebb5d1479332dbddd4431b2, type: 3}
   - {fileID: 7373959907178826108, guid: 815dcec7315378248b4e6eecf2feee68, type: 3}
   entityDensity: 0.1
-  size: {x: 0, y: 0}
+  size: 0
   universal: 1
   blocks: []
+  changed: 0
+  resetRoom: 0
