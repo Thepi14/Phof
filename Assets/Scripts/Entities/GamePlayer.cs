@@ -23,6 +23,7 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
     private Vector3 velocity;
     public Vector2 XZInput; //X vector (vertical) = Z input, Y vector (horizontal) = X input
     public Vector3 playerTarget;
+    public int disponiblePoints = 0;
     #endregion
 
     #region Variáveis pré-definidas

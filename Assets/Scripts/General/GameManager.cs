@@ -124,6 +124,11 @@ namespace GameManagerSystem
                 }
             }
         }
+        public static void UpdatePlayerMaxKarma(int xp)
+        {
+            player.EntityData.currentKarma += xp;
+            player.EntityData.LevelUp();
+        }
         public void VerifyEffects(IEntity entity)
         {
             entity.EntityData.ResetAttributesStatus();

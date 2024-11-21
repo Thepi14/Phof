@@ -19,7 +19,10 @@ public class NavMeshUpdate : MonoBehaviour
     public async void BuildNavMesh(int delay = 0)
     {
         await Task.Delay(delay);
-        surface.BuildNavMesh();
+        if (navMeshUpdateInstance != null)
+        {
+            surface.BuildNavMesh();
+        }
     }
     //SIM EU SEI ISSO É UMA GAMBIARRA
     //mas ninguém pode me impedir ha (só o Marcos)

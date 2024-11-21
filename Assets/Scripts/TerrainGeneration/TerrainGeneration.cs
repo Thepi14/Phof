@@ -627,14 +627,15 @@ public class TerrainGeneration : MonoBehaviour
                     newTex.SetPixel(x, y, Color.black);
                     newTex.Apply();
 
-                    int Size = UnityEngine.Random.Range(minX, maxX);
+                    int Size1 = UnityEngine.Random.Range(minX, maxX) / 2;
+                    int Size2 = UnityEngine.Random.Range(minX, maxX) / 2;
 
                     var roomObj = new GameObject("Room " + currentID);
                     roomObj.transform.SetParent(transform);
                     roomObj.layer = 2;
 
                     var room = roomObj.AddComponent<RoomNode>();
-                    room.NewRoomNode(currentID, new Vector2Int(x, y), Size * 2);
+                    room.NewRoomNode(currentID, new Vector2Int(x, y), Size1 + Size2);
                     room.info = biome.defaultRoom;
 
                     foreach (var rInfo in biome.rooms)
@@ -647,8 +648,8 @@ public class TerrainGeneration : MonoBehaviour
                         }
                     }
 
-                    room.LeftDownCornerPosition = new Vector2Int(-Size + x - 1, -Size + y - 1);
-                    room.RightUpCornerPosition = new Vector2Int(Size + x + 0, Size + y + 0);
+                    room.LeftDownCornerPosition = new Vector2Int(-Size1 + x - 1, -Size1 + y - 1);
+                    room.RightUpCornerPosition = new Vector2Int(Size2 + x + 0, Size2 + y + 0);
 
                     if (room.info != null)
                         if (!room.info.universal)
@@ -661,9 +662,9 @@ public class TerrainGeneration : MonoBehaviour
                     rooms.Add(room);
                     //Debug.Log(room.ToString());
 
-                    for (int xE = -Size + x; xE < Size + x; xE++)
+                    for (int xE = -Size1 + x; xE < Size2 + x; xE++)
                     {
-                        for (int yE = -Size + y; yE < Size + y; yE++)
+                        for (int yE = -Size1 + y; yE < Size2 + y; yE++)
                         {
                             //ponto atual
                             if (!IsInside2DArray(xE, yE, colors) ||
@@ -691,9 +692,9 @@ public class TerrainGeneration : MonoBehaviour
                                 newTex.SetPixel(xE, yE, undefinedColor);
                         }
                     }
-                    for (int xE = -Size - 1 + x; xE < Size + 1 + x; xE++)
+                    for (int xE = -Size1 - 1 + x; xE < Size2 + 1 + x; xE++)
                     {
-                        for (int yE = -Size - 1 + y; yE < Size + 1 + y; yE++)
+                        for (int yE = -Size1 - 1 + y; yE < Size2 + 1 + y; yE++)
                         {
                             roomGrid.SetGridObject(xE, yE, currentID);
                         }

@@ -15,16 +15,16 @@ using EntityDataSystem;
 public class CanvasGameManager : MonoBehaviour
 {
     public bool seeingMap = false, isActivated = false;
-    public GameObject inventory => GameObjectGeneral.GetGameObject(gameObject, "Mainpanel/Inventory");
+    public GameObject inventory => GetGameObject(gameObject, "Mainpanel/Inventory");
     public Inventory slots;
     public static CanvasGameManager canvasInstance;
     public GameObject MainPanel => GetGameObject(gameObject, "Mainpanel");
-    public Slider LifeBar => GameObjectGeneral.GetGameObjectComponent<Slider>(gameObject, "Mainpanel/LifeBar/Bar");
-    public Slider StaminaBar => GameObjectGeneral.GetGameObjectComponent<Slider>(gameObject, "Mainpanel/StaminaBar/Bar");
-    public Slider ManaBar => GameObjectGeneral.GetGameObjectComponent<Slider>(gameObject, "Mainpanel/ManaBar/Bar");
-    public Slider KarmaBar => GameObjectGeneral.GetGameObjectComponent<Slider>(gameObject, "Mainpanel/KarmaBar/Bar");
-    public RectTransform KarmaBarRect => GameObjectGeneral.GetGameObjectComponent<RectTransform>(gameObject, "Mainpanel/KarmaBar/Bar");
-    public Image Bar => GameObjectGeneral.GetGameObjectComponent<Image>(gameObject, "Mainpanel/KarmaBar/Bar/FillArea/Fill");
+    public Slider LifeBar => GetGameObjectComponent<Slider>(gameObject, "Mainpanel/LifeBar/Bar");
+    public Slider StaminaBar => GetGameObjectComponent<Slider>(gameObject, "Mainpanel/StaminaBar/Bar");
+    public Slider ManaBar => GetGameObjectComponent<Slider>(gameObject, "Mainpanel/ManaBar/Bar");
+    public Slider KarmaBar => GetGameObjectComponent<Slider>(gameObject, "Mainpanel/KarmaBar/Bar");
+    public RectTransform KarmaBarRect => GetGameObjectComponent<RectTransform>(gameObject, "Mainpanel/KarmaBar/Bar");
+    public Image Bar => GetGameObjectComponent<Image>(gameObject, "Mainpanel/KarmaBar/Bar/FillArea/Fill");
     public GameObject CardsMain => GetGameObject(gameObject, "Mainpanel/Cards");
     public GameObject LoadPanel => GetGameObject(gameObject, "Loadpanel");
     public GameObject CardPanel => GetGameObject(gameObject, "Cardpanel");
@@ -110,9 +110,6 @@ public class CanvasGameManager : MonoBehaviour
                 staffItem = slots.inventorySlots[1].myItem.myItem;
             else
                 staffItem = null;*/
-
-
-            
         }
         BlockCards();
     }
@@ -181,6 +178,7 @@ public class CanvasGameManager : MonoBehaviour
     }
     public void RandomizeCards()
     {
+        cardsAlreadyGotList = new List<string>();
         Debug.Log($"{cardsAlreadyGotList.Count}, {CardChoice.habilitiesIDs.Count - 2}, {CardPanelExibition.transform.childCount}");
         if (cardsAlreadyGotList.Count >= CardChoice.habilitiesIDs.Count - 2 && CardPanelExibition.transform.childCount > 1)
         {
@@ -194,10 +192,10 @@ public class CanvasGameManager : MonoBehaviour
         if (cardsAlreadyGotList.Count < CardChoice.habilitiesIDs.Count)
             foreach (CardChoice choice in cardObjList)
             {
-            remakeCard:;
-                string id = CardChoice.habilitiesIDs[UnityEngine.Random.Range(0, CardChoice.habilitiesIDs.Count)];
-                if (currentPlayerCards.Contains(id))
+            remakeCard: string id = CardChoice.habilitiesIDs[UnityEngine.Random.Range(0, CardChoice.habilitiesIDs.Count)];
+                if (currentPlayerCards.Contains(id) || cardsAlreadyGotList.Contains(id))
                 {
+                    Debug.Log(id);
                     goto remakeCard;
                 }
                 cardsAlreadyGotList.Add(id);
