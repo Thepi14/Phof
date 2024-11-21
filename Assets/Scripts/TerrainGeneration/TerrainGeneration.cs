@@ -72,6 +72,10 @@ public class TerrainGeneration : MonoBehaviour
     private bool configSeed = false;
     public bool mapLoaded = false;
 
+    private void Awake()
+    {
+        Instance = this;
+    }
     void Start()
     {
         Instance = this;
@@ -84,9 +88,22 @@ public class TerrainGeneration : MonoBehaviour
             MapHeight = PlayerPrefs.GetInt("MAP_HEIGHT", 100);
         }
 
+        walls = new Grid<GameObject>(MapWidth, MapHeight, (grid, x, y) => { return null; });
+        floors = new Grid<GameObject>(MapWidth, MapHeight, (grid, x, y) => { return null; });
+        spawnTiles = new Grid<bool>(MapWidth, MapHeight, (spawntiles, x, y) => { return false; });
+        roomGrid = new Grid<int>(MapWidth, MapHeight, (grid, x, y) => { return -1; });
+
+        noiseMap = new Texture2D(MapWidth, MapHeight);
+        dotMap = new Texture2D(MapWidth, MapHeight);
+        physicalMap = new Texture2D(MapWidth, MapHeight);
+        roomDetectionMap = new Texture2D(MapWidth, MapHeight);
+        torchMap = new Texture2D(MapWidth, MapHeight);
+
         pathfinding = new Pathfinding(MapWidth, MapHeight);
 
         rooms = new List<RoomNode>();
+
+        Random.InitState(seed);
 
         GenerateLevel();
     }
@@ -135,19 +152,7 @@ public class TerrainGeneration : MonoBehaviour
     private async Task _GenerateLevel()
     {
         mapLoaded = false;
-        Random.InitState(seed);
         generationProgress = 0;
-
-        walls = new Grid<GameObject>(MapWidth, MapHeight, (grid, x, y) => { return null; });
-        floors = new Grid<GameObject>(MapWidth, MapHeight, (grid, x, y) => { return null; });
-        spawnTiles = new Grid<bool>(MapWidth, MapHeight, (spawntiles, x, y) => { return false; });
-        roomGrid = new Grid<int>(MapWidth, MapHeight, (grid, x, y) => { return -1; });
-
-        noiseMap = new Texture2D(MapWidth, MapHeight);
-        dotMap = new Texture2D(MapWidth, MapHeight);
-        physicalMap = new Texture2D(MapWidth, MapHeight);
-        roomDetectionMap = new Texture2D(MapWidth, MapHeight);
-        torchMap = new Texture2D(MapWidth, MapHeight);
 
         noiseMap = GenerateNoiseTexture(MapWidth, MapHeight, seed, frequency, limit, scattering, true, StageOffSet * CurrentStage, StageOffSet * CurrentStage);
 
@@ -638,11 +643,12 @@ public class TerrainGeneration : MonoBehaviour
                     room.NewRoomNode(currentID, new Vector2Int(x, y), Size1 + Size2);
                     room.info = biome.defaultRoom;
 
+                    RoomInfo info = null;
                     foreach (var rInfo in biome.rooms)
                     {
                         if (rInfo.size == room.size)
                         {
-                            room.info = rInfo;
+                            info = rInfo;
                             Debug.Log(rInfo.name);
                             break;
                         }
@@ -653,7 +659,7 @@ public class TerrainGeneration : MonoBehaviour
 
                     if (room.info != null)
                         if (!room.info.universal)
-                            room.SetRoomInfo();
+                            room.SetRoomInfo(info);
 
                     roomObj.transform.position = new Vector3(room.LeftDownCornerPositionInternal.x + (room.size / 2f), 1.5f, room.LeftDownCornerPositionInternal.y + (room.size / 2f));
                     roomObj.AddComponent<BoxCollider>().size = new Vector3(room.size, 2, room.size);

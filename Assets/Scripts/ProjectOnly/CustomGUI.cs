@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using HabilitySystem;
@@ -23,3 +24,4 @@ public class TestUI : Editor
         }
     }*/
 }
+#endif

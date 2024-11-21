@@ -8,6 +8,7 @@ using UnityEngine.Events;
 using static TerrainGeneration;
 using static NavMeshUpdate;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RoomSystem
 {
@@ -59,8 +60,10 @@ namespace RoomSystem
             doors = new List<Door>();
             blocks = new List<GameObject>();
         }
-        public void SetRoomInfo()
+        public async void SetRoomInfo(RoomInfo info)
         {
+            this.info = info;
+            await Task.Delay(1);
             for (int x = 0; x <= size - 1; x++)
             {
                 for (int y = 0; y <= size - 1; y++)

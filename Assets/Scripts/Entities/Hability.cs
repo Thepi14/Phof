@@ -155,12 +155,16 @@ namespace HabilitySystem
             this.ID = ID;
             this.name = name;
             description = textAsset;
+#if UNITY_EDITOR
             OnGUI();
+#endif
         }
+#if UNITY_EDITOR
         readonly void OnGUI()
         {
             GUI.skin.button.wordWrap = true;
             EditorStyles.textField.wordWrap = true;
         }
+#endif
     }
 }

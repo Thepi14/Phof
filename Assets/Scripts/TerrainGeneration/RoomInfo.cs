@@ -18,6 +18,7 @@ public class RoomInfo : ScriptableObject
     [SerializeField]
     private List<BlockInfo> blocks = new List<BlockInfo>();
     private List<BlockInfo> previousBlocks = new List<BlockInfo>();
+    [SerializeField]
     public Grid<BlockInfo> grid;
     [HideInInspector]
     public bool changed = false;
