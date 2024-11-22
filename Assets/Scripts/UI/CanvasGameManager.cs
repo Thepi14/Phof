@@ -11,13 +11,16 @@ using ObjectUtils;
 using static ObjectUtils.GameObjectGeneral;
 using HabilitySystem;
 using EntityDataSystem;
+using static GameManagerSystem.GameManager;
+using System.Threading.Tasks;
 
 public class CanvasGameManager : MonoBehaviour
 {
+    public static CanvasGameManager canvasInstance;
+    public bool espada = false;
     public bool seeingMap = false, isActivated = false;
     public GameObject inventory => GetGameObject(gameObject, "Mainpanel/Inventory");
-    public Inventory slots;
-    public static CanvasGameManager canvasInstance;
+    public Inventory slots => GetGameObjectComponent<Inventory>(gameObject, "Mainpanel/Inventory");
     public GameObject MainPanel => GetGameObject(gameObject, "Mainpanel");
     public Slider LifeBar => GetGameObjectComponent<Slider>(gameObject, "Mainpanel/LifeBar/Bar");
     public Slider StaminaBar => GetGameObjectComponent<Slider>(gameObject, "Mainpanel/StaminaBar/Bar");
@@ -30,9 +33,14 @@ public class CanvasGameManager : MonoBehaviour
     public GameObject CardPanel => GetGameObject(gameObject, "Cardpanel");
     public GameObject CardPanelExibition => GetGameObject(CardPanel, "Subpanel");
     public Slider LoadBar => GetGameObjectComponent<Slider>(LoadPanel, "Loadbar");
+    public GameObject AttributesPanel => GetGameObject(gameObject, "Attributespanel");
+    public GameObject AttributesPanelExibition => GetGameObject(AttributesPanel, "Subpanel");
 
     public Button sword;
     public Button staff;
+
+    public Image iconSword;
+    public Image iconStaff;
 
     public Item swordItem;
     public Item staffItem;
@@ -64,8 +72,10 @@ public class CanvasGameManager : MonoBehaviour
             Destroy(gameObject);
         DontDestroyOnLoad(gameObject);
         SetLang();
-        sword.onClick.AddListener(() => { player.SetItem(swordItem); });
-        staff.onClick.AddListener(() => { player.SetItem(staffItem); }); 
+        sword.onClick.AddListener(() => { espada = false; });
+        staff.onClick.AddListener(() => { espada = true; });
+        Instantiate(slots.itemPrefab, slots.equipmentSlots[0].transform).Initialize(slots.equipmentSlots[0], swordItem);
+        Instantiate(slots.itemPrefab, slots.equipmentSlots[1].transform).Initialize(slots.equipmentSlots[1], staffItem);
     }
     public void SetLang()
     {
@@ -73,6 +83,7 @@ public class CanvasGameManager : MonoBehaviour
     }
     private void Update()
     {
+        
         LoadPanel.SetActive(!TerrainGeneration.Instance.mapLoaded);
         if (!TerrainGeneration.Instance.mapLoaded)
         {
@@ -98,20 +109,75 @@ public class CanvasGameManager : MonoBehaviour
                 isActivated = !isActivated;
                 player.EntityData.canAttack = !isActivated;
             }
+            else if (Input.GetKeyDown(KeyCode.Q))
+            {
+                espada = !espada;
+            }
+
+            if (slots.equipmentSlots[0].myItem == null)
+            {
+                swordItem = null;
+                iconSword.color= new Color(1f, 1f, 1f, 0f);
+            }
+            else
+            {
+                swordItem = slots.equipmentSlots[0].myItem.myItem;
+                iconSword.sprite = swordItem.itemSprite;
+                iconSword.color = new Color(1f, 1f, 1f, 1f);
+            }
+            if (slots.equipmentSlots[1].myItem == null)
+            {
+                staffItem = null;
+                gameManagerInstance.targetObject.SetActive(false);
+                iconStaff.color = new Color(1f, 1f, 1f, 0f);
+            }
+
+            else
+            {
+                staffItem = slots.equipmentSlots[1].myItem.myItem;
+                iconStaff.sprite = staffItem.itemSprite;
+                iconStaff.color = new Color(1f, 1f, 1f, 1f);
+            }
+
+            //kkkkkkk
+            switch (espada)
+            {
+                case false:
+                    player.SetItem(swordItem);
+                    break;
+                case true:
+                    player.SetItem(staffItem);
+                    break;
+            }
+
+            
 
             inventory.SetActive(isActivated);
-
-            /*if (slots.inventorySlots[0].myItem != null)
-                swordItem = slots.inventorySlots[0].myItem.myItem;
-            else 
-                swordItem = null;
-
-            if (slots.inventorySlots[1].myItem != null)
-                staffItem = slots.inventorySlots[1].myItem.myItem;
-            else
-                staffItem = null;*/
+            
         }
         BlockCards();
+    }
+    public void LevelUpAttribute(string name)
+    {
+        switch (name.ToLower())
+        {
+            case "strength":
+                player.EntityData.strength++;
+                break;
+            case "resistance":
+                player.EntityData.resistance++;
+                break;
+            case "intelligence":
+                player.EntityData.intelligence++;
+                break;
+            case "defense":
+                player.EntityData.defense++;
+                break;
+            case "speed":
+                player.EntityData.speed++;
+                break;
+        }
+        player.EntityData.CalculateStatus();
     }
     public enum GameMenu : byte
     {
@@ -176,11 +242,12 @@ public class CanvasGameManager : MonoBehaviour
         Destroy(player.EntityData.habilities[hability.habilityID]);
         player.EntityData.habilities.Remove(hability.habilityID);
     }
-    public void RandomizeCards()
+    [Obsolete("Precisa de correção.")]
+    public async void RandomizeCards()
     {
-        cardsAlreadyGotList = new List<string>();
-        Debug.Log($"{cardsAlreadyGotList.Count}, {CardChoice.habilitiesIDs.Count - 2}, {CardPanelExibition.transform.childCount}");
-        if (cardsAlreadyGotList.Count >= CardChoice.habilitiesIDs.Count - 2 && CardPanelExibition.transform.childCount > 1)
+        cardsAlreadyGotList.Clear();
+        //Debug.Log($"{cardsAlreadyGotList.Count}, {CardChoice.habilitiesIDs.Count - 2}, {CardPanelExibition.transform.childCount}");
+        if (currentPlayerCards.Count >= CardChoice.habilitiesIDs.Count - 2 && CardPanelExibition.transform.childCount > 1)
         {
             Destroy(CardPanelExibition.transform.GetChild(1).gameObject);
         }
@@ -189,17 +256,33 @@ public class CanvasGameManager : MonoBehaviour
         {
             cardObjList.Add(CardPanelExibition.transform.GetChild(i).GetComponent<CardChoice>());
         }
-        if (cardsAlreadyGotList.Count < CardChoice.habilitiesIDs.Count)
-            foreach (CardChoice choice in cardObjList)
+        string strin = "";
+        int maxBuffer = 100;
+        int currentBuffer = 0;
+
+        //if (cardsAlreadyGotList.Count < CardChoice.habilitiesIDs.Count)
+        foreach (CardChoice choice in cardObjList)
+        {
+        remakeCard: string id = CardChoice.habilitiesIDs[UnityEngine.Random.Range(0, CardChoice.habilitiesIDs.Count)];
+            //await Task.Delay(1);
+            if (currentPlayerCards.Contains(id) || cardsAlreadyGotList.Contains(id))
             {
-            remakeCard: string id = CardChoice.habilitiesIDs[UnityEngine.Random.Range(0, CardChoice.habilitiesIDs.Count)];
-                if (currentPlayerCards.Contains(id) || cardsAlreadyGotList.Contains(id))
-                {
-                    Debug.Log(id);
-                    goto remakeCard;
-                }
+                strin += id + " // ";
+                Debug.Log(id);
+                currentBuffer++;
+                if (currentBuffer >= maxBuffer)
+                    break;
+                goto remakeCard;
+            }
+            else
+            {
                 cardsAlreadyGotList.Add(id);
+                currentBuffer++;
+                if (currentBuffer >= maxBuffer)
+                    break;
                 choice.SetCard(id);
             }
+        }
+        Debug.Log(strin);
     }
 }

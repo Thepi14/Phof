@@ -95,8 +95,16 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
         {
             SpriteObj.GetComponent<Animator>().SetBool("Walking", false);
         }
-
-        AttackArea.transform.localScale = new Vector3(EntityData.currentAttackItem.attackwidth, EntityData.currentAttackItem.attackDistance, 1);
+         
+        if(EntityData.currentAttackItem != null)
+        {
+            AttackArea.SetActive(true);
+            AttackArea.transform.localScale = new Vector3(EntityData.currentAttackItem.attackwidth, EntityData.currentAttackItem.attackDistance, 1);
+        }
+        else
+        {
+            AttackArea.SetActive(false);
+        }
 
         attackHeldDown = Input.GetKey(KeyCode.Mouse0);
         if (attackHeldDown && !EntityData.canAttack)
@@ -118,23 +126,27 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
         Physics.Raycast(ray, out hit, Vector3.Distance(MainCameraControl.gameObject.transform.position, transform.position) + 10f, LayerMask.GetMask("RaycastHit"), QueryTriggerInteraction.Ignore);
         playerTarget = hit.point;
 
-        switch (EntityData.currentAttackItem.type)
+        if(EntityData.currentAttackItem != null)
         {
-            case ItemType.MeleeWeapon:
-                var atkRotation = MathEx.AngleRadian(AttackArea.transform.position, hit.point);
-                AttackArea.transform.rotation = Quaternion.Euler(-90, 0, (-atkRotation * Mathf.Rad2Deg) + 90);
-                AttackArea.SetActive(true);
-                gameManagerInstance.targetObject.SetActive(false);
-                break;
-            case ItemType.RangedWeapon:
-                gameManagerInstance.SetTargetPosition(new Vector2(hit.point.x, hit.point.z));
-                AttackArea.SetActive(false);
-                gameManagerInstance.targetObject.SetActive(true);
-                break;
-            case ItemType.CustomWeapon:
+            switch (EntityData.currentAttackItem.type)
+            {
+                case ItemType.MeleeWeapon:
+                    var atkRotation = MathEx.AngleRadian(AttackArea.transform.position, hit.point);
+                    AttackArea.transform.rotation = Quaternion.Euler(-90, 0, (-atkRotation * Mathf.Rad2Deg) + 90);
+                    AttackArea.SetActive(true);
+                    gameManagerInstance.targetObject.SetActive(false);
+                    break;
+                case ItemType.RangedWeapon:
+                    gameManagerInstance.SetTargetPosition(new Vector2(hit.point.x, hit.point.z));
+                    AttackArea.SetActive(false);
+                    gameManagerInstance.targetObject.SetActive(true);
+                    break;
+                case ItemType.CustomWeapon:
 
-                break;
+                    break;
+            }
         }
+
     }
     public override void Damage(DamageData damageData)
     {
@@ -157,12 +169,22 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
             Die(damageData.sender);
         }
     }
-    public override void SetItem(Item item)
+    public override void SetItem(Item item = null)
     {
-        EntityData.currentAttackItem = item;
-        ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
-        ItemSpriteAnimator.runtimeAnimatorController = item.animatorController;
-        ItemSpriteOffset.transform.localPosition = (Vector3)item.positionOffSet + new Vector3(0, 0, -0.01f);
+        if(item == null)
+        {
+            EntityData.currentAttackItem = null;
+            ItemSpriteRenderer.sprite = null;
+            ItemSpriteAnimator.runtimeAnimatorController = null;
+            ItemSpriteOffset.transform.localPosition = new Vector3(0,0,0);
+        }
+        else
+        {
+            EntityData.currentAttackItem = item;
+            ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
+            ItemSpriteAnimator.runtimeAnimatorController = item.animatorController;
+            ItemSpriteOffset.transform.localPosition = (Vector3)item.positionOffSet + new Vector3(0, 0, -0.01f);
+        }
     }
     private IEnumerator SetDamageColor()
     {
@@ -260,6 +282,8 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
 
         IEnumerator AttackAnimC()
         {
+            if (ItemSpriteAnimator == null || ItemSpriteAnimator.runtimeAnimatorController == null)
+                yield break;
             ItemSpriteAnimator.Play("Attack");
             yield return new WaitForSeconds(ItemSpriteAnimator.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.length);
             ItemSpriteAnimator.Play("Default");

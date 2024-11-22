@@ -23,9 +23,10 @@ public class inventorySlot : MonoBehaviour, IPointerClickHandler
     public void SetItem(InventoryItem item)
     {
         Inventory.carriedItem = null;
-        item.activeSlot.myItem = null;
+        item.activeSlot.myItem = item.activeSlot.gameObject.transform.childCount > 0 ? item.activeSlot.gameObject.transform.GetComponentInChildren<InventoryItem>() : null;
 
         myItem = item;
+        myItem.myItem = item.myItem;
         myItem.activeSlot = this;
         myItem.transform.SetParent(transform);
         myItem.canvasGroup.blocksRaycasts = true;

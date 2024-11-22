@@ -26,7 +26,7 @@ public class WarningTextManager : MonoBehaviour
         else
             Destroy(gameObject);
         warningText.color = new Color(1, 1, 1, 0);
-        DontDestroyOnLoad(warningTextManagerInstance);
+        //DontDestroyOnLoad(warningTextManagerInstance);
     }
     /// <summary>
     /// Mostra uma mensagem de aviso na tela por um dado tempo.

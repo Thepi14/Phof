@@ -636,7 +636,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 116
   m_CollisionDetection: 2
 --- !u!114 &5175043934453122565
 MonoBehaviour:
@@ -660,9 +660,11 @@ MonoBehaviour:
     defense: 2
     speed: 5
     attackSpeedMultipliyer: 1
+    maxKarma: 0
     maxHealth: 0
     maxStamina: 0
     maxMana: 0
+    currentKarma: 0
     currentHealth: 0
     currentStamina: 0
     currentMana: 0
@@ -704,6 +706,7 @@ MonoBehaviour:
   velocity: {x: 0, y: 0, z: 0}
   XZInput: {x: 0, y: 0}
   playerTarget: {x: 0, y: 0, z: 0}
+  disponiblePoints: 0
 --- !u!114 &6813995179876145116
 MonoBehaviour:
   m_ObjectHideFlags: 0

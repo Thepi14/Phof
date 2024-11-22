@@ -355,7 +355,7 @@ namespace EntityDataSystem
         public void Damage(DamageData damageData);
         public void Attack();
         public void Die(GameObject killer);
-        public void SetItem(Item item);
+        public void SetItem(Item item = null);
         public void CalculateStatusRegen();
     }
     public abstract class EntityBehaviour : MonoBehaviour
@@ -410,7 +410,7 @@ namespace EntityDataSystem
         public abstract void Damage(DamageData damageData);
         public abstract void Attack();
         public abstract void Die(GameObject killer);
-        public abstract void SetItem(Item item);
+        public abstract void SetItem(Item item = null);
         public abstract void CalculateStatusRegen();
     }
     public abstract class BasicEntityBehaviour : BaseEntityBehaviour, IEntity
@@ -438,12 +438,22 @@ namespace EntityDataSystem
             AttackTimer();
             gameManagerInstance.AddEntity(gameObject);
         }
-        public override void SetItem(Item item)
+        public override void SetItem(Item item = null)
         {
-            EntityData.currentAttackItem = item;
-            ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
-            ItemSpriteAnimator.runtimeAnimatorController = item.animatorController;
-            ItemSpriteOffset.transform.localPosition = (Vector3)item.positionOffSet + new Vector3(0, 0, -0.01f);
+            if (item == null)
+            {
+                EntityData.currentAttackItem = null;
+                ItemSpriteRenderer.sprite = null;
+                ItemSpriteAnimator.runtimeAnimatorController = null;
+                ItemSpriteOffset.transform.localPosition = new Vector3(0, 0, 0);
+            }
+            else
+            {
+                EntityData.currentAttackItem = item;
+                ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
+                ItemSpriteAnimator.runtimeAnimatorController = item.animatorController;
+                ItemSpriteOffset.transform.localPosition = (Vector3)item.positionOffSet + new Vector3(0, 0, -0.01f);
+            }
         }
         public void Awake()
         {
@@ -602,6 +612,8 @@ namespace EntityDataSystem
             StartCoroutine(AttackAnimC());
             IEnumerator AttackAnimC()
             {
+                if (ItemSpriteAnimator == null || ItemSpriteAnimator.runtimeAnimatorController == null)
+                    yield break;
                 ItemSpriteAnimator.Play("Attack");
                 yield return new WaitForSeconds(ItemSpriteAnimator.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.length);
                 ItemSpriteAnimator.Play("Default");

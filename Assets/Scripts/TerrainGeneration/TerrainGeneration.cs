@@ -151,6 +151,9 @@ public class TerrainGeneration : MonoBehaviour
     }
     private async Task _GenerateLevel()
     {
+        if (GamePlayer.player != null)
+            GamePlayer.player.transform.position = new Vector3(0, 1f, 0);
+
         mapLoaded = false;
         generationProgress = 0;
 
@@ -418,12 +421,15 @@ public class TerrainGeneration : MonoBehaviour
             }
         }
 
-        navMeshUpdateInstance.BuildNavMesh();
+        await Task.Delay(1);
+        navMeshUpdateInstance.BuildNavMesh(10);
 
         if (GameManager.gameManagerInstance == null)
             throw new System.Exception("Manager is null");
         if (GameManager.gameManagerInstance.playerPrefab == null)
             throw new System.Exception("Manager player prefab is null");
+
+        await Task.Delay(20);
         if (GamePlayer.player == null)
             Instantiate(GameManager.gameManagerInstance.playerPrefab, new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z), Quaternion.identity, null);
         else
@@ -641,7 +647,6 @@ public class TerrainGeneration : MonoBehaviour
 
                     var room = roomObj.AddComponent<RoomNode>();
                     room.NewRoomNode(currentID, new Vector2Int(x, y), Size1 + Size2);
-                    room.info = biome.defaultRoom;
 
                     RoomInfo info = null;
                     foreach (var rInfo in biome.rooms)
@@ -657,9 +662,10 @@ public class TerrainGeneration : MonoBehaviour
                     room.LeftDownCornerPosition = new Vector2Int(-Size1 + x - 1, -Size1 + y - 1);
                     room.RightUpCornerPosition = new Vector2Int(Size2 + x + 0, Size2 + y + 0);
 
-                    if (room.info != null)
-                        if (!room.info.universal)
-                            room.SetRoomInfo(info);
+                    if (info != null)
+                        room.SetRoomInfo(info);
+                    else
+                        room.SetRoomInfo(biome.defaultRoom);
 
                     roomObj.transform.position = new Vector3(room.LeftDownCornerPositionInternal.x + (room.size / 2f), 1.5f, room.LeftDownCornerPositionInternal.y + (room.size / 2f));
                     roomObj.AddComponent<BoxCollider>().size = new Vector3(room.size, 2, room.size);

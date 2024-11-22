@@ -60,10 +60,11 @@ namespace RoomSystem
             doors = new List<Door>();
             blocks = new List<GameObject>();
         }
-        public async void SetRoomInfo(RoomInfo info)
+        public void SetRoomInfo(RoomInfo info)
         {
             this.info = info;
-            await Task.Delay(1);
+            if (info.universal || info == null || info.grid.IsNull() || info == null)
+                return;
             for (int x = 0; x <= size - 1; x++)
             {
                 for (int y = 0; y <= size - 1; y++)
@@ -71,6 +72,9 @@ namespace RoomSystem
                     var xP = x + LeftDownCornerPositionInternal.x;
                     var yP = y + LeftDownCornerPositionInternal.y;
 
+                    //Debug.Log($"{Instance == null} {info == null} {info.grid == null} {Instance.spawnTiles == null} {info.grid[x, y] == null}");
+                    if (info.grid[x, y] == null)
+                        continue;
                     Instance.spawnTiles[xP, yP] = info.grid[x, y].entityCanSpawn;
 
                     if (info.grid[x, y].id == 0)

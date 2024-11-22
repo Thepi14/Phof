@@ -19,7 +19,23 @@ public class RoomInfo : ScriptableObject
     private List<BlockInfo> blocks = new List<BlockInfo>();
     private List<BlockInfo> previousBlocks = new List<BlockInfo>();
     [SerializeField]
-    public Grid<BlockInfo> grid;
+    public Grid<BlockInfo> grid
+    {
+        get
+        {
+            if (!universal)
+            {
+                var newGrid = new Grid<BlockInfo>(size, size, (grid, x, y) => { return new BlockInfo(x, y); });
+                newGrid.ListToGrid(blocks, size);
+                return newGrid;
+            }
+            else
+            {
+                var newGrid = new Grid<BlockInfo>(size, size, (grid, x, y) => { return new BlockInfo(x, y); });
+                return newGrid;
+            }
+        }
+    }
     [HideInInspector]
     public bool changed = false;
     [SerializeField]
@@ -44,20 +60,35 @@ public class RoomInfo : ScriptableObject
         {
             if (resetRoom)
             {
-                grid = new Grid<BlockInfo>(size, size, (grid, x, y) => { return new BlockInfo(x, y); });
-                blocks = grid.GridToList();
+                blocks.Clear();
             }
-            else if (grid.IsNull())
+            if (blocks == null || blocks.Count == 0)
             {
-                grid = new Grid<BlockInfo>(size, size, (grid, x, y) => { return new BlockInfo(x, y); });
+                blocks = new List<BlockInfo>();
+                for (int x = 0; x < size; x++)
+                {
+                    for (int y = 0; y < size; y++)
+                    {
+                        blocks.Add(new BlockInfo(x, y));
+                    }
+                }
+            }
+            if (grid.IsNull())
+            {
                 grid.ListToGrid(blocks, size);
             }
             //Room size changed
             if (grid.GetWidth() != size || grid.GetHeight() != size || grid.GridToList().Count != blocks.Count)
             {
-                grid = new Grid<BlockInfo>(size, size, (grid, x, y) => { return new BlockInfo(x, y); });
+                blocks = new List<BlockInfo>();
+                for (int x = 0; x < size; x++)
+                {
+                    for (int y = 0; y < size; y++)
+                    {
+                        blocks.Add(new BlockInfo(x, y));
+                    }
+                }
                 grid.ResizeGrid(size, size);
-                blocks = grid.GridToList();
             }
             else
             {
@@ -88,7 +119,6 @@ public class RoomInfo : ScriptableObject
         }
         else
         {
-            grid = null;
             blocks = null;
             previousBlocks = null;
         }
@@ -150,10 +180,26 @@ public class RoomInfo : ScriptableObject
         }
         public static bool operator ==(BlockInfo a, BlockInfo b)
         {
+            if (a is null)
+            {
+                return b is null;
+            }
+            else if (b is null)
+            {
+                return a is null;
+            }
             return a.x == b.x && a.y == b.y && a.id == b.id;
         }
         public static bool operator !=(BlockInfo a, BlockInfo b)
         {
+            if (a is null)
+            {
+                return b is not null;
+            }
+            else if (b is null)
+            {
+                return a is not null;
+            }
             return a.x != b.x || a.y != b.y || a.id != b.id;
         }
     }

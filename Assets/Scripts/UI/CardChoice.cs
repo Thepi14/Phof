@@ -42,6 +42,8 @@ public class CardChoice : MonoBehaviour
     }
     public void SetCard(string cardID)
     {
+        if (gameObject == null)
+            return;
         gameObject.name = cardID;
         if (habilitiesIDs.Contains(cardID))
         {
