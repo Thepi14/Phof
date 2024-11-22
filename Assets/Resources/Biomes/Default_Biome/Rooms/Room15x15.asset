@@ -52,11 +52,11 @@ MonoBehaviour:
   - name: x 0, y 4
     x: 0
     y: 4
-    id: 0
+    id: 5
     height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 1
+    entityCanSpawn: 0
   - name: x 0, y 5
     x: 0
     y: 5
@@ -1817,5 +1817,5 @@ MonoBehaviour:
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
     entityCanSpawn: 1
-  changed: 0
+  changed: 1
   resetRoom: 0
