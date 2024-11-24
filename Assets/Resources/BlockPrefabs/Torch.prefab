@@ -238,8 +238,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7595793828807955833}
-  - component: {fileID: 1512442442020862450}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Torch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -265,27 +264,6 @@ Transform:
   - {fileID: 1157723912804191689}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1512442442020862450
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7359289033505088175}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7789499779878029570
 GameObject:
   m_ObjectHideFlags: 0

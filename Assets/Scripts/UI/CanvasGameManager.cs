@@ -18,7 +18,7 @@ public class CanvasGameManager : MonoBehaviour
 {
     public static CanvasGameManager canvasInstance;
     public bool espada = false;
-    public bool seeingMap = false, isActivated = false;
+    public bool seeingMap = false, seeingInventory = false;
     public GameObject inventory => GetGameObject(gameObject, "Mainpanel/Inventory");
     public Inventory slots => GetGameObjectComponent<Inventory>(gameObject, "Mainpanel/Inventory");
     public GameObject MainPanel => GetGameObject(gameObject, "Mainpanel");
@@ -63,7 +63,6 @@ public class CanvasGameManager : MonoBehaviour
             return newList;
         }
     }
-
     private void Start()
     {
         if (canvasInstance == null)
@@ -83,7 +82,6 @@ public class CanvasGameManager : MonoBehaviour
     }
     private void Update()
     {
-        
         LoadPanel.SetActive(!TerrainGeneration.Instance.mapLoaded);
         if (!TerrainGeneration.Instance.mapLoaded)
         {
@@ -106,8 +104,7 @@ public class CanvasGameManager : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.E))
             {
-                isActivated = !isActivated;
-                player.EntityData.canAttack = !isActivated;
+                seeingInventory = !seeingInventory;
             }
             else if (Input.GetKeyDown(KeyCode.Q))
             {
@@ -125,13 +122,13 @@ public class CanvasGameManager : MonoBehaviour
                 iconSword.sprite = swordItem.itemSprite;
                 iconSword.color = new Color(1f, 1f, 1f, 1f);
             }
+
             if (slots.equipmentSlots[1].myItem == null)
             {
                 staffItem = null;
                 gameManagerInstance.targetObject.SetActive(false);
                 iconStaff.color = new Color(1f, 1f, 1f, 0f);
             }
-
             else
             {
                 staffItem = slots.equipmentSlots[1].myItem.myItem;
@@ -149,34 +146,63 @@ public class CanvasGameManager : MonoBehaviour
                     player.SetItem(staffItem);
                     break;
             }
-
-            
-
-            inventory.SetActive(isActivated);
-            
+            inventory.SetActive(seeingInventory);
         }
         BlockCards();
+        if (player != null)
+            player.EntityData.canAttack = !seeingInventory;
+    }
+    public void OpenAttributesMenu(bool open)
+    {
+        AttributesPanel.SetActive(open);
+        UpdateAllAttributes();
+        Time.timeScale = open ? 0f : 1f;
+    }
+    public void SetActiveInventory() => seeingInventory = !seeingInventory;
+    public void UpdateAllAttributes()
+    {
+        GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Strength/Level").text = $"{currentLanguage.level}: {player.EntityData.strength}";
+        GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Resistance/Level").text = $"{currentLanguage.level}: {player.EntityData.resistance}";
+        GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Intelligence/Level").text = $"{currentLanguage.level}: {player.EntityData.intelligence}";
+        GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Defense/Level").text = $"{currentLanguage.level}: {player.EntityData.defense}";
+        GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Speed/Level").text = $"{currentLanguage.level}: {player.EntityData.speed}";
+
+        GetGameObjectComponent<TextMeshProUGUI>(AttributesPanel, "Currentlevel").text = $"{currentLanguage.currentLevel}: {player.EntityData.level}";
+        GetGameObjectComponent<TextMeshProUGUI>(AttributesPanel, "Points").text = $"{currentLanguage.availablePoints}: {player.disponiblePoints}";
     }
     public void LevelUpAttribute(string name)
     {
-        switch (name.ToLower())
+        if (player.disponiblePoints > 0)
         {
-            case "strength":
-                player.EntityData.strength++;
-                break;
-            case "resistance":
-                player.EntityData.resistance++;
-                break;
-            case "intelligence":
-                player.EntityData.intelligence++;
-                break;
-            case "defense":
-                player.EntityData.defense++;
-                break;
-            case "speed":
-                player.EntityData.speed++;
-                break;
+            switch (name.ToLower())
+            {
+                case "strength":
+                    player.EntityData.strength++;
+                    GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Strength/Level").text = $"{currentLanguage.level}: {player.EntityData.strength}";
+                    break;
+                case "resistance":
+                    player.EntityData.resistance++;
+                    GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Resistance/Level").text = $"{currentLanguage.level}: {player.EntityData.resistance}";
+                    break;
+                case "intelligence":
+                    player.EntityData.intelligence++;
+                    GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Intelligence/Level").text = $"{currentLanguage.level}: {player.EntityData.intelligence}";
+                    break;
+                case "defense":
+                    player.EntityData.defense++;
+                    GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Defense/Level").text = $"{currentLanguage.level}: {player.EntityData.defense}";
+                    break;
+                case "speed":
+                    player.EntityData.speed++;
+                    GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Speed/Level").text = $"{currentLanguage.level}: {player.EntityData.speed}";
+                    break;
+            }
+            player.disponiblePoints--;
+            GetGameObjectComponent<TextMeshProUGUI>(AttributesPanel, "Currentlevel").text = $"{currentLanguage.currentLevel}: {player.EntityData.level}";
+            GetGameObjectComponent<TextMeshProUGUI>(AttributesPanel, "Points").text = $"{currentLanguage.availablePoints}: {player.disponiblePoints}";
         }
+        else
+            WarningTextManager.ShowWarning(currentLanguage.cantLevelUpAttribute, 2.5f, 0.2f, WarningTextManager.WarningTextColor);
         player.EntityData.CalculateStatus();
     }
     public enum GameMenu : byte

@@ -86,7 +86,7 @@ public class BlockEntity : MonoBehaviour, IEntity
     }
     public void OnDestroy()
     {
-        navMeshUpdateInstance.BuildNavMesh(3500);
+        navMeshUpdateInstance.BuildNavMesh(200);
     }
 
     public void SetItem(Item item)

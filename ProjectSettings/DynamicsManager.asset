@@ -21,15 +21,15 @@ PhysicsManager:
   m_LayerCollisionMatrix: ffdfffbfffdfff9fffe7ff9fffdfff9fffdfff9fffdfff9f3fdfffbf3fffffbfffcfff9fffffff9fffd7ff9ffbc3ff9ffbc6ff9f84c2ff9fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc1c0ff3f00c0ff1fffffff9f
   m_SimulationMode: 0
   m_AutoSyncTransforms: 0
-  m_ReuseCollisionCallbacks: 0
+  m_ReuseCollisionCallbacks: 1
   m_InvokeCollisionCallbacks: 1
   m_ClothInterCollisionSettingsToggle: 0
   m_ClothGravity: {x: 0, y: -9.81, z: 0}
   m_ContactPairsMode: 0
-  m_BroadphaseType: 0
+  m_BroadphaseType: 2
   m_WorldBounds:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 250, y: 250, z: 250}
+    m_Center: {x: 100, y: 0, z: 100}
+    m_Extent: {x: 200, y: 50, z: 200}
   m_WorldSubdivisions: 8
   m_FrictionType: 0
   m_EnableEnhancedDeterminism: 0

@@ -9,10 +9,12 @@ Um jogo onde você vai passando por níveis através de salas geradas procedural
 <p>João Victor</p>
 <p>Jonathan de Paula</p>
 <p>Marcos Henrique</p>
+<p>Eduardo</p>
 
 ## Ajudantes:
 <p>Arthurzinho (Arthur Gonçalves)</p>
 <p>Guilherme Calixto</p>
+<p>Davi</p>
 
 ### Agradecimentos especiais:
 <p>Lucas Nogueira</p>

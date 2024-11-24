@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4973013970756991762}
   - component: {fileID: 6649211173224488172}
   - component: {fileID: 8995396074912719058}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -104,5 +104,5 @@ MeshCollider:
   m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
-  m_CookingOptions: 30
+  m_CookingOptions: 18
   m_Mesh: {fileID: 993649600057310089, guid: 7e317adc53f921141b850bf635e26714, type: 3}

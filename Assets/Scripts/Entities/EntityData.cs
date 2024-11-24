@@ -83,14 +83,16 @@ namespace EntityDataSystem
         public void LevelUp()
         {
         repeat:;
-            if (currentKarma >= maxKarma)
+            currentKarma -= maxKarma;
+            level++;
+            SetMaxKarma();
+            CalculateStatus();
+            if (gameObject.GetComponent<IEntity>().GetType() == typeof(GamePlayer))
             {
-                currentKarma -= maxKarma;
-                level++;
-                SetMaxKarma();
-                CalculateStatus();
-                goto repeat;
+                gameObject.GetComponent<GamePlayer>().disponiblePoints++;
             }
+            if (currentKarma >= maxKarma)
+                goto repeat;
         }
         public void ResetStatus()
         {
@@ -337,12 +339,12 @@ namespace EntityDataSystem
         }
     }
     /// <summary>
-    /// Evento de dano, é chamado quando a entidade leva dano, ele devolve a entityData da entidade que levou dano e o gameObject e deu o dano.
+    /// Evento de dano, é chamado quando a entidade leva dano, ele devolve a entityData da entidade que levou dano e o gameObject que deu o dano, as informações do dano dado e o total de dano causado.
     /// </summary>
     [Serializable]
-    public class DamageEvent : UnityEvent<EntityData, GameObject> { }
+    public class DamageEvent : UnityEvent<EntityData, GameObject, DamageData, int> { }
     /// <summary>
-    /// Evento de morte, é chamado quando a entidade morre, ele devolve a entityData da entidade que morreu e o gameObject e matou.
+    /// Evento de morte, é chamado quando a entidade morre, ele devolve a entityData da entidade que morreu e o gameObject que o matou.
     /// </summary>
     [Serializable]
     public class DeathEvent : UnityEvent<EntityData, GameObject> { }
@@ -436,7 +438,6 @@ namespace EntityDataSystem
 
             SetItem(EntityData.currentAttackItem);
             AttackTimer();
-            gameManagerInstance.AddEntity(gameObject);
         }
         public override void SetItem(Item item = null)
         {
@@ -520,10 +521,8 @@ namespace EntityDataSystem
             EntityData.currentImpulse -= new Vector2(EntityData.currentImpulse.x * Time.fixedDeltaTime * 5f, EntityData.currentImpulse.y * Time.fixedDeltaTime * 5f);
             RB.velocity = -new Vector3(EntityData.currentImpulse.x, 0, EntityData.currentImpulse.y);
         }
-
         public override void Damage(DamageData damageData)
         {
-            OnDamageEvent.Invoke(EntityData, damageData.sender);
             if (EntityData.target == null && (damageData.sender.layer == 8 || damageData.sender.layer == 9))
                 EntityData.target = damageData.sender;
 
@@ -538,6 +537,7 @@ namespace EntityDataSystem
 
             StopCoroutine(SetDamageColor());
             StartCoroutine(SetDamageColor());
+            OnDamageEvent.Invoke(EntityData, damageData.sender, damageData, total);
 
             if (EntityData.currentHealth <= 0)
             {

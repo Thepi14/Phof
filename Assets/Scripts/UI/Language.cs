@@ -24,6 +24,8 @@ namespace LangSystem
         public string enterNumber;
         public string exit;
         public string loading;
+        public string ok;
+        public string Return;
 
         [Header("New game world")]
         public string generateNewWorld;
@@ -31,9 +33,16 @@ namespace LangSystem
         public string mapSize;
         public string seed;
         public string generatingWorld;
+        public string chooseYourClass;
+        public string wizard;
+        public string warrior;
+        public string archer;
 
         [Header("Game")]
         public string level;
+        public string currentLevel;
+        public string availablePoints;
+        public string cantLevelUpAttribute;
         public string strength;
         public string resistance;
         public string intelligence;

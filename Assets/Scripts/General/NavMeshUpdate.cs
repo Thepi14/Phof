@@ -9,6 +9,7 @@ public class NavMeshUpdate : MonoBehaviour
 {
     [SerializeField]
     private NavMeshSurface surface;
+    private Coroutine navMeshCoroutine;
 
     public static NavMeshUpdate navMeshUpdateInstance;
 
@@ -16,13 +17,23 @@ public class NavMeshUpdate : MonoBehaviour
     {
         navMeshUpdateInstance = this;
     }
-    public async void BuildNavMesh(int delay = 0)
+    public void BuildNavMesh(int delay = 0)
     {
-        await Task.Delay(delay);
         if (navMeshUpdateInstance != null)
         {
-            surface.BuildNavMesh();
+            if (navMeshCoroutine != null)
+                StopCoroutine(navMeshCoroutine);
+            navMeshCoroutine = StartCoroutine(_BuildNavMesh(delay / 1000f));
         }
+    }
+    private IEnumerator _BuildNavMesh(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        surface.BuildNavMesh();
+    }
+    private void OnDestroy()
+    {
+        StopCoroutine(navMeshCoroutine);
     }
     //SIM EU SEI ISSO É UMA GAMBIARRA
     //mas ninguém pode me impedir ha (só o Marcos)

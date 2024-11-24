@@ -9,6 +9,7 @@ using ObjectUtils;
 using System.Linq;
 using ItemSystem;
 using System.Threading.Tasks;
+using InputManagement;
 
 public class GamePlayer : BaseEntityBehaviour, IEntity
 {
@@ -56,6 +57,7 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
 
         SetItem(EntityData.currentAttackItem);
         gameManagerInstance.allies.Add(gameObject);
+        CanvasGameManager.canvasInstance.UpdateAllAttributes();
 
         DontDestroyOnLoad(gameObject);
     }
@@ -65,7 +67,8 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
             return;
         CalculateStatusRegen();
 
-        XZInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * new Vector2(Mathf.Abs(Input.GetAxis("Horizontal")), Mathf.Abs(Input.GetAxis("Vertical")));
+        //XZInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * new Vector2(Mathf.Abs(Input.GetAxis("Horizontal")), Mathf.Abs(Input.GetAxis("Vertical")));
+        XZInput = InputManager.GetAxis().normalized * new Vector2(Mathf.Abs(InputManager.GetAxis().x), Mathf.Abs(InputManager.GetAxis().y));
 
         if(EntityData.canMove && XZInput != new Vector2(0, 0))
             RB.velocity = new Vector3(XZInput.x * EntityData.currentSpeed, 0, XZInput.y * EntityData.currentSpeed);
@@ -84,10 +87,10 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
         if (EntityData.dead || !Instance.mapLoaded)
             return;
 
-        if (RB.velocity.x > 0.1f || RB.velocity.x < -0.1f)
+        if (Mathf.Abs(XZInput.x) > 0.1f)
             SpriteObj.transform.localScale = XZInput.x < 0 ? new Vector3(-1, 1, 1) : Vector3.one;
 
-        if ((XZInput.y != 0 || XZInput.x != 0))
+        if ((Mathf.Abs(XZInput.x) > 0.1f || Mathf.Abs(XZInput.y) > 0.1f))
         {
             SpriteObj.GetComponent<Animator>().SetBool("Walking", true);
         }
@@ -106,17 +109,17 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
             AttackArea.SetActive(false);
         }
 
-        attackHeldDown = Input.GetKey(KeyCode.Mouse0);
+        attackHeldDown = InputManager.GetKey(KeyBindKey.Attack);
         if (attackHeldDown && !EntityData.canAttack)
         {
             canAttackByHeld = false;
         }
-        if (Input.GetKeyDown(KeyCode.Mouse0) && EntityData.canAttack)
+        if (InputManager.GetKeyDown(KeyBindKey.Attack) && EntityData.canAttack)
         {
             canAttackByHeld = true;
             Attack();
         }
-        else if (Input.GetKey(KeyCode.Mouse0) && EntityData.canAttack && canAttackByHeld)
+        else if (InputManager.GetKeyDown(KeyBindKey.Attack) && EntityData.canAttack && canAttackByHeld)
         {
             Attack();
         }
@@ -150,9 +153,8 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
     }
     public override void Damage(DamageData damageData)
     {
-        OnDamageEvent.Invoke(EntityData, damageData.sender);
-
         int total = !damageData.ignoreDefense ? Mathf.Max(damageData.damage - EntityData.CalculateDefense(), 0) : damageData.damage;
+        OnDamageEvent.Invoke(EntityData, damageData.sender, damageData, total);
 
         EntityData.currentHealth -= total;
         EntityData.WasteMana(damageData.manaDamage);

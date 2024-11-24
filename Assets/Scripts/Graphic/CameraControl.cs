@@ -100,11 +100,6 @@ public class CameraControl : MonoBehaviour
         switch ((int)focusMode)
         {
             case 1 or 2 or 3 or 4 or 5 or 6 or 7:
-                foreach (GameObject obj in spriteRenderers.ToList())
-                {
-                    if (obj.GetComponent<SpriteRenderer>() == null)
-                        spriteRenderers.Remove(obj);
-                }
                 foreach (GameObject spriteObj in spriteRenderers.ToList())
                 {
                     spriteObj.transform.localRotation = Quaternion.Euler((Mathf.Atan2( //X
@@ -115,11 +110,6 @@ public class CameraControl : MonoBehaviour
                 }
                 break;
             case 8:
-                foreach (GameObject obj in spriteRenderers.ToList())
-                {
-                    if (obj.GetComponent<SpriteRenderer>() == null)
-                        spriteRenderers.Remove(obj);
-                }
                 foreach (GameObject spriteObj in spriteRenderers.ToList())
                 {
                     spriteObj.transform.localRotation = Quaternion.Euler((Mathf.Atan2( //X

@@ -510,7 +510,19 @@ MonoBehaviour:
     m_Width: 59
     m_Height: 445
   - m_X: 0
-    m_Y: 148
+    m_Y: 66
+    m_Width: 511
+    m_Height: 445
+  - m_X: 0
+    m_Y: 28
+    m_Width: 153
+    m_Height: 483
+  - m_X: 83
+    m_Y: 25
+    m_Width: 70
+    m_Height: 486
+  - m_X: 217
+    m_Y: 0
     m_Width: 511
     m_Height: 363
   - m_X: 0
