@@ -96,15 +96,16 @@ namespace GameManagerSystem
             if (Input.GetKeyDown(KeyCode.Escape) && !optionsMenu.activeSelf)
                 optionsMenu.SetActive(true);
         }
-        public void SpawnEntity(Vector2 position, GameObject entity)
+        public static GameObject SpawnEntity(Vector2 position, GameObject entity)
         {
             if (entity.GetComponent<IEntity>() == null)
             {
                 throw new Exception("GameObject " + entity.name + " does not have IEntity component.");
             }
             var newEntity = Instantiate(entity, new Vector3(position.x, 1f, position.y), Quaternion.identity, null);
-            AddEntity(newEntity);
+            gameManagerInstance.AddEntity(newEntity);
             newEntity.SetActive(true);
+            return newEntity;
         }
         public void AddEntity(GameObject entity)
         {
@@ -205,11 +206,11 @@ namespace GameManagerSystem
                         if (!entity.EntityData.damaged)
                             ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 2) + (Color.green / 2));
                         break;
-                    case "on fire":
+                    case "on fire" or "fire":
                         RemoveEffectByName(entity, "freezed", effect.frameAdded);
                         RemoveEffectByName(entity, "coldness", effect.frameAdded);
                         if (ticked)
-                            entity.Damage(new DamageData((effect.level * 6) + (entity.EntityData.resistance) + ((effect.level / 2) * UnityEngine.Random.Range(0, 6))));
+                            entity.Damage(new DamageData((effect.level * 9 + UnityEngine.Random.Range(0, 12)) - (entity.EntityData.currentResistence * 2)));
                         if (!entity.EntityData.damaged)
                             ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 2) + (new Color(1, 0.5f, 0) / 2));
                         break;

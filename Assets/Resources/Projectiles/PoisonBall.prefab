@@ -19721,7 +19721,7 @@ GameObject:
   - component: {fileID: 4447793389538611280}
   - component: {fileID: -6210122871518559802}
   m_Layer: 0
-  m_Name: VFX_PoisonBall
+  m_Name: PoisonBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

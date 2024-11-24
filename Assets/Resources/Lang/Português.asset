@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5861ad981e341894098d43c6a13148fc, type: 3}
   m_Name: "Portugu\xEAs"
   m_EditorClassIdentifier: 
-  playNewGame: Jogar novo jogo
   language: Idioma
   enterText: Coloque texto
   enterNumber: "Coloque n\xFAmero"
@@ -20,6 +19,8 @@ MonoBehaviour:
   loading: Carregando
   ok: Ok
   Return: Voltar
+  playNewGame: Jogar novo jogo
+  credits: "Cr\xE9ditos"
   generateNewWorld: Gerar novo mundo
   generate: Gerar
   mapSize: Tamanho do mapa

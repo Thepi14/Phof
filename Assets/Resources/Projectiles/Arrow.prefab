@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -5051248158304649913}
   - component: {fileID: 4737380719498641481}
   m_Layer: 0
-  m_Name: Flecha
+  m_Name: Arrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -97,7 +97,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sender: {fileID: 0}
   _explosionPrefab: {fileID: 0}
-  _projectileProperties: {fileID: 11400000, guid: 03e3b039f47e63048a01ffd8f0ab5707, type: 2}
+  minDamage: 20
+  maxDamage: 30
+  speed: 8.5
+  impulseForce: 6
+  effects: []
   _damageAdd: 5
   destroyingProcess: 0
   bulletExclusionType: 1

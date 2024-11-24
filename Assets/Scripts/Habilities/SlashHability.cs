@@ -19,7 +19,7 @@ namespace HabilitySystem
         public void Start()
         {
             SetHability("Slash", 5, HabilityType.basic);
-            slashPrefab = Resources.Load<GameObject>("VFX/Powers/Slash/VFX_Slash");
+            slashPrefab = Resources.Load<GameObject>("Projectiles/Slash");
         }
         public void Update()
         {
@@ -75,7 +75,6 @@ namespace HabilitySystem
             cooldownTimer = 0;
             Vector3 eTarget = gameObject.layer == 10 ? eTarget = GetComponent<IEntity>().EntityData.target.transform.position : eTarget = GetComponent<GamePlayer>().playerTarget;
             var slash = Instantiate(slashPrefab, new Vector3(transform.position.x, IEntity.DEFAULT_SHOT_Y_POSITION, transform.position.z), Quaternion.Euler(0, (-MathEx.AngleRadian(transform.position, new Vector3(eTarget.x, IEntity.DEFAULT_SHOT_Y_POSITION, eTarget.z)) * Mathf.Rad2Deg) - 90, 0), GameManager.gameManagerInstance.gameObject.transform);
-            slash.GetComponent<IBullet>().damageAdd = GetComponent<IEntity>().EntityData.currentStrength * 2;
             slash.GetComponent<IBullet>().sender = gameObject;
             slash.layer = gameObject.layer == 8 ? 12 : 11;
             selecting = false;

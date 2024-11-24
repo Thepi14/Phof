@@ -245,6 +245,7 @@ namespace EntityDataSystem
         public byte level = 1;
         public float currentTick = 0;
         public bool stackable = false;
+        [HideInInspector]
         public GameObject effectVFX;
         [HideInInspector]
         public int frameAdded = 0;
@@ -734,13 +735,13 @@ namespace EntityDataSystem
     public interface IBullet
     {
         public GameObject sender { get; set; }
+        public IEntity senderEntity => sender.GetComponent<IEntity>();
         public GameObject explosionPrefab { get; set; }
-        public ProjectileProperties projectileProperties { get; set; }
         public bool started { get; set; }
         public void SetBullet(GameObject sender, float? radAngles = null);
         public void DeathEffect();
         public DamageData damageData { get; set; }
-        public int damageAdd { get; set; }
+        public bool entityDamageAdd { get; set; }
     }
     public abstract class BaseBulletBehaviour : EntityBehaviour, IBullet
     {
@@ -748,19 +749,23 @@ namespace EntityDataSystem
         private GameObject _sender;
         [SerializeField]
         private GameObject _explosionPrefab;
-        [SerializeField]
-        private ProjectileProperties _projectileProperties;
+        public IEntity senderEntity => sender.GetComponent<IEntity>();
 
         private bool _started = false;
 
+        public int minDamage = 1;
+        public int maxDamage = 1;
+        public float speed = 10f;
+        public float impulseForce;
+        public List<Effect> effects = new List<Effect>();
+        [SerializeField]
+        private bool _entityDamageAdd;
+        public bool entityDamageAdd { get => _entityDamageAdd; set => _entityDamageAdd = value; }
+
         public GameObject sender { get => _sender; set => _sender = value; }
         public GameObject explosionPrefab { get => _explosionPrefab; set => _explosionPrefab = value; }
-        public ProjectileProperties projectileProperties { get => _projectileProperties; set => _projectileProperties = value; }
         public bool started { get => _started; set => _started = value; }
         public DamageData damageData { get; set; }
-        [SerializeField]
-        private int _damageAdd;
-        public int damageAdd { get => _damageAdd; set => _damageAdd = value; }
         public bool destroyingProcess = false;
 
         public virtual void SetBullet(GameObject sender, float? radAngles = null)
