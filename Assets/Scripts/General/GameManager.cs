@@ -304,7 +304,7 @@ namespace GameManagerSystem
         public void NextStage()
         {
             PlayerPrefs.SetInt("CURRENT_STAGE", PlayerPrefs.GetInt("CURRENT_STAGE", 1) + 1);
-            StartCoroutine(LoadAsyncGame(1));
+            StartCoroutine(LoadAsyncGame(2));
         }
         private IEnumerator LoadAsyncGame(int index)
         {

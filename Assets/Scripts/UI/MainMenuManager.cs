@@ -12,6 +12,7 @@ using LangSystem;
 using static LangSystem.Language;
 using UnityEditor;
 using EasterEggs;
+using InputManagement;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -88,6 +89,8 @@ public class MainMenuManager : MonoBehaviour
 
     void Start()
     {
+        InputManager.ResetKeyBindToDefault();
+        PlayerPrefs.SetInt("DEFAULTED", 0);
         if (PlayerPrefs.GetInt("DEFAULTED", 0) == 0)
         {
             Debug.Log("Game defaulted succesfullyyy");
@@ -124,7 +127,7 @@ public class MainMenuManager : MonoBehaviour
 
         PlayButton.onClick.AddListener(() => { OpenMenu(Panel.Newgamepanel); });
         LangButton.onClick.AddListener(() => { OpenMenu(Panel.LanguagePanel); });
-        CreditsButton.onClick.AddListener(() => { SceneManager.LoadScene(2); });
+        CreditsButton.onClick.AddListener(() => { SceneManager.LoadScene(3); });
         ExitButton.onClick.AddListener(() => { Application.Quit(); });
 
         ToClassButton.onClick.AddListener(() => { ClassPanel.SetActive(true); });
