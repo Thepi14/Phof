@@ -476,10 +476,10 @@ public class TerrainGeneration : MonoBehaviour
 
         if (block.GetComponent<Collider>() != null)
         {
-            block.AddComponent<Rigidbody>();
+            /*block.AddComponent<Rigidbody>();
             block.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             block.GetComponent<Rigidbody>().isKinematic = true;
-            block.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.Continuous;
+            block.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.Continuous;*/
             /*if (type.isDestructible)
             {
                 block.AddComponent<BlockEntity>();

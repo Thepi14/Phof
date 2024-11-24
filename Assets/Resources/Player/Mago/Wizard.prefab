@@ -536,7 +536,7 @@ Animator:
   m_GameObject: {fileID: 5079276993695259559}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 678604f13539ada43911d37fa3f1ae76, type: 2}
+  m_Controller: {fileID: 9100000, guid: 4b2f0e3077b477f4aab5c343aac3b6e9, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -562,7 +562,7 @@ GameObject:
   - component: {fileID: 6813995179876145116}
   - component: {fileID: 6429081168655082510}
   m_Layer: 8
-  m_Name: Player
+  m_Name: Wizard
   m_TagString: GamePlayer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -653,11 +653,11 @@ MonoBehaviour:
   _entityData:
     gameObject: {fileID: 5316647512813464706}
     name: 
-    level: 2
-    strength: 3
-    resistance: 4
-    intelligence: 1
-    defense: 2
+    level: 8
+    strength: 1
+    resistance: 2
+    intelligence: 4
+    defense: 1
     speed: 5
     attackSpeedMultipliyer: 1
     maxKarma: 0

@@ -72,7 +72,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 78f738cb513d99d489dd6b00118caa9d, type: 2}
+  m_Motion: {fileID: 7400000, guid: 0e6e705e81d86774a8bd9cf5f75ac941, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -134,7 +134,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Player
+  m_Name: Mago
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Walking
@@ -184,7 +184,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: a3fb88168c6c9ee4ba86d90628125e0c, type: 2}
+  m_Motion: {fileID: 7400000, guid: 5782561faef8abf499c2bbc32e52e423, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -240,7 +240,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 50d244f6cf9cd9d49a1f59a92ed4fbd6, type: 2}
+  m_Motion: {fileID: 7400000, guid: e3184baffba53ff4fb847da6332dffc2, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 

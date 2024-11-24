@@ -12,6 +12,7 @@ using RoomSystem;
 using UnityEngine.SceneManagement;
 using LangSystem;
 using System.Threading.Tasks;
+using TMPro;
 
 namespace GameManagerSystem
 {
@@ -24,8 +25,13 @@ namespace GameManagerSystem
         public GameObject optionsMenu;
 
         [Header("General", order = 0)]
+        public GameObject wizardPrefab;
+        public GameObject warriorPrefab;
+        public GameObject archerPrefab;
+        [HideInInspector]
         public GameObject playerPrefab;
         public GameObject targetObject;
+        public GameObject damageTextPrefab;
 
         [Header("Current Status", order = 1)]
         public RoomNode currentRoom;
@@ -44,6 +50,18 @@ namespace GameManagerSystem
 
         private async void Awake()
         {
+            switch (PlayerPrefs.GetString("CLASS", "Warrior"))
+            {
+                case "Warrior":
+                    playerPrefab = warriorPrefab;
+                    break;
+                case "Wizard":
+                    playerPrefab = wizardPrefab;
+                    break;
+                case "Archer":
+                    playerPrefab = archerPrefab;
+                    break;
+            }
             if (gameManagerInstance == null)
             {
                 gameManagerInstance = this;
@@ -84,10 +102,8 @@ namespace GameManagerSystem
             {
                 throw new Exception("GameObject " + entity.name + " does not have IEntity component.");
             }
-
             var newEntity = Instantiate(entity, new Vector3(position.x, 1f, position.y), Quaternion.identity, null);
-            newEntity.SetActive(false);
-
+            AddEntity(newEntity);
             newEntity.SetActive(true);
         }
         public void AddEntity(GameObject entity)
@@ -108,6 +124,16 @@ namespace GameManagerSystem
                     enemies.Add(entity);
                     entity.GetComponent<IEntity>().OnDeathEvent.AddListener((a, obj) => { entities.Remove(entity); enemies.Remove(entity); });
                     break;
+            }
+            if (entity.layer == 8 || entity.layer == 10)
+            {
+                entity.GetComponent<IEntity>().OnDamageEvent.AddListener((entityData, obj, damageData, total) =>
+                {
+                    if (total == 0)
+                        return;
+                    Instantiate(damageTextPrefab, entity.transform.position + new Vector3(UnityEngine.Random.Range(-1.1f, 1.1f), 0, -0.5f), Quaternion.identity);
+                    damageTextPrefab.GetComponentInChildren<DamageExbitionAngler>().gameObject.GetComponent<TextMeshPro>().text = $"-{total}";
+                });
             }
         }
         public void RemoveEffectByName(IEntity entity, string name, int frames)

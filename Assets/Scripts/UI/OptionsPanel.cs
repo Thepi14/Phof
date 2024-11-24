@@ -62,10 +62,10 @@ public class OptionsPanel : MonoBehaviour
         KeybindButton.onClick.AddListener(() => { OpenPanel(Panel.KeybindPanel); });
         ExitButton.onClick.AddListener(() => { ExitMenu(); });
 
-        MasterVolume.onValueChanged.AddListener((value) => { PlayerPrefs.SetFloat("MASTER_VOLUME", value); });
-        MusicVolume.onValueChanged.AddListener((value) => { PlayerPrefs.SetFloat("MUSIC_VOLUME", value); });
-        SoundEffectsVolume.onValueChanged.AddListener((value) => { PlayerPrefs.SetFloat("SOUND_EFFECTS_VOLUME", value); });
-        UIVolume.onValueChanged.AddListener((value) => { PlayerPrefs.SetFloat("UI_VOLUME", value); });
+        MasterVolume.onValueChanged.AddListener((value) => { PlayerPrefs.SetFloat("MASTER_VOLUME", value); PlayerPrefs.Save(); });
+        MusicVolume.onValueChanged.AddListener((value) => { PlayerPrefs.SetFloat("MUSIC_VOLUME", value); PlayerPrefs.Save(); });
+        SoundEffectsVolume.onValueChanged.AddListener((value) => { PlayerPrefs.SetFloat("SOUND_EFFECTS_VOLUME", value); PlayerPrefs.Save(); });
+        UIVolume.onValueChanged.AddListener((value) => { PlayerPrefs.SetFloat("UI_VOLUME", value); PlayerPrefs.Save(); });
         VolumeExitButton.onClick.AddListener(() => { OpenPanel(0); });
 
         MasterVolume.value = PlayerPrefs.GetFloat("MASTER_VOLUME", 0.8f);

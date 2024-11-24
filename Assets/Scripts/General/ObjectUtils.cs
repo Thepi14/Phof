@@ -69,43 +69,7 @@ namespace ObjectUtils
         /// <returns>O componente do GameObject no caminho inserido.</returns>
         public static T GetGameObjectComponent<T>(GameObject start, string path)
         {
-            if (start == null)
-                throw new System.ArgumentNullException("GameObject of name \'" + start.name + "\' is null", "start");
-            //lista de nomes
-            List<string> names = new List<string>();
-            //lista de caracteres do path
-            char[] chars = path.ToCharArray();
-            //nome temporário em chars
-            List<char> temp = new List<char>();
-            //iterar sobre os chars
-            for (int i = 0; i < path.Length; i++)
-            {
-                //se for uma separação
-                if (chars[i] == '\\' || chars[i] == '/')
-                {
-                    //adiciona um nome
-                    names.Add(new string(temp.ToArray()));
-                    //renova a temp
-                    temp = new List<char>();
-                    //continua
-                    continue;
-                }
-                //adiciona novo char se não for uma separação
-                temp.Add(chars[i]);
-            }
-            //última iteração adicionada como último destino do caminho.
-            names.Add(new string(temp.ToArray()));
-            //go se torna referência inicial
-            GameObject go = start;
-            //iterar sobre cada nome
-            foreach (string name in names)
-            {
-                //se o filho de go for nulo
-                if (go.transform.Find(name) == null)
-                    throw new System.Exception(name + " was not been found or it doesn't exist on the path: " + path);
-                //go é igual ao gameobject achado como filho do seu transform
-                go = go.transform.Find(name).gameObject;
-            }
+            var go = GetGameObject(start, path);
             if (go == null)
                 throw new System.Exception("GameObject has not been found on the path.");
             if (go.GetComponent<T>() == null)

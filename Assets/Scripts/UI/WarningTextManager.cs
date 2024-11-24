@@ -19,6 +19,8 @@ public class WarningTextManager : MonoBehaviour
     private string currentMsg = "";
     private int msgRepetition = 0;
 
+    public static Color WarningTextColor => new Color(1, 0.37f, 0.37f, 1);
+
     void Start()
     {
         if (warningTextManagerInstance == null)

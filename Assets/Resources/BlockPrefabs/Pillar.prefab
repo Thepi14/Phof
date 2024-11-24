@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 456811408206589613}
   - component: {fileID: 5247192604669791948}
   - component: {fileID: 4233254964959045927}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Pillar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -62,7 +62,7 @@ MeshCollider:
   m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
-  m_CookingOptions: 30
+  m_CookingOptions: 18
   m_Mesh: {fileID: 2495703381458242797, guid: 04a8596f9456783408706d52f766979f, type: 3}
 --- !u!23 &4233254964959045927
 MeshRenderer:

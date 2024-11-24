@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 565304763275406145}
   - component: {fileID: 1598184473616387042}
   - component: {fileID: 8294112554871186009}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GroundBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -104,5 +104,5 @@ MeshCollider:
   m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
-  m_CookingOptions: 30
+  m_CookingOptions: 18
   m_Mesh: {fileID: 5159557868297216081, guid: 73c1ae02814fb3842b1e2ab98c7b6dd0, type: 3}

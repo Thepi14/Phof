@@ -18,12 +18,21 @@ MonoBehaviour:
   enterNumber: Enter number
   exit: Exit
   loading: Loading
+  ok: Ok
+  Return: Return
   generateNewWorld: Generate new world
   generate: Generate
   mapSize: Map size
   seed: Seed
   generatingWorld: Generating world...
+  chooseYourClass: Choose your class
+  wizard: Wizard
+  warrior: Warrior
+  archer: Archer
   level: Level
+  currentLevel: Current level
+  availablePoints: Available points
+  cantLevelUpAttribute: Needs more points to level up attributes.
   strength: Strength
   resistance: Resistance
   intelligence: Intelligence

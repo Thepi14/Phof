@@ -105,7 +105,7 @@ MeshCollider:
   m_Enabled: 1
   serializedVersion: 5
   m_Convex: 0
-  m_CookingOptions: 30
+  m_CookingOptions: 18
   m_Mesh: {fileID: -3262789968867269347, guid: 9980ad6c58386484099f7a4c2dc8547d, type: 3}
 --- !u!114 &3267789115586257347
 MonoBehaviour:
@@ -129,9 +129,11 @@ MonoBehaviour:
     defense: 1
     speed: 2.5
     attackSpeedMultipliyer: 1
+    maxKarma: 0
     maxHealth: 10
     maxStamina: 0
     maxMana: 0
+    currentKarma: 0
     currentHealth: 10
     currentStamina: 0
     currentMana: 0

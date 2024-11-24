@@ -204,7 +204,6 @@ namespace RoomSystem
             {
                 door.doorBlock.GetComponent<Animator>().Play("DoorOpen");
             }
-
             SoundManager.StopMusic();
             GameManager.UpdatePlayerMaxKarma(usedPoints);
             Instance.RoomOcclusion(-1);

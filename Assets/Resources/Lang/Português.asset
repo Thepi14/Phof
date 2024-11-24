@@ -18,12 +18,21 @@ MonoBehaviour:
   enterNumber: "Coloque n\xFAmero"
   exit: Sair
   loading: Carregando
+  ok: Ok
+  Return: Voltar
   generateNewWorld: Gerar novo mundo
   generate: Gerar
   mapSize: Tamanho do mapa
   seed: Semente
   generatingWorld: Gerando mundo...
+  chooseYourClass: Escolha sua classe
+  wizard: Mago
+  warrior: Guerreiro
+  archer: Arqueiro
   level: "N\xEDvel"
+  currentLevel: "N\xEDvel atual"
+  availablePoints: "Pontos dispon\xEDveis"
+  cantLevelUpAttribute: "N\xE3o d\xE1 para evoluir atributo, precisa de mais pontos."
   strength: "For\xE7a"
   resistance: "Resist\xEAncia"
   intelligence: "Intelig\xEAncia"
