@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07d7222b6841bb246bf483a2780cfa3d, type: 3}
   m_Name: Arrow
   m_EditorClassIdentifier: 
-  minDamage: 10
+  minDamage: 20
   maxDamage: 30
   speed: 8.5
   effects: []

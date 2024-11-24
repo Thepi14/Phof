@@ -653,10 +653,10 @@ MonoBehaviour:
   _entityData:
     gameObject: {fileID: 5316647512813464706}
     name: 
-    level: 8
+    level: 6
     strength: 1
-    resistance: 2
-    intelligence: 4
+    resistance: 1
+    intelligence: 3
     defense: 1
     speed: 5
     attackSpeedMultipliyer: 1

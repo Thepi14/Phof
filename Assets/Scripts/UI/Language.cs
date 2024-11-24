@@ -15,9 +15,6 @@ namespace LangSystem
         public static List<Language> languages;
         public string LanguageName => name;
 
-        [Header("Main menu")]
-        public string playNewGame;
-
         [Header("General")]
         public string language;
         public string enterText;
@@ -26,6 +23,10 @@ namespace LangSystem
         public string loading;
         public string ok;
         public string Return;
+
+        [Header("Main menu")]
+        public string playNewGame;
+        public string credits;
 
         [Header("New game world")]
         public string generateNewWorld;

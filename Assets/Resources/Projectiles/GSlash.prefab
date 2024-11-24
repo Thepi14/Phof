@@ -4972,7 +4972,7 @@ GameObject:
   - component: {fileID: 8801346508800993971}
   - component: {fileID: 8880245080807855880}
   m_Layer: 12
-  m_Name: VFX_GSlash
+  m_Name: GSlash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5057,6 +5057,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sender: {fileID: 0}
   _explosionPrefab: {fileID: 0}
-  _projectileProperties: {fileID: 11400000, guid: 499a98616529d9b449262daafab96f55, type: 2}
+  minDamage: 15
+  maxDamage: 25
+  speed: 8
+  impulseForce: 5
+  effects:
+  - name: Stun
+    duration: 3
+    tickDelay: 0
+    level: 1
+    currentTick: 0
+    stackable: 0
+    effectVFX: {fileID: 0}
+    frameAdded: 0
   _damageAdd: 6
   destroyingProcess: 0

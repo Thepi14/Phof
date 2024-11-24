@@ -18,6 +18,11 @@ public static class PlayerPreferences
     public static float UIVolumeScaled => PlayerPrefs.GetFloat("UI_VOLUME", 1f) * PlayerPrefs.GetFloat("MASTER_VOLUME", 0.8f);
     #endregion
 
+    #region Configurations
+    public static bool ShowDamage => PlayerPrefs.GetInt("SHOW_DAMAGE", 1) == 1;
+    public static bool Orthographic => PlayerPrefs.GetInt("ORTHOGRAPHIC", 0) == 1;
+    #endregion
+
     public static Difficulty GetDifficulty() =>
         CurrentDifficulty == "Easy" ? Difficulty.easy :
         CurrentDifficulty == "Normal" ? Difficulty.normal :

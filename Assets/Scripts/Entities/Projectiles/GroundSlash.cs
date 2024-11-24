@@ -9,7 +9,7 @@ public class GroundSlash : BaseBulletBehaviour
 {
     private Rigidbody RB => GetComponent<Rigidbody>();
     private List<GameObject> entitiesAffected = new();
-    private float timer = 6;
+    private float timer = 4.5f;
     private float timerTime = 0;
     private List<GameObject> wallList = new();
 
@@ -25,7 +25,7 @@ public class GroundSlash : BaseBulletBehaviour
     {
         if (!started && !destroyingProcess)
             return;
-        RB.velocity = new Vector3((transform.forward * projectileProperties.speed).x, RB.velocity.y, (transform.forward * projectileProperties.speed).z);
+        RB.velocity = new Vector3((transform.forward * speed).x, RB.velocity.y, (transform.forward * speed).z);
         //transform.rotation = Quaternion.LookRotation(RB.velocity.normalized);
     }
     private void OnTriggerEnter(Collider collider)
@@ -42,7 +42,7 @@ public class GroundSlash : BaseBulletBehaviour
             (collider.gameObject.layer == 6))//WALL
         {
             entitiesAffected.Add(collider.gameObject);
-            collider.gameObject.GetComponent<IEntity>().Damage(new DamageData(sender, Random.Range(projectileProperties.minDamage + damageAdd, projectileProperties.maxDamage + damageAdd), MathEx.AngleVectors(transform.position, collider.gameObject.transform.position) * projectileProperties.impulseForce, projectileProperties.effects, true));
+            collider.gameObject.GetComponent<IEntity>().Damage(new DamageData(sender, Random.Range(minDamage + (senderEntity.EntityData.currentStrength * 3), maxDamage + (senderEntity.EntityData.currentStrength * 3)), MathEx.AngleVectors(transform.position, collider.gameObject.transform.position) * impulseForce, effects, true));
         }
     }
     private void FixedUpdate()

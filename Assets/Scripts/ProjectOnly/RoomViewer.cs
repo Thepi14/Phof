@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if UNITY_EDITOR
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -8,7 +9,6 @@ using static RoomInfo;
 
 public class RoomViewer : MonoBehaviour
 {
-#if UNITY_EDITOR
     [HelpAttribute("Ao mudar essas variáveis o mapa vai atualizar automáticamente, se nada der errado. Os erros irão aparecer no console mesmo.", order = -1)]
     [Header("Configuration", order = 0)]
     public Biome biome;
@@ -203,5 +203,5 @@ public class RoomViewer : MonoBehaviour
                 blocks.Remove(block);
         }
     }
-#endif
 }
+#endif

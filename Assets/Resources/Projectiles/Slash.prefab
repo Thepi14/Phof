@@ -39131,7 +39131,7 @@ GameObject:
   - component: {fileID: 963438681857489122}
   - component: {fileID: 6851906136362650657}
   m_Layer: 12
-  m_Name: VFX_Slash
+  m_Name: Slash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -39220,7 +39220,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sender: {fileID: 0}
   _explosionPrefab: {fileID: 0}
-  _projectileProperties: {fileID: 11400000, guid: 3cefdf86cdb9a8c479cb03cccfbd0154, type: 2}
+  minDamage: 20
+  maxDamage: 30
+  speed: 9
+  impulseForce: 6.5
+  effects: []
   _damageAdd: 6
   destroyingProcess: 0
 --- !u!1 &7935694947140365353

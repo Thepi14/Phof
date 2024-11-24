@@ -51,12 +51,12 @@ namespace ProjectileSystem
             if ((condition > maxTimeAlive && bulletExclusionType == BulletExclusionType.ByTime) || (condition > maxDistance && bulletExclusionType == BulletExclusionType.ByDistance))
                EndBullet();
 
-            RB.velocity = new Vector3((transform.forward * projectileProperties.speed).x, RB.velocity.y, (transform.forward * projectileProperties.speed).z);
+            RB.velocity = new Vector3((transform.forward * speed).x, RB.velocity.y, (transform.forward * speed).z);
             //transform.rotation = Quaternion.LookRotation(RB.velocity.normalized);
         }
         private void OnTriggerEnter(Collider collider)
         {
-            damageData = new DamageData(sender, Random.Range(projectileProperties.minDamage, projectileProperties.maxDamage), MathEx.AngleVectors(transform.position, collider.transform.position) * projectileProperties.impulseForce, projectileProperties.effects, false);
+            damageData = new DamageData(sender, Random.Range(minDamage, maxDamage), MathEx.AngleVectors(transform.position, collider.transform.position) * impulseForce, effects, false);
             switch (collider.gameObject.layer)
             {
                 case 0:

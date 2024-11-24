@@ -124,6 +124,7 @@ public class MainMenuManager : MonoBehaviour
 
         PlayButton.onClick.AddListener(() => { OpenMenu(Panel.Newgamepanel); });
         LangButton.onClick.AddListener(() => { OpenMenu(Panel.LanguagePanel); });
+        CreditsButton.onClick.AddListener(() => { SceneManager.LoadScene(2); });
         ExitButton.onClick.AddListener(() => { Application.Quit(); });
 
         ToClassButton.onClick.AddListener(() => { ClassPanel.SetActive(true); });
@@ -175,6 +176,7 @@ public class MainMenuManager : MonoBehaviour
         //main menu
         GetGameObjectComponent<TextMeshProUGUI>(PlayButton.gameObject, "Text").text = currentLanguage.playNewGame;
         GetGameObjectComponent<TextMeshProUGUI>(LangButton.gameObject, "Text").text = currentLanguage.language;
+        GetGameObjectComponent<TextMeshProUGUI>(CreditsButton.gameObject, "Text").text = currentLanguage.credits;
         GetGameObjectComponent<TextMeshProUGUI>(ExitButton.gameObject, "Text").text = currentLanguage.exitGame;
 
         //new game menu

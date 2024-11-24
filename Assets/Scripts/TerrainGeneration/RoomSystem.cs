@@ -9,29 +9,25 @@ using static TerrainGeneration;
 using static NavMeshUpdate;
 using System.Linq;
 using System.Threading.Tasks;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace RoomSystem
 {
     [Serializable]
     public class RoomNode : MonoBehaviour
     {
+        #region Room information
         public RoomInfo info;
-        public class RoomCompletionEvent : UnityEvent { }
-        public RoomCompletionEvent OnRoomCompletion = new RoomCompletionEvent();
-        public class RoomStartEvent : UnityEvent { }
-        public RoomStartEvent OnRoomStart = new RoomStartEvent();
-
         public byte id;
-        [SerializeField]
+
         private int _maxPoints;
         public int maxPoints { set { _maxPoints = (int)(((size ^ 2) * (int)PlayerPreferences.GetDifficulty() * 100) * info.entityDensity); } get { return (int)(((size ^ 2) * (int)PlayerPreferences.GetDifficulty() * 100) * info.entityDensity); } }
         public int usedPoints;
+        [SerializeField]
+        private List<SpawnPoint> spawnPoints = new();
 
         public bool isFirstRoom => id == 1;
         public bool isLastRoom => id == Instance.rooms.Count;
-
-        public bool roomEntered = false;
-        public bool roomCompleted = false;
 
         public Vector2Int position;
 
@@ -41,15 +37,25 @@ namespace RoomSystem
         public Vector2Int RightUpCornerPositionInternal => RightUpCornerPosition - new Vector2Int(1, 1);
 
         public int size;
-
         public List<GameObject> blocks = new List<GameObject>();
-
         public List<Door> doors;
         [HideInInspector]
         [SerializeReference]
         public List<RoomNode> roomChildren;
 
+        public class RoomCompletionEvent : UnityEvent { }
+        public RoomCompletionEvent OnRoomCompletion = new RoomCompletionEvent();
+        public class RoomStartEvent : UnityEvent { }
+        public RoomStartEvent OnRoomStart = new RoomStartEvent();
         public BoxCollider RoomArea => GetComponent<BoxCollider>();
+        #endregion
+
+        #region Status
+        public bool roomEntered = false;
+        public bool roomCompleted = false;
+        #endregion
+
+
 
         #region Room config
         public void NewRoomNode(byte id, Vector2Int position, int size)
@@ -97,6 +103,17 @@ namespace RoomSystem
             doors = new List<Door>();
         }
         #endregion
+        public class SpawnPoint
+        {
+            public Vector2 position;
+            public GameObject entity;
+
+            public SpawnPoint(Vector2 position, GameObject entity)
+            {
+                this.position = position;
+                this.entity = entity;
+            }
+        }
 
         public void Start()
         {
@@ -163,39 +180,43 @@ namespace RoomSystem
                 if (posList.Contains(new Vector2Int(x, y)) || Instance.spawnTiles[x, y])
                     goto returnV;
                 posList.Add(new Vector2Int(x, y));
-
                 var random = UnityEngine.Random.Range(0, entityList.Count);
-                if (entityList[random] != null)
+                var entity = entityList[random];
+                if (entity != null)
                 {
-                    if (entityList[random].GetComponent<IEntity>().EntityData.currentKarma == 0)
+                    if (entity.GetComponent<IEntity>().EntityData.currentKarma == 0)
                         throw new Exception("Entity has 0 karma, this is not allowed.");
-                    if (usedPoints + Mathf.Abs(entityList[random].GetComponent<IEntity>().EntityData.currentKarma) < maxPoints)
+                    if (usedPoints + Mathf.Abs(entity.GetComponent<IEntity>().EntityData.currentKarma) < maxPoints)
                     {
-                        usedPoints += entityList[random].GetComponent<IEntity>().EntityData.currentKarma;
-                        GameManager.gameManagerInstance.SpawnEntity(new Vector2(x + 0.5f, y + 0.5f), entityList[random]);
+                        usedPoints += entity.GetComponent<IEntity>().EntityData.currentKarma;
+                        spawnPoints.Add(new SpawnPoint(new Vector2(x + 0.5f, y + 0.5f), entity));
                     }
                     else
-                    {
-                        entityList.RemoveAt(random);
-                    }
+                        entityList.Remove(entity);
                 }
                 else
-                {
-                    entityList.RemoveAt(random);
-                }
+                    entityList.Remove(entity);
             }
 
             foreach (Door door in doors)
             {
                 door.doorBlock.GetComponent<Animator>().Play("DoorClose");
             }
-            foreach (var entity in GameManager.gameManagerInstance.enemies)
-            {
-                entity.GetComponent<IEntity>().OnDeathEvent.AddListener((a, b) => { if (GameManager.gameManagerInstance.enemies.Count == 0) CompleteRoom(); });
-            }
+            StartCoroutine(SpawnEntitiesDelayed());
 
             SoundManager.PlayMusic("No_Mercy");
             Instance.RoomOcclusion(id);
+        }
+        public const float timer = 3f;
+        private IEnumerator SpawnEntitiesDelayed()
+        {
+            yield return new WaitForSeconds(timer);
+            foreach (var spawn in spawnPoints)
+            {
+                var entity = GameManager.SpawnEntity(spawn.position, spawn.entity);
+                entity.GetComponent<IEntity>().OnDeathEvent.AddListener((a, b) => { if (GameManager.gameManagerInstance.enemies.Count == 0) CompleteRoom(); });
+                yield return new WaitForEndOfFrame();
+            }
         }
         private void RoomCompletionFunction()
         {
