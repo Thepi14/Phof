@@ -15,8 +15,6 @@ using ProjectileSystem;
 using UnityEngine.Events;
 using UnityEngine.AI;
 using System.Linq;
-using static UnityEngine.RuleTile.TilingRuleOutput;
-using UnityEngine.UIElements;
 
 namespace EntityDataSystem
 {

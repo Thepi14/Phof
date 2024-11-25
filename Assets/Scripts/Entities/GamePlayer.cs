@@ -10,6 +10,8 @@ using System.Linq;
 using ItemSystem;
 using System.Threading.Tasks;
 using InputManagement;
+using HabilitySystem;
+using Unity.VisualScripting;
 
 public class GamePlayer : BaseEntityBehaviour, IEntity
 {
@@ -33,6 +35,19 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
     public GameObject AttackArea => transform.Find("AttackArea").gameObject;
 
     #endregion
+    public string[] GetCards()
+    {
+        var list = new List<string>();
+        foreach (var card in EntityData.habilities)
+        {
+            var cardID = card.Value.habilityID;
+            Debug.Log(cardID);
+            if (!CardChoice.habilitiesIDs.Contains(cardID))
+                throw new System.Exception($"Hability of name: {cardID} doesn't exist, put it's name on the list or it's not a hability.");
+            list.Add(cardID);
+        }
+        return list.ToArray();
+    }
 
     public void Awake()
     {

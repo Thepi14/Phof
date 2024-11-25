@@ -23,7 +23,7 @@ public class CardChoice : MonoBehaviour
         "GroundSlash",
         "Berserk",
     };
-    public void AddCard(string cardID)
+    public static void AddCard(string cardID)
     {
         if (!habilitiesIDs.Contains(cardID))
             throw new System.Exception($"Hability of name: {cardID} doesn't exist, put it's name on the list or it's not a hability.");
@@ -37,6 +37,9 @@ public class CardChoice : MonoBehaviour
                 break;
             case "Berserk":
                 player.AddComponent<BerserkHability>();
+                break;
+            case "FireTornado":
+
                 break;
         }
     }

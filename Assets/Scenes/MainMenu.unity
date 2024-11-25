@@ -6379,7 +6379,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100x100
+  m_text: 120x120
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 93d663642291aa94bab1773b873598bf, type: 2}
   m_sharedMaterial: {fileID: -816036870339015491, guid: 93d663642291aa94bab1773b873598bf, type: 2}
@@ -6855,7 +6855,7 @@ GameObject:
   - component: {fileID: 1195752558}
   - component: {fileID: 1195752559}
   m_Layer: 5
-  m_Name: Toggle100
+  m_Name: Toggle120
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6929,7 +6929,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 1
+  m_IsOn: 0
 --- !u!1 &1198686200
 GameObject:
   m_ObjectHideFlags: 0
@@ -7414,7 +7414,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 80x80
+  m_text: '100x100
+
+'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 93d663642291aa94bab1773b873598bf, type: 2}
   m_sharedMaterial: {fileID: -816036870339015491, guid: 93d663642291aa94bab1773b873598bf, type: 2}
@@ -9834,7 +9836,7 @@ GameObject:
   - component: {fileID: 2003721340}
   - component: {fileID: 2003721341}
   m_Layer: 5
-  m_Name: Toggle80
+  m_Name: Toggle100
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9908,7 +9910,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 0
+  m_IsOn: 1
 --- !u!1 &2059675729
 GameObject:
   m_ObjectHideFlags: 0

@@ -30,6 +30,7 @@ namespace ItemSystem
     [CreateAssetMenu(fileName = "new Item", menuName = "Novo item", order = 0)]
     public class Item : ScriptableObject
     {
+        public string ID => name;
         [Header("Geral", order = 0)]
         public string itemName = "NULL";
         public Sprite itemSprite;

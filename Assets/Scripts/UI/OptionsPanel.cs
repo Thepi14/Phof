@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using static LangSystem.Language;
 using UnityEngine.SceneManagement;
+using static GamePlayer;
 
 public class OptionsPanel : MonoBehaviour
 {
@@ -77,12 +78,25 @@ public class OptionsPanel : MonoBehaviour
         if (QuitGameButton != null)
         {
             QuitGameButton.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = currentLanguage.exitGame;
-            QuitGameButton.onClick.AddListener(() => { Application.Quit(); });
+            QuitGameButton.onClick.AddListener(() => {  Application.Quit(); });
         }
         if (ReturnToMainMenuButton != null)
         {
             ReturnToMainMenuButton.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = currentLanguage.returnToMainMenu;
-            ReturnToMainMenuButton.onClick.AddListener(() => { PlayerPrefs.Save(); DontDestroyOnLoadManager.DestroyAll(); SceneManager.LoadSceneAsync(0); });
+            ReturnToMainMenuButton.onClick.AddListener(() => 
+            { 
+                if (!PlayerPreferences.Died)
+                {
+                    PlayerPreferences.SavePlayerData(player.EntityData);
+                }
+                else
+                {
+                    PlayerPrefs.SetInt("SAVED_GAME", 0);
+                }
+                PlayerPrefs.Save();
+                DontDestroyOnLoadManager.DestroyAll();
+                SceneManager.LoadSceneAsync(0);
+            });
         }
 
         OpenPanel(0);

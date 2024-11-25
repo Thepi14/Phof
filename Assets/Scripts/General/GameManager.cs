@@ -78,6 +78,7 @@ namespace GameManagerSystem
                     playerPrefab = archerPrefab;
                     break;
             }
+
             PlayerPrefs.SetInt("SAVED_GAME", 1);
             PlayerPrefs.Save();
             gameObject.DontDestroyOnLoad();
@@ -308,7 +309,7 @@ namespace GameManagerSystem
         {
             PlayerPrefs.SetInt("CURRENT_STAGE", PlayerPrefs.GetInt("CURRENT_STAGE", 1) + 1);
             PlayerPrefs.Save();
-            StartCoroutine(LoadAsyncGame(1));
+            StartCoroutine(LoadAsyncGame(2));
         }
         private IEnumerator LoadAsyncGame(int index)
         {

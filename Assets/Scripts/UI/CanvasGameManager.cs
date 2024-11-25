@@ -73,8 +73,9 @@ public class CanvasGameManager : MonoBehaviour
         SetLang();
         sword.onClick.AddListener(() => { espada = false; });
         staff.onClick.AddListener(() => { espada = true; });
-        Instantiate(slots.itemPrefab, slots.equipmentSlots[0].transform).Initialize(slots.equipmentSlots[0], swordItem);
-        Instantiate(slots.itemPrefab, slots.equipmentSlots[1].transform).Initialize(slots.equipmentSlots[1], staffItem);
+
+        //Instantiate(slots.itemPrefab, slots.equipmentSlots[0].transform).Initialize(slots.equipmentSlots[0], swordItem);
+        //Instantiate(slots.itemPrefab, slots.equipmentSlots[1].transform).Initialize(slots.equipmentSlots[1], staffItem);
     }
     public void SetLang()
     {
@@ -193,7 +194,7 @@ public class CanvasGameManager : MonoBehaviour
                     AttributesPanelExibition.GetGameObjectComponent<TextMeshProUGUI>("Defense/Level").text = $"{currentLanguage.level}: {player.EntityData.defense}";
                     break;
                 case "speed":
-                    player.EntityData.speed++;
+                    player.EntityData.speed += 0.2f;
                     AttributesPanelExibition.GetGameObjectComponent<TextMeshProUGUI>("Speed/Level").text = $"{currentLanguage.level}: {player.EntityData.speed}";
                     break;
             }

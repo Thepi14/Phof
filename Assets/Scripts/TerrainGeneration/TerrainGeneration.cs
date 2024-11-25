@@ -431,7 +431,17 @@ public class TerrainGeneration : MonoBehaviour
 
         await Task.Delay(20);
         if (GamePlayer.player == null)
-            Instantiate(GameManager.gameManagerInstance.playerPrefab, new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z), Quaternion.identity, null);
+        {
+            var entityPlayer = Instantiate(GameManager.gameManagerInstance.playerPrefab, new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z), Quaternion.identity, null);
+            if (PlayerPreferences.NewGame)
+            {
+                //PlayerPreferences.SavePlayerData(entityPlayer.GetComponent<GamePlayer>().EntityData);
+            }
+            else
+            {
+                PlayerPreferences.LoadPlayerData();
+            }
+        }
         else
             GamePlayer.player.transform.position = new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z);
 

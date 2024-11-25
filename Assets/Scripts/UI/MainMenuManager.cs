@@ -31,8 +31,8 @@ public class MainMenuManager : MonoBehaviour
     private GameObject NewGamePanel => gameObject.GetGameObject("Newgamepanel");
     private Button ToClassButton => NewGamePanel.GetGameObjectComponent<Button>("Okbutton");
     private TMP_InputField SeedInput => NewGamePanel.GetGameObjectComponent<TMP_InputField>("Seedinput");
-    private Toggle Toggle80 => NewGamePanel.GetGameObjectComponent<Toggle>("Toggle80");
     private Toggle Toggle100 => NewGamePanel.GetGameObjectComponent<Toggle>("Toggle100");
+    private Toggle Toggle120 => NewGamePanel.GetGameObjectComponent<Toggle>("Toggle120");
     private Toggle Toggle150 => NewGamePanel.GetGameObjectComponent<Toggle>("Toggle150");
     private Toggle Toggle200 => NewGamePanel.GetGameObjectComponent<Toggle>("Toggle200");
     private Toggle ToggleEasy => NewGamePanel.GetGameObjectComponent<Toggle>("Toggleeasy");
@@ -119,7 +119,16 @@ public class MainMenuManager : MonoBehaviour
         MainPanel.GetGameObjectComponent<TextMeshProUGUI>("Version").text = "v" + Application.version;
 
         PlayButton.onClick.AddListener(() => { OpenMenu(Panel.Newgamepanel); });
-        ContinueGameButton.onClick.AddListener(() => { SceneManager.LoadScene(1); });
+        ContinueGameButton.onClick.AddListener(() => 
+        { 
+            if (PlayerPreferences.GameSaved)
+            {
+                Debug.Log("Loading game...");
+                PlayerPrefs.SetInt("NEW_GAME", 0);
+                PlayerPrefs.Save();
+                LoadAsyncGame(2);
+            }
+        });
         LangButton.onClick.AddListener(() => { OpenMenu(Panel.LanguagePanel); });
         CreditsButton.onClick.AddListener(() => { SceneManager.LoadScene(3); });
         ExitButton.onClick.AddListener(() => { Application.Quit(); });
@@ -134,8 +143,8 @@ public class MainMenuManager : MonoBehaviour
 
         SeedInput.onEndEdit.AddListener((text) => { if (text.Length == 0 || !int.TryParse(text, out var a)) { SeedInput.text = UnityEngine.Random.Range(10000, 999999) + ""; } });
 
-        Toggle80.onValueChanged.AddListener((a) => { DeactivateAllMapSizeToggles(); Toggle80.SetIsOnWithoutNotify(true); selectedMapWidth = 80; selectedMapHeight = 80; });
         Toggle100.onValueChanged.AddListener((a) => { DeactivateAllMapSizeToggles(); Toggle100.SetIsOnWithoutNotify(true); selectedMapWidth = 100; selectedMapHeight = 100; });
+        Toggle120.onValueChanged.AddListener((a) => { DeactivateAllMapSizeToggles(); Toggle120.SetIsOnWithoutNotify(true); selectedMapWidth = 120; selectedMapHeight = 120; });
         Toggle150.onValueChanged.AddListener((a) => { DeactivateAllMapSizeToggles(); Toggle150.SetIsOnWithoutNotify(true); selectedMapWidth = 150; selectedMapHeight = 150; });
         Toggle200.onValueChanged.AddListener((a) => { DeactivateAllMapSizeToggles(); Toggle200.SetIsOnWithoutNotify(true); selectedMapWidth = 200; selectedMapHeight = 200; });
 
@@ -190,8 +199,8 @@ public class MainMenuManager : MonoBehaviour
         ClassPanel.GetGameObjectComponent<TextMeshProUGUI>("Subpanel/Wizardmask/Wizardbutton/Name").text = currentLanguage.wizard;
         ClassPanel.GetGameObjectComponent<TextMeshProUGUI>("Subpanel/Warriormask/Warriorbutton/Name").text = currentLanguage.warrior;
         ClassPanel.GetGameObjectComponent<TextMeshProUGUI>("Subpanel/Archermask/Archerbutton/Name").text = currentLanguage.archer;
-        GenerateGameButton.gameObject.GetGameObjectComponent<TextMeshProUGUI>("Text").text = currentLanguage.generate;
         ReturnClassPanelButton.gameObject.GetGameObjectComponent<TextMeshProUGUI>("Text").text = currentLanguage.Return;
+        GenerateGameButton.gameObject.GetGameObjectComponent<TextMeshProUGUI>("Text").text = currentLanguage.generate;
 
         //language menu
         LanguagePanel.gameObject.GetGameObjectComponent<TextMeshProUGUI>("Title").text = currentLanguage.language;
@@ -208,6 +217,7 @@ public class MainMenuManager : MonoBehaviour
     public void OpenMenu(int panel) => OpenMenu((Panel)panel);
     private void GenerateNewWorld()
     {
+        PlayerPrefs.SetInt("NEW_GAME", 1);
         PlayerPrefs.SetInt("CURRENT_SEED", int.Parse(SeedInput.text));
         PlayerPrefs.SetInt("MAP_WIDTH", selectedMapWidth);
         PlayerPrefs.SetInt("MAP_HEIGHT", selectedMapHeight);
@@ -216,9 +226,13 @@ public class MainMenuManager : MonoBehaviour
         PlayerPrefs.SetString("DIFFICULTY", selectedDifficulty);
         PlayerPrefs.SetString("CLASS", selectedClass);
         PlayerPrefs.Save();
-        StartCoroutine(LoadAsyncGame(1));
+        LoadAsyncGame(1);
     }
-    private IEnumerator LoadAsyncGame(int index)
+    public void LoadAsyncGame(int index)
+    {
+        StartCoroutine(_LoadAsyncGame(index));
+    }
+    private IEnumerator _LoadAsyncGame(int index)
     {
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(index);
         LoadPanel.SetActive(true);
@@ -231,8 +245,8 @@ public class MainMenuManager : MonoBehaviour
     }
     private void DeactivateAllMapSizeToggles()
     {
-        Toggle80.SetIsOnWithoutNotify(false);
         Toggle100.SetIsOnWithoutNotify(false);
+        Toggle120.SetIsOnWithoutNotify(false);
         Toggle150.SetIsOnWithoutNotify(false);
         Toggle200.SetIsOnWithoutNotify(false);
     }

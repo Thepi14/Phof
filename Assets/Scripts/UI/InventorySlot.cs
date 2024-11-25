@@ -4,7 +4,8 @@ using ItemSystem;
 
 public class inventorySlot : MonoBehaviour, IPointerClickHandler
 {
-    public InventoryItem myItem {  get; set; }
+    [SerializeReference]
+    public InventoryItem myItem;
     public ItemType myType;
     public void OnPointerClick(PointerEventData eventData)
     {
