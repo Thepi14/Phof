@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ObjectUtils;
-using static ObjectUtils.GameObjectGeneral;
 using UnityEngine.UI;
 using TMPro;
 using static LangSystem.Language;
@@ -10,21 +9,21 @@ using UnityEngine.SceneManagement;
 
 public class OptionsPanel : MonoBehaviour
 {
-    public GameObject SubPanel => GetGameObject(gameObject, "Subpanel");
-    public GameObject ConfigPanel => GetGameObject(gameObject, "Configurationspanel");
-    public GameObject VolumePanel => GetGameObject(gameObject, "Volumepanel");
-    public GameObject KeybindPanel => GetGameObject(gameObject, "Keybindpanel");
+    public GameObject SubPanel => gameObject.GetGameObject("Subpanel");
+    public GameObject ConfigPanel => gameObject.GetGameObject("Configurationspanel");
+    public GameObject VolumePanel => gameObject.GetGameObject("Volumepanel");
+    public GameObject KeybindPanel => gameObject.GetGameObject("Keybindpanel");
 
-    public Button ConfigButton => GetGameObjectComponent<Button>(SubPanel, "Configbutton");
-    public Button VolumeButton => GetGameObjectComponent<Button>(SubPanel, "Volumebutton");
-    public Button KeybindButton => GetGameObjectComponent<Button>(SubPanel, "Keybindbutton");
-    public Button ExitButton => GetGameObjectComponent<Button>(SubPanel, "Exitbutton");
+    public Button ConfigButton => SubPanel.GetGameObjectComponent<Button>("Configbutton");
+    public Button VolumeButton => SubPanel.GetGameObjectComponent<Button>("Volumebutton");
+    public Button KeybindButton => SubPanel.GetGameObjectComponent<Button>("Keybindbutton");
+    public Button ExitButton => SubPanel.GetGameObjectComponent<Button>("Exitbutton");
 
-    public Slider MasterVolume => GetGameObjectComponent<Slider>(VolumePanel, "Mastervolume");
-    public Slider MusicVolume => GetGameObjectComponent<Slider>(VolumePanel, "Musicvolume");
-    public Slider SoundEffectsVolume => GetGameObjectComponent<Slider>(VolumePanel, "Soundeffectsvolume");
-    public Slider UIVolume => GetGameObjectComponent<Slider>(VolumePanel, "UIvolume");
-    public Button VolumeExitButton => GetGameObjectComponent<Button>(VolumePanel, "Exitbutton");
+    public Slider MasterVolume => VolumePanel.GetGameObjectComponent<Slider>("Mastervolume");
+    public Slider MusicVolume => VolumePanel.GetGameObjectComponent<Slider>("Musicvolume");
+    public Slider SoundEffectsVolume => VolumePanel.GetGameObjectComponent<Slider>("Soundeffectsvolume");
+    public Slider UIVolume => VolumePanel.GetGameObjectComponent<Slider>("UIvolume");
+    public Button VolumeExitButton => VolumePanel.GetGameObjectComponent<Button>("Exitbutton");
 
     public Button QuitGameButton;
     public Button ReturnToMainMenuButton;
@@ -41,7 +40,7 @@ public class OptionsPanel : MonoBehaviour
     {
         currentPanel = panel;
         CloseAllPanels();
-        GetGameObjectChildren(gameObject)[(byte)panel].SetActive(true);
+        gameObject.GetGameObjectChildren()[(byte)panel].SetActive(true);
     }
     public void CloseAllPanels()
     {
@@ -83,7 +82,7 @@ public class OptionsPanel : MonoBehaviour
         if (ReturnToMainMenuButton != null)
         {
             ReturnToMainMenuButton.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = currentLanguage.returnToMainMenu;
-            ReturnToMainMenuButton.onClick.AddListener(() => { SceneManager.LoadSceneAsync(0); });
+            ReturnToMainMenuButton.onClick.AddListener(() => { PlayerPrefs.Save(); DontDestroyOnLoadManager.DestroyAll(); SceneManager.LoadSceneAsync(0); });
         }
 
         OpenPanel(0);

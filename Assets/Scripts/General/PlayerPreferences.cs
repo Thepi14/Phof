@@ -21,9 +21,25 @@ public static class PlayerPreferences
     #region Configurations
     public static bool ShowDamage => PlayerPrefs.GetInt("SHOW_DAMAGE", 1) == 1;
     public static bool Orthographic => PlayerPrefs.GetInt("ORTHOGRAPHIC", 0) == 1;
-    #endregion
+    public static bool ShowCoordinates => PlayerPrefs.GetInt("SHOW_COORD", 0) == 1;
+    public static bool GameSaved => PlayerPrefs.GetInt("SAVED_GAME", 0) == 1;
 
-    public static Difficulty GetDifficulty() =>
+    #endregion
+    public static void Reset()
+    {
+        PlayerPrefs.SetFloat("MASTER_VOLUME", 0.8f);
+        PlayerPrefs.SetFloat("MUSIC_VOLUME", 1f);
+        PlayerPrefs.SetFloat("SOUND_EFFECTS_VOLUME", 1f);
+        PlayerPrefs.SetFloat("UI_VOLUME", 1f);
+        PlayerPrefs.SetInt("MAP_WIDTH", 100);
+        PlayerPrefs.SetInt("MAP_HEIGHT", 100);
+        PlayerPrefs.SetString("CLASS", "Warrior");
+        PlayerPrefs.SetInt("SHOW_DAMAGE", 1);
+        PlayerPrefs.SetInt("ORTHOGRAPHIC", 0);
+        PlayerPrefs.SetInt("SHOW_COORD", 0);
+        InputManagement.InputManager.ResetKeyBindToDefault();
+    }
+    public static Difficulty Difficulty =>
         CurrentDifficulty == "Easy" ? Difficulty.easy :
         CurrentDifficulty == "Normal" ? Difficulty.normal :
         CurrentDifficulty == "Hard" ? Difficulty.hard : Difficulty.lunatic;

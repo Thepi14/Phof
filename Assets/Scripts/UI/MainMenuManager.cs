@@ -18,38 +18,39 @@ public class MainMenuManager : MonoBehaviour
     public GameObject langTab;
 
     #region Main panel
-    private GameObject MainPanel => GetGameObject(gameObject, "Mainpanel");
-    private TextMeshProUGUI HotText => GetGameObjectComponent<TextMeshProUGUI>(MainPanel, "Hottext");
-    private Button PlayButton => GetGameObjectComponent<Button>(MainPanel, "Playbutton");
-    private Button LangButton => GetGameObjectComponent<Button>(MainPanel, "Languagebutton");
-    private Button CreditsButton => GetGameObjectComponent<Button>(MainPanel, "Creditsbutton");
-    private Button ExitButton => GetGameObjectComponent<Button>(MainPanel, "Exitbutton");
+    private GameObject MainPanel => gameObject.GetGameObject("Mainpanel");
+    private TextMeshProUGUI HotText => MainPanel.GetGameObjectComponent<TextMeshProUGUI>("Hottext");
+    private Button PlayButton => MainPanel.GetGameObjectComponent<Button>("Playbutton");
+    private Button ContinueGameButton => MainPanel.GetGameObjectComponent<Button>("Continuegamebutton");
+    private Button LangButton => MainPanel.GetGameObjectComponent<Button>("Languagebutton");
+    private Button CreditsButton => MainPanel.GetGameObjectComponent<Button>("Creditsbutton");
+    private Button ExitButton => MainPanel.GetGameObjectComponent<Button>("Exitbutton");
     #endregion
 
     #region New game panel
-    private GameObject NewGamePanel => GetGameObject(gameObject, "Newgamepanel");
-    private Button ToClassButton => GetGameObjectComponent<Button>(NewGamePanel, "Okbutton");
-    private TMP_InputField SeedInput => GetGameObjectComponent<TMP_InputField>(NewGamePanel, "Seedinput");
-    private Toggle Toggle80 => GetGameObjectComponent<Toggle>(NewGamePanel, "Toggle80");
-    private Toggle Toggle100 => GetGameObjectComponent<Toggle>(NewGamePanel, "Toggle100");
-    private Toggle Toggle150 => GetGameObjectComponent<Toggle>(NewGamePanel, "Toggle150");
-    private Toggle Toggle200 => GetGameObjectComponent<Toggle>(NewGamePanel, "Toggle200");
-    private Toggle ToggleEasy => GetGameObjectComponent<Toggle>(NewGamePanel, "Toggleeasy");
-    private Toggle ToggleNormal => GetGameObjectComponent<Toggle>(NewGamePanel, "Togglenormal");
-    private Toggle ToggleHard => GetGameObjectComponent<Toggle>(NewGamePanel, "Togglehard");
-    private Toggle ToggleLunatic => GetGameObjectComponent<Toggle>(NewGamePanel, "Togglelunatic");
-    private GameObject ClassPanel => GetGameObject(NewGamePanel, "Classpanel");
-    private Button ReturnClassPanelButton => GetGameObjectComponent<Button>(ClassPanel, "Returnbutton");
-    private Button GenerateGameButton => GetGameObjectComponent<Button>(ClassPanel, "Generatebutton");
+    private GameObject NewGamePanel => gameObject.GetGameObject("Newgamepanel");
+    private Button ToClassButton => NewGamePanel.GetGameObjectComponent<Button>("Okbutton");
+    private TMP_InputField SeedInput => NewGamePanel.GetGameObjectComponent<TMP_InputField>("Seedinput");
+    private Toggle Toggle80 => NewGamePanel.GetGameObjectComponent<Toggle>("Toggle80");
+    private Toggle Toggle100 => NewGamePanel.GetGameObjectComponent<Toggle>("Toggle100");
+    private Toggle Toggle150 => NewGamePanel.GetGameObjectComponent<Toggle>("Toggle150");
+    private Toggle Toggle200 => NewGamePanel.GetGameObjectComponent<Toggle>("Toggle200");
+    private Toggle ToggleEasy => NewGamePanel.GetGameObjectComponent<Toggle>("Toggleeasy");
+    private Toggle ToggleNormal => NewGamePanel.GetGameObjectComponent<Toggle>("Togglenormal");
+    private Toggle ToggleHard => NewGamePanel.GetGameObjectComponent<Toggle>("Togglehard");
+    private Toggle ToggleLunatic => NewGamePanel.GetGameObjectComponent<Toggle>("Togglelunatic");
+    private GameObject ClassPanel => NewGamePanel.GetGameObject("Classpanel");
+    private Button ReturnClassPanelButton => ClassPanel.GetGameObjectComponent<Button>("Returnbutton");
+    private Button GenerateGameButton => ClassPanel.GetGameObjectComponent<Button>("Generatebutton");
     #endregion
 
     #region Language panel
-    private ScrollConfigurator LanguagePanel => GetGameObjectComponent<ScrollConfigurator>(gameObject, "Languagepanel");
+    private ScrollConfigurator LanguagePanel => gameObject.GetGameObjectComponent<ScrollConfigurator>("Languagepanel");
     #endregion
 
     #region Load panel
-    private GameObject LoadPanel => GetGameObject(gameObject, "Loadpanel");
-    private Slider LoadBar => GetGameObjectComponent<Slider>(LoadPanel, "Loadbar");
+    private GameObject LoadPanel => gameObject.GetGameObject("Loadpanel");
+    private Slider LoadBar => LoadPanel.GetGameObjectComponent<Slider>("Loadbar");
     #endregion
 
     private GameObject[] PanelList = new GameObject[3];
@@ -88,13 +89,8 @@ public class MainMenuManager : MonoBehaviour
 
     void Start()
     {
-        if (PlayerPrefs.GetInt("DEFAULTED", 0) == 0)
-        {
-            Debug.Log("Game defaulted succesfullyyy");
-            PlayerPrefs.SetInt("DEFAULTED", 1);
-            MakeDefaultConfig();
-        }
         LoadPanel.SetActive(false);
+        gameObject.GetGameObjectComponent<Animator>("Black").Play("FadeOut");
 
         selectedMapWidth = 100;
         selectedMapHeight = 100;
@@ -120,11 +116,12 @@ public class MainMenuManager : MonoBehaviour
         PanelList[2] = (LanguagePanel.gameObject);
 
         SetAllLang();
-        GetGameObjectComponent<TextMeshProUGUI>(MainPanel, "Version").text = "v" + Application.version;
+        MainPanel.GetGameObjectComponent<TextMeshProUGUI>("Version").text = "v" + Application.version;
 
         PlayButton.onClick.AddListener(() => { OpenMenu(Panel.Newgamepanel); });
+        ContinueGameButton.onClick.AddListener(() => { SceneManager.LoadScene(1); });
         LangButton.onClick.AddListener(() => { OpenMenu(Panel.LanguagePanel); });
-        CreditsButton.onClick.AddListener(() => { SceneManager.LoadScene(2); });
+        CreditsButton.onClick.AddListener(() => { SceneManager.LoadScene(3); });
         ExitButton.onClick.AddListener(() => { Application.Quit(); });
 
         ToClassButton.onClick.AddListener(() => { ClassPanel.SetActive(true); });
@@ -147,9 +144,9 @@ public class MainMenuManager : MonoBehaviour
         ToggleHard.onValueChanged.AddListener((a) => { DeactivateAllDifficultyToggles(); ToggleHard.SetIsOnWithoutNotify(true); selectedDifficulty = "Hard"; });
         ToggleLunatic.onValueChanged.AddListener((a) => { DeactivateAllDifficultyToggles(); ToggleLunatic.SetIsOnWithoutNotify(true); selectedDifficulty = "Lunatic"; });
 
-        GetGameObjectComponent<Button>(ClassPanel, "Subpanel/Wizardmask/Wizardbutton").onClick.AddListener(() => { selectedClass = "Wizard"; DeactivateClassPanelHighlights(); GetGameObject(ClassPanel, "Subpanel/Wizardmask/Wizardbutton/Highlight").SetActive(true); });
-        GetGameObjectComponent<Button>(ClassPanel, "Subpanel/Warriormask/Warriorbutton").onClick.AddListener(() => { selectedClass = "Warrior"; DeactivateClassPanelHighlights(); GetGameObject(ClassPanel, "Subpanel/Warriormask/Warriorbutton/Highlight").SetActive(true); });
-        GetGameObjectComponent<Button>(ClassPanel, "Subpanel/Archermask/Archerbutton").onClick.AddListener(() => { selectedClass = "Archer"; DeactivateClassPanelHighlights(); GetGameObject(ClassPanel, "Subpanel/Archermask/Archerbutton/Highlight").SetActive(true); });
+        ClassPanel.GetGameObjectComponent<Button>("Subpanel/Wizardmask/Wizardbutton").onClick.AddListener(() => { selectedClass = "Wizard"; DeactivateClassPanelHighlights(); ClassPanel.GetGameObject("Subpanel/Wizardmask/Wizardbutton/Highlight").SetActive(true); });
+        ClassPanel.GetGameObjectComponent<Button>("Subpanel/Warriormask/Warriorbutton").onClick.AddListener(() => { selectedClass = "Warrior"; DeactivateClassPanelHighlights(); ClassPanel.GetGameObject("Subpanel/Warriormask/Warriorbutton/Highlight").SetActive(true); });
+        ClassPanel.GetGameObjectComponent<Button>("Subpanel/Archermask/Archerbutton").onClick.AddListener(() => { selectedClass = "Archer"; DeactivateClassPanelHighlights(); ClassPanel.GetGameObject("Subpanel/Archermask/Archerbutton/Highlight").SetActive(true); });
 
         Toggle100.isOn = true;
         ToggleNormal.isOn = true;
@@ -157,7 +154,7 @@ public class MainMenuManager : MonoBehaviour
         SeedInput.text = UnityEngine.Random.Range(10000, 999999) + "";
 
         DeactivateClassPanelHighlights();
-        GetGameObject(ClassPanel, "Subpanel/Warriormask/Warriorbutton/Highlight").SetActive(true);
+        ClassPanel.GetGameObject("Subpanel/Warriormask/Warriorbutton/Highlight").SetActive(true);
         selectedClass = "Warrior";
         OpenMenu(Panel.Mainpanel);
     }
@@ -167,38 +164,39 @@ public class MainMenuManager : MonoBehaviour
     }
     public void DeactivateClassPanelHighlights()
     {
-        GetGameObject(ClassPanel, "Subpanel/Wizardmask/Wizardbutton/Highlight").SetActive(false);
-        GetGameObject(ClassPanel, "Subpanel/Warriormask/Warriorbutton/Highlight").SetActive(false);
-        GetGameObject(ClassPanel, "Subpanel/Archermask/Archerbutton/Highlight").SetActive(false);
+        ClassPanel.GetGameObject("Subpanel/Wizardmask/Wizardbutton/Highlight").SetActive(false);
+        ClassPanel.GetGameObject("Subpanel/Warriormask/Warriorbutton/Highlight").SetActive(false);
+        ClassPanel. GetGameObject("Subpanel/Archermask/Archerbutton/Highlight").SetActive(false);
     }
     public void SetAllLang()
     {
         //main menu
-        GetGameObjectComponent<TextMeshProUGUI>(PlayButton.gameObject, "Text").text = currentLanguage.playNewGame;
-        GetGameObjectComponent<TextMeshProUGUI>(LangButton.gameObject, "Text").text = currentLanguage.language;
-        GetGameObjectComponent<TextMeshProUGUI>(CreditsButton.gameObject, "Text").text = currentLanguage.credits;
-        GetGameObjectComponent<TextMeshProUGUI>(ExitButton.gameObject, "Text").text = currentLanguage.exitGame;
+        PlayButton.gameObject.GetGameObjectComponent<TextMeshProUGUI>("Text").text = currentLanguage.playNewGame;
+        ContinueGameButton.gameObject.GetGameObjectComponent<TextMeshProUGUI>("Text").text = currentLanguage.continueGame;
+        LangButton.gameObject.GetGameObjectComponent<TextMeshProUGUI>("Text").text = currentLanguage.language;
+        CreditsButton.gameObject.GetGameObjectComponent<TextMeshProUGUI>("Text").text = currentLanguage.credits;
+        ExitButton.gameObject.GetGameObjectComponent<TextMeshProUGUI>("Text").text = currentLanguage.exitGame;
 
         //new game menu
-        GetGameObjectComponent<TextMeshProUGUI>(NewGamePanel, "Title").text = currentLanguage.generateNewWorld;
+        NewGamePanel.GetGameObjectComponent<TextMeshProUGUI>("Title").text = currentLanguage.generateNewWorld;
 
-        GetGameObjectComponent<TextMeshProUGUI>(NewGamePanel, "Seedtext").text = currentLanguage.seed;
+        NewGamePanel.GetGameObjectComponent<TextMeshProUGUI>("Seedtext").text = currentLanguage.seed;
         SeedInput.placeholder.gameObject.GetComponent<TextMeshProUGUI>().text = currentLanguage.enterNumber + "...";
 
-        GetGameObjectComponent<TextMeshProUGUI>(NewGamePanel, "Mapsizetext").text = currentLanguage.mapSize;
-        GetGameObjectComponent<TextMeshProUGUI>(GenerateGameButton.gameObject, "Text").text = currentLanguage.ok;
+        NewGamePanel.GetGameObjectComponent<TextMeshProUGUI>("Mapsizetext").text = currentLanguage.mapSize;
+        GenerateGameButton.gameObject.GetGameObjectComponent<TextMeshProUGUI>("Text").text = currentLanguage.ok;
 
         //class menu
-        GetGameObjectComponent<TextMeshProUGUI>(ClassPanel, "Subpanel/Wizardmask/Wizardbutton/Name").text = currentLanguage.wizard;
-        GetGameObjectComponent<TextMeshProUGUI>(ClassPanel, "Subpanel/Warriormask/Warriorbutton/Name").text = currentLanguage.warrior;
-        GetGameObjectComponent<TextMeshProUGUI>(ClassPanel, "Subpanel/Archermask/Archerbutton/Name").text = currentLanguage.archer;
-        GetGameObjectComponent<TextMeshProUGUI>(GenerateGameButton.gameObject, "Text").text = currentLanguage.generate;
-        GetGameObjectComponent<TextMeshProUGUI>(ReturnClassPanelButton.gameObject, "Text").text = currentLanguage.Return;
+        ClassPanel.GetGameObjectComponent<TextMeshProUGUI>("Subpanel/Wizardmask/Wizardbutton/Name").text = currentLanguage.wizard;
+        ClassPanel.GetGameObjectComponent<TextMeshProUGUI>("Subpanel/Warriormask/Warriorbutton/Name").text = currentLanguage.warrior;
+        ClassPanel.GetGameObjectComponent<TextMeshProUGUI>("Subpanel/Archermask/Archerbutton/Name").text = currentLanguage.archer;
+        GenerateGameButton.gameObject.GetGameObjectComponent<TextMeshProUGUI>("Text").text = currentLanguage.generate;
+        ReturnClassPanelButton.gameObject.GetGameObjectComponent<TextMeshProUGUI>("Text").text = currentLanguage.Return;
 
         //language menu
-        GetGameObjectComponent<TextMeshProUGUI>(LanguagePanel.gameObject, "Title").text = currentLanguage.language;
-        GetGameObjectComponent<TextMeshProUGUI>(LanguagePanel.gameObject, "Exitbutton/Text").text = currentLanguage.exit;
-        GetGameObjectComponent<TextMeshProUGUI>(ClassPanel, "Title").text = currentLanguage.chooseYourClass;
+        LanguagePanel.gameObject.GetGameObjectComponent<TextMeshProUGUI>("Title").text = currentLanguage.language;
+        LanguagePanel.gameObject.GetGameObjectComponent<TextMeshProUGUI>("Exitbutton/Text").text = currentLanguage.exit;
+        ClassPanel.GetGameObjectComponent<TextMeshProUGUI>("Title").text = currentLanguage.chooseYourClass;
 
         //loading panel
         LoadPanel.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = currentLanguage.loading;
@@ -244,16 +242,5 @@ public class MainMenuManager : MonoBehaviour
         ToggleNormal.SetIsOnWithoutNotify(false);
         ToggleHard.SetIsOnWithoutNotify(false);
         ToggleLunatic.SetIsOnWithoutNotify(false);
-    }
-    private void MakeDefaultConfig()
-    {
-        PlayerPrefs.SetFloat("MASTER_VOLUME", 0.8f);
-        PlayerPrefs.SetFloat("MUSIC_VOLUME", 1f);
-        PlayerPrefs.SetFloat("SOUND_EFFECTS_VOLUME", 1f);
-        PlayerPrefs.SetFloat("UI_VOLUME", 1f);
-        PlayerPrefs.SetInt("MAP_WIDTH", 100);
-        PlayerPrefs.SetInt("MAP_HEIGHT", 100);
-        PlayerPrefs.SetString("CLASS", "Warrior");
-        InputManagement.InputManager.ResetKeyBindToDefault();
     }
 }

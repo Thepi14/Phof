@@ -79,20 +79,22 @@ namespace EntityDataSystem
         public bool damaged = false;
         public bool dead = false;
         public bool canAttack = true;
-        public void SetMaxKarma() => maxKarma = level * 100 * (int)PlayerPreferences.GetDifficulty();
+        public void SetMaxKarma() => maxKarma = level * 100 * (int)PlayerPreferences.Difficulty;
         public void LevelUp()
         {
         repeat:;
-            currentKarma -= maxKarma;
-            level++;
-            SetMaxKarma();
-            CalculateStatus();
-            if (gameObject.GetComponent<IEntity>().GetType() == typeof(GamePlayer))
-            {
-                gameObject.GetComponent<GamePlayer>().disponiblePoints++;
-            }
             if (currentKarma >= maxKarma)
+            {
+                currentKarma -= maxKarma;
+                level++;
+                SetMaxKarma();
+                CalculateStatus();
+                if (gameObject.GetComponent<IEntity>().GetType() == typeof(GamePlayer))
+                {
+                    gameObject.GetComponent<GamePlayer>().disponiblePoints++;
+                }
                 goto repeat;
+            }
         }
         public void ResetStatus()
         {

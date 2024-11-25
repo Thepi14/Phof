@@ -59,7 +59,7 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
         gameManagerInstance.allies.Add(gameObject);
         CanvasGameManager.canvasInstance.UpdateAllAttributes();
 
-        DontDestroyOnLoad(gameObject);
+        gameObject.DontDestroyOnLoad();
     }
     public void FixedUpdate()
     {

@@ -20,6 +20,7 @@ MonoBehaviour:
   ok: Ok
   Return: Voltar
   playNewGame: Jogar novo jogo
+  continueGame: Continuar jogo
   credits: "Cr\xE9ditos"
   generateNewWorld: Gerar novo mundo
   generate: Gerar

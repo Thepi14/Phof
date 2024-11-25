@@ -41,7 +41,7 @@ public class CameraControl : MonoBehaviour
         else
             Destroy(gameObject);
         DefaultCameraFieldView = cam.fieldOfView;
-        DontDestroyOnLoad(gameObject);
+        gameObject.DontDestroyOnLoad();
     }
     private void Update()
     {

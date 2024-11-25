@@ -142,7 +142,7 @@ public class TerrainGeneration : MonoBehaviour
                 }
             }
         }
-        navMeshUpdateInstance.BuildNavMesh();
+        BuildNavMesh();
     }
     public void OnValidate()
     {
@@ -422,7 +422,7 @@ public class TerrainGeneration : MonoBehaviour
         }
 
         await Task.Delay(1);
-        navMeshUpdateInstance.BuildNavMesh(10);
+        BuildNavMesh(10);
 
         if (GameManager.gameManagerInstance == null)
             throw new System.Exception("Manager is null");

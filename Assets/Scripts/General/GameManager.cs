@@ -7,6 +7,7 @@ using EntityDataSystem;
 using static GamePlayer;
 using static TerrainGeneration;
 using static CanvasGameManager;
+using static DontDestroyOnLoadManager;
 using ObjectUtils;
 using RoomSystem;
 using UnityEngine.SceneManagement;
@@ -36,12 +37,12 @@ namespace GameManagerSystem
         [Header("Current Status", order = 1)]
         public RoomNode currentRoom;
 
-        public List<GameObject> enemyBullets = new List<GameObject>();
-        public List<GameObject> playerBullets = new List<GameObject>();
+        public List<GameObject> enemyBullets = new();
+        public List<GameObject> playerBullets = new();
 
-        public List<GameObject> entities = new List<GameObject>();
-        public List<GameObject> enemies = new List<GameObject>();
-        public List<GameObject> allies = new List<GameObject>();
+        public List<GameObject> entities = new();
+        public List<GameObject> enemies = new();
+        public List<GameObject> allies = new();
 
         public const float EFFECT_CHANGER = 0.9f;
 
@@ -50,6 +51,21 @@ namespace GameManagerSystem
 
         private async void Awake()
         {
+            if (gameManagerInstance == null)
+            {
+                gameManagerInstance = this;
+                Language.GetLanguage();
+            reWaitLang:
+                if (Language.currentLanguage == null)
+                {
+                    await Task.Delay(1);
+                    goto reWaitLang;
+                }
+                Language.currentLanguage.SetLanguageDescsLists();
+            }
+            else
+                Destroy(gameObject);
+
             switch (PlayerPrefs.GetString("CLASS", "Warrior"))
             {
                 case "Warrior":
@@ -62,22 +78,9 @@ namespace GameManagerSystem
                     playerPrefab = archerPrefab;
                     break;
             }
-            if (gameManagerInstance == null)
-            {
-                gameManagerInstance = this;
-
-                Language.GetLanguage();
-            reWaitLang:
-                if (Language.currentLanguage == null)
-                {
-                    await Task.Delay(1);
-                    goto reWaitLang;
-                }
-                Language.currentLanguage.SetLanguageDescsLists();
-                DontDestroyOnLoad(gameObject);
-            }
-            else
-                Destroy(gameObject);
+            PlayerPrefs.SetInt("SAVED_GAME", 1);
+            PlayerPrefs.Save();
+            gameObject.DontDestroyOnLoad();
         }
         private void Update()
         {
@@ -304,6 +307,7 @@ namespace GameManagerSystem
         public void NextStage()
         {
             PlayerPrefs.SetInt("CURRENT_STAGE", PlayerPrefs.GetInt("CURRENT_STAGE", 1) + 1);
+            PlayerPrefs.Save();
             StartCoroutine(LoadAsyncGame(1));
         }
         private IEnumerator LoadAsyncGame(int index)
@@ -326,5 +330,31 @@ namespace GameManagerSystem
         {
             targetObject.transform.position = new Vector3(pos.x, 1, pos.y);
         }
+    }
+}
+
+public static class DontDestroyOnLoadManager
+{
+    static List<GameObject> _ddolObjects = new List<GameObject>();
+
+    /// <summary>
+    /// Método alternativo para o DontDestroyOnLoad() convencional.
+    /// </summary>
+    /// <param name="go">Objeto</param>
+    public static void DontDestroyOnLoad(this GameObject go)
+    {
+        UnityEngine.Object.DontDestroyOnLoad(go);
+        _ddolObjects.Add(go);
+    }
+    /// <summary>
+    /// Desrói todos os DontDestroyOnLoad() armazenados nessa classe.
+    /// </summary>
+    public static void DestroyAll()
+    {
+        foreach (var go in _ddolObjects)
+            if (go != null)
+                UnityEngine.Object.Destroy(go);
+
+        _ddolObjects.Clear();
     }
 }

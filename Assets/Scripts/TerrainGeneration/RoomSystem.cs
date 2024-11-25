@@ -21,7 +21,7 @@ namespace RoomSystem
         public byte id;
 
         private int _maxPoints;
-        public int maxPoints { set { _maxPoints = (int)(((size ^ 2) * (int)PlayerPreferences.GetDifficulty() * 100) * info.entityDensity); } get { return (int)(((size ^ 2) * (int)PlayerPreferences.GetDifficulty() * 100) * info.entityDensity); } }
+        public int maxPoints { set { _maxPoints = (int)(((size ^ 2) * (int)PlayerPreferences.Difficulty * 100) * info.entityDensity); } get { return (int)(((size ^ 2) * (int)PlayerPreferences.Difficulty * 100) * info.entityDensity); } }
         public int usedPoints;
         [SerializeField]
         private List<SpawnPoint> spawnPoints = new();

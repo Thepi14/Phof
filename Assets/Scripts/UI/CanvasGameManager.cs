@@ -19,22 +19,22 @@ public class CanvasGameManager : MonoBehaviour
     public static CanvasGameManager canvasInstance;
     public bool espada = false;
     public bool seeingMap = false, seeingInventory = false;
-    public GameObject inventory => GetGameObject(gameObject, "Mainpanel/Inventory");
-    public Inventory slots => GetGameObjectComponent<Inventory>(gameObject, "Mainpanel/Inventory");
-    public GameObject MainPanel => GetGameObject(gameObject, "Mainpanel");
-    public Slider LifeBar => GetGameObjectComponent<Slider>(gameObject, "Mainpanel/LifeBar/Bar");
-    public Slider StaminaBar => GetGameObjectComponent<Slider>(gameObject, "Mainpanel/StaminaBar/Bar");
-    public Slider ManaBar => GetGameObjectComponent<Slider>(gameObject, "Mainpanel/ManaBar/Bar");
-    public Slider KarmaBar => GetGameObjectComponent<Slider>(gameObject, "Mainpanel/KarmaBar/Bar");
-    public RectTransform KarmaBarRect => GetGameObjectComponent<RectTransform>(gameObject, "Mainpanel/KarmaBar/Bar");
-    public Image Bar => GetGameObjectComponent<Image>(gameObject, "Mainpanel/KarmaBar/Bar/FillArea/Fill");
-    public GameObject CardsMain => GetGameObject(gameObject, "Mainpanel/Cards");
-    public GameObject LoadPanel => GetGameObject(gameObject, "Loadpanel");
-    public GameObject CardPanel => GetGameObject(gameObject, "Cardpanel");
-    public GameObject CardPanelExibition => GetGameObject(CardPanel, "Subpanel");
-    public Slider LoadBar => GetGameObjectComponent<Slider>(LoadPanel, "Loadbar");
-    public GameObject AttributesPanel => GetGameObject(gameObject, "Attributespanel");
-    public GameObject AttributesPanelExibition => GetGameObject(AttributesPanel, "Subpanel");
+    public GameObject inventory => gameObject.GetGameObject("Mainpanel/Inventory");
+    public Inventory slots => gameObject.GetGameObjectComponent<Inventory>("Mainpanel/Inventory");
+    public GameObject MainPanel => gameObject.GetGameObject("Mainpanel");
+    public Slider LifeBar => gameObject.GetGameObjectComponent<Slider>("Mainpanel/LifeBar/Bar");
+    public Slider StaminaBar => gameObject.GetGameObjectComponent<Slider>("Mainpanel/StaminaBar/Bar");
+    public Slider ManaBar => gameObject.GetGameObjectComponent<Slider>("Mainpanel/ManaBar/Bar");
+    public Slider KarmaBar => gameObject.GetGameObjectComponent<Slider>("Mainpanel/KarmaBar/Bar");
+    public RectTransform KarmaBarRect => gameObject.GetGameObjectComponent<RectTransform>("Mainpanel/KarmaBar/Bar");
+    public Image Bar => gameObject.GetGameObjectComponent<Image>("Mainpanel/KarmaBar/Bar/FillArea/Fill");
+    public GameObject CardsMain => gameObject.GetGameObject("Mainpanel/Cards");
+    public GameObject LoadPanel => gameObject.GetGameObject("Loadpanel");
+    public GameObject CardPanel => gameObject.GetGameObject("Cardpanel");
+    public GameObject CardPanelExibition => CardPanel.GetGameObject("Subpanel");
+    public Slider LoadBar => LoadPanel.GetGameObjectComponent<Slider>("Loadbar");
+    public GameObject AttributesPanel => gameObject.GetGameObject("Attributespanel");
+    public GameObject AttributesPanelExibition => AttributesPanel.GetGameObject("Subpanel");
 
     public Button sword;
     public Button staff;
@@ -69,7 +69,7 @@ public class CanvasGameManager : MonoBehaviour
             canvasInstance = this;
         else
             Destroy(gameObject);
-        DontDestroyOnLoad(gameObject);
+        gameObject.DontDestroyOnLoad();
         SetLang();
         sword.onClick.AddListener(() => { espada = false; });
         staff.onClick.AddListener(() => { espada = true; });
@@ -161,14 +161,14 @@ public class CanvasGameManager : MonoBehaviour
     public void SetActiveInventory() => seeingInventory = !seeingInventory;
     public void UpdateAllAttributes()
     {
-        GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Strength/Level").text = $"{currentLanguage.level}: {player.EntityData.strength}";
-        GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Resistance/Level").text = $"{currentLanguage.level}: {player.EntityData.resistance}";
-        GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Intelligence/Level").text = $"{currentLanguage.level}: {player.EntityData.intelligence}";
-        GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Defense/Level").text = $"{currentLanguage.level}: {player.EntityData.defense}";
-        GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Speed/Level").text = $"{currentLanguage.level}: {player.EntityData.speed}";
+        AttributesPanelExibition.GetGameObjectComponent<TextMeshProUGUI>("Strength/Level").text = $"{currentLanguage.level}: {player.EntityData.strength}";
+        AttributesPanelExibition.GetGameObjectComponent<TextMeshProUGUI>("Resistance/Level").text = $"{currentLanguage.level}: {player.EntityData.resistance}";
+        AttributesPanelExibition.GetGameObjectComponent<TextMeshProUGUI>("Intelligence/Level").text = $"{currentLanguage.level}: {player.EntityData.intelligence}";
+        AttributesPanelExibition.GetGameObjectComponent<TextMeshProUGUI>("Defense/Level").text = $"{currentLanguage.level}: {player.EntityData.defense}";
+        AttributesPanelExibition.GetGameObjectComponent<TextMeshProUGUI>("Speed/Level").text = $"{currentLanguage.level}: {player.EntityData.speed}";
 
-        GetGameObjectComponent<TextMeshProUGUI>(AttributesPanel, "Currentlevel").text = $"{currentLanguage.currentLevel}: {player.EntityData.level}";
-        GetGameObjectComponent<TextMeshProUGUI>(AttributesPanel, "Points").text = $"{currentLanguage.availablePoints}: {player.disponiblePoints}";
+        AttributesPanel.GetGameObjectComponent<TextMeshProUGUI>("Currentlevel").text = $"{currentLanguage.currentLevel}: {player.EntityData.level}";
+        AttributesPanel.GetGameObjectComponent<TextMeshProUGUI>("Points").text = $"{currentLanguage.availablePoints}: {player.disponiblePoints}";
     }
     public void LevelUpAttribute(string name)
     {
@@ -178,28 +178,28 @@ public class CanvasGameManager : MonoBehaviour
             {
                 case "strength":
                     player.EntityData.strength++;
-                    GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Strength/Level").text = $"{currentLanguage.level}: {player.EntityData.strength}";
+                    AttributesPanelExibition.GetGameObjectComponent<TextMeshProUGUI>("Strength/Level").text = $"{currentLanguage.level}: {player.EntityData.strength}";
                     break;
                 case "resistance":
                     player.EntityData.resistance++;
-                    GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Resistance/Level").text = $"{currentLanguage.level}: {player.EntityData.resistance}";
+                    AttributesPanelExibition.GetGameObjectComponent<TextMeshProUGUI>("Resistance/Level").text = $"{currentLanguage.level}: {player.EntityData.resistance}";
                     break;
                 case "intelligence":
                     player.EntityData.intelligence++;
-                    GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Intelligence/Level").text = $"{currentLanguage.level}: {player.EntityData.intelligence}";
+                    AttributesPanelExibition.GetGameObjectComponent<TextMeshProUGUI>("Intelligence/Level").text = $"{currentLanguage.level}: {player.EntityData.intelligence}";
                     break;
                 case "defense":
                     player.EntityData.defense++;
-                    GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Defense/Level").text = $"{currentLanguage.level}: {player.EntityData.defense}";
+                    AttributesPanelExibition.GetGameObjectComponent<TextMeshProUGUI>("Defense/Level").text = $"{currentLanguage.level}: {player.EntityData.defense}";
                     break;
                 case "speed":
                     player.EntityData.speed++;
-                    GetGameObjectComponent<TextMeshProUGUI>(AttributesPanelExibition, "Speed/Level").text = $"{currentLanguage.level}: {player.EntityData.speed}";
+                    AttributesPanelExibition.GetGameObjectComponent<TextMeshProUGUI>("Speed/Level").text = $"{currentLanguage.level}: {player.EntityData.speed}";
                     break;
             }
             player.disponiblePoints--;
-            GetGameObjectComponent<TextMeshProUGUI>(AttributesPanel, "Currentlevel").text = $"{currentLanguage.currentLevel}: {player.EntityData.level}";
-            GetGameObjectComponent<TextMeshProUGUI>(AttributesPanel, "Points").text = $"{currentLanguage.availablePoints}: {player.disponiblePoints}";
+            AttributesPanel.GetGameObjectComponent<TextMeshProUGUI>("Currentlevel").text = $"{currentLanguage.currentLevel}: {player.EntityData.level}";
+            AttributesPanel.GetGameObjectComponent<TextMeshProUGUI>("Points").text = $"{currentLanguage.availablePoints}: {player.disponiblePoints}";
         }
         else
             WarningTextManager.ShowWarning(currentLanguage.cantLevelUpAttribute, 2.5f, 0.2f, WarningTextManager.WarningTextColor);

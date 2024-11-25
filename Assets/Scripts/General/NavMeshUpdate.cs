@@ -17,13 +17,13 @@ public class NavMeshUpdate : MonoBehaviour
     {
         navMeshUpdateInstance = this;
     }
-    public void BuildNavMesh(int delay = 0)
+    public static void BuildNavMesh(int delay = 0)
     {
         if (navMeshUpdateInstance != null)
         {
-            if (navMeshCoroutine != null)
-                StopCoroutine(navMeshCoroutine);
-            navMeshCoroutine = StartCoroutine(_BuildNavMesh(delay / 1000f));
+            if (navMeshUpdateInstance.navMeshCoroutine != null)
+                navMeshUpdateInstance.StopCoroutine(navMeshUpdateInstance.navMeshCoroutine);
+            navMeshUpdateInstance.navMeshCoroutine = navMeshUpdateInstance.StartCoroutine(navMeshUpdateInstance._BuildNavMesh(delay / 1000f));
         }
     }
     private IEnumerator _BuildNavMesh(float delay)

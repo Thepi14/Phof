@@ -16,7 +16,7 @@ namespace ObjectUtils
         /// <param name="start">Gameobject de referência.</param>
         /// <param name="path">Caminho do GameObject separados por '\' ou '/'.</param>
         /// <returns>O GameObject no caminho inserido.</returns>
-        public static GameObject GetGameObject(GameObject start, string path)
+        public static GameObject GetGameObject(this GameObject start, string path)
         {
             if (start == null)
                 throw new System.ArgumentNullException("GameObject of name \'" + start.name + "\' is null", "start");
@@ -67,7 +67,7 @@ namespace ObjectUtils
         /// <param name="start">Gameobject de referência.</param>
         /// <param name="path">Caminho do GameObject separados por '\' ou '/'.</param>
         /// <returns>O componente do GameObject no caminho inserido.</returns>
-        public static T GetGameObjectComponent<T>(GameObject start, string path)
+        public static T GetGameObjectComponent<T>(this GameObject start, string path)
         {
             var go = GetGameObject(start, path);
             if (go == null)
@@ -85,7 +85,7 @@ namespace ObjectUtils
         /// <param name="childName">Nome do filho.</param>
         /// <returns>O componente do GameObject filho do parent escolhido com o nome inserido.</returns>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public static T FindComponentInChild<T>(GameObject parent, string childName)
+        public static T FindComponentInChild<T>(this GameObject parent, string childName)
         {
             if (parent == null)
                 throw new System.ArgumentNullException("Parent of name \'" + parent.name + "\' is null");
@@ -95,7 +95,7 @@ namespace ObjectUtils
                 throw new System.ArgumentNullException("Component was not been found in child of name \'" + childName + "\' of parent \'" + parent.name + "\'");
             return parent.transform.Find(childName).GetComponent<T>();
         }
-        public static GameObject[] GetGameObjectChildren(GameObject gameObject)
+        public static GameObject[] GetGameObjectChildren(this GameObject gameObject)
         {
             var list = new List<GameObject>();
             for (int i = 0; i < gameObject.transform.childCount; i++)

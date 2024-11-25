@@ -26,6 +26,7 @@ namespace LangSystem
 
         [Header("Main menu")]
         public string playNewGame;
+        public string continueGame;
         public string credits;
 
         [Header("New game world")]
