@@ -1,17 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Credits : MonoBehaviour
 {
-    public GameObject CameraObj;
+    public bool telaRin = false;
+    public AudioSource audioSource;
+    public Button rinButton;
     void Start()
     {
-        CameraObj.GetComponent<AudioSource>().volume = PlayerPreferences.MusicVolumeScaled;
-        CameraObj.GetComponent<AudioSource>().Play();
+        audioSource.volume = PlayerPreferences.MusicVolumeScaled;
+        rinButton.onClick.AddListener(() => { telaRin = true; });
     }
     void Update()
     {
-        
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.R) && telaRin)
+        {
+            Debug.Log("Tezuka Rin");
+        }
     }
 }
