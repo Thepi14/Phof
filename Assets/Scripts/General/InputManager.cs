@@ -31,7 +31,7 @@ namespace InputManagement
             new KeyBind(KeyCode.M, KeyBindKey.OpenMap)
         };
 
-        private void Start()
+        public void Awake()
         {
             if (Instance == null)
                 Instance = this;
@@ -116,6 +116,7 @@ namespace InputManagement
         }
         public static void ResetKeyBindToDefault()
         {
+            Debug.Log($"{Instance == null}");
             Instance.keyBindList = defaultList;
             SaveKeyBinds();
         }

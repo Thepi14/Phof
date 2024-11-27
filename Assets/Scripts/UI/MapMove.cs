@@ -17,13 +17,16 @@ public class MapMove : MonoBehaviour
     public Image mapCross => gameObject.GetGameObjectComponent<Image>("Cross");
     private Vector2 moveVision;
 
-    void Start()
+    public void Awake()
     {
-        MapMoveInstance = this;
+        if (MapMoveInstance == null)
+            MapMoveInstance = this;
+        else
+            Destroy(gameObject);
     }
-    void LateUpdate()
+    private void LateUpdate()
     {
-        if (player == null)
+        if (player == null || TerrainGeneration.Instance == null || MapMoveInstance == null)
             return;
         playerPosition = new Vector2(player.transform.position.x, player.transform.position.z);
         if (!canvasInstance.seeingMap)

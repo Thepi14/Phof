@@ -113,6 +113,8 @@ public class CanvasGameManager : MonoBehaviour
             DontDestroyOnLoadManager.DestroyAll();
             SceneManager.LoadSceneAsync(0);
         });
+
+        StartCoroutine(Pauser());
     }
     public void SetLang()
     {
@@ -191,6 +193,7 @@ public class CanvasGameManager : MonoBehaviour
                     seeingInventory = false;
                 }
             }
+
             if (Slots.equipmentSlots[0].myItem == null)
             {
                 swordItem = null;
@@ -259,6 +262,17 @@ public class CanvasGameManager : MonoBehaviour
         BlockCards();
         if (player != null)
             player.EntityData.canAttack = !seeingInventory;
+    }
+    public IEnumerator Pauser()
+    {
+        while (true)
+        {
+            yield return new WaitForNextFrameUnit();
+            if (InputManager.GetKeyDown(KeyBindKey.Pause))
+            {
+                TickPause();
+            }
+        }
     }
     public void OpenAttributesMenu(bool open)
     {

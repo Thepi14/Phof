@@ -79,7 +79,7 @@ namespace RoomSystem
                     //Debug.Log($"{Instance == null} {info == null} {info.grid == null} {Instance.spawnTiles == null} {info.grid[x, y] == null}");
                     if (info.grid[x, y] == null)
                         continue;
-                    Instance.spawnTiles[xP, yP] = info.grid[x, y].entityCanSpawn;
+                    Instance.spawnTiles.SetGridObject(xP, yP, info.grid[x, y].entityCanSpawn);
 
                     if (info.grid[x, y].id == 0)
                         continue;
@@ -157,7 +157,7 @@ namespace RoomSystem
             var x = 0;
             var y = 0;
             bool maxEntitiesReached = false;
-            List<GameObject> entityList = new List<GameObject>();
+            List<GameObject> entityList = new();
 
             if (info.entities.Count > 0)
             {
@@ -224,8 +224,9 @@ namespace RoomSystem
                 door.doorBlock.GetComponent<Animator>().Play("DoorOpen");
             }
             SoundManager.StopMusic();
-            CanvasGameManager.PlayRoomCompletionAnimation(usedPoints);
-            GameManager.UpdatePlayerMaxKarma(usedPoints);
+            var poitsTotal = usedPoints + (usedPoints / (int)PlayerPreferences.Difficulty);
+            CanvasGameManager.PlayRoomCompletionAnimation(poitsTotal);
+            GameManager.UpdatePlayerMaxKarma(poitsTotal);
             Instance.RoomOcclusion(-1);
         }
         public void CompleteRoom()
