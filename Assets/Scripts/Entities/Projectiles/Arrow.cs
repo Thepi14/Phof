@@ -35,7 +35,7 @@ namespace ProjectileSystem
         }
         void Update()
         {
-            if (!started)
+            if (!Started)
                 return;
 
             switch (bulletExclusionType)
@@ -56,22 +56,22 @@ namespace ProjectileSystem
         }
         private void OnTriggerEnter(Collider collider)
         {
-            damageData = new DamageData(sender, Random.Range(minDamage, maxDamage), MathEx.AngleVectors(transform.position, collider.transform.position) * impulseForce, effects, false);
+            DamageData = new DamageData(Sender, Random.Range(minDamage, maxDamage), MathEx.AngleVectors(transform.position, collider.transform.position) * impulseForce, effects, false);
             switch (collider.gameObject.layer)
             {
                 case 0:
                     return;
                 case 6 or 7:
                     if (collider.GetComponent<IEntity>() != null)
-                        collider.GetComponent<IEntity>().Damage(damageData);
+                        collider.GetComponent<IEntity>().Damage(DamageData);
                     break;
                 //PLAYER
                 case 8 when gameObject.layer == 11:
-                    collider.GetComponent<IEntity>().Damage(damageData);
+                    collider.GetComponent<IEntity>().Damage(DamageData);
                     break;
                 //ENEMY
                 case 10 when gameObject.layer == 12:
-                    collider.GetComponent<IEntity>().Damage(damageData);
+                    collider.GetComponent<IEntity>().Damage(DamageData);
                     break;
                 default:
                     EndBullet();

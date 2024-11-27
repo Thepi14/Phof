@@ -20,9 +20,9 @@ public class Enemy : BasicEntityBehaviour
         if (EntityData.target != null)
         {
             Gizmos.DrawLine(transform.position, EntityData.target.transform.position);
-            Gizmos.DrawSphere(gizmoPos, 0.25f);
+            Gizmos.DrawSphere(GizmoPos, 0.25f);
             Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(gizmoPos, transform.position);
+            Gizmos.DrawLine(GizmoPos, transform.position);
         }
     }
 }

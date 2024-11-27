@@ -31,6 +31,7 @@ MonoBehaviour:
   wizard: Mago
   warrior: Guerreiro
   archer: Arqueiro
+  chooseAttributeToLevelUp: Escolha um atributo para evoluir
   level: "N\xEDvel"
   currentLevel: "N\xEDvel atual"
   availablePoints: "Pontos dispon\xEDveis"
@@ -42,6 +43,11 @@ MonoBehaviour:
   speed: Velocidade
   chooseCard: Escolha uma Carta
   habilityIsNotReloaded: "A habilidade \\ n\xE3o recarregou."
+  inventoryIsFull: "Invent\xE1rio est\xE1 cheio"
+  pressToCollectItem: Aperte \ para coletar o item
+  roomCompleted: Sala completada!
+  karmaEarned: Karma ganho
+  youReDead: "Voc\xEA morreu"
   options: "Op\xE7\xF5es"
   configurations: "Configura\xE7\xF5es"
   volume: Volume
@@ -49,6 +55,25 @@ MonoBehaviour:
   musicVolume: "Volume da m\xFAsica"
   soundEffectVolume: Volume de efeitos sonoros
   UIVolume: "Volume da interface de usu\xE1rio"
+  showDamage: Mostrar dano
+  orthographic: "Ortogr\xE1fico"
+  showCoordinates: Mostrar coordenadas
+  showFPS: Mostrar FPS
+  reset: "Reiniciar configura\xE7\xF5es para padr\xE3o"
+  enterKey: Clique em uma tecla
+  keyNameList:
+  - Nenhum
+  - Sair
+  - Atacar
+  - Pausar
+  - "Invent\xE1rio"
+  - Atalho de equipamento
+  - Cima
+  - Baixo
+  - Esquerda
+  - Direita
+  - Coletar item
+  - Abrir/fechar mapa
   keybind: Controles
   exitOptionsMenu: Sair do menu
   returnToMainMenu: Voltar ao menu principal

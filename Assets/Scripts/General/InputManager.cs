@@ -27,6 +27,8 @@ namespace InputManagement
             new KeyBind(KeyCode.A, KeyBindKey.Left),
             new KeyBind(KeyCode.S, KeyBindKey.Down),
             new KeyBind(KeyCode.D, KeyBindKey.Right),
+            new KeyBind(KeyCode.F, KeyBindKey.Collect),
+            new KeyBind(KeyCode.M, KeyBindKey.OpenMap)
         };
 
         private void Start()
@@ -103,10 +105,13 @@ namespace InputManagement
         public static void RemoveKeyBind(KeyBind keyBind) => RemoveKeyBind(keyBind.bind);
         public static void RemoveKeyBind(KeyBindKey keyBindKey)
         {
-            foreach (var keyBind in Instance.keyBindList)
+            foreach (var keyBind in Instance.keyBindList.ToList())
             {
                 if (keyBind.bind == keyBindKey)
+                {
                     Instance.keyBindList.Remove(keyBind);
+                    break;
+                }
             }
         }
         public static void ResetKeyBindToDefault()
@@ -140,6 +145,13 @@ namespace InputManagement
                    (Mathf.Abs(slidingH) < deadZone) ? 0f : slidingH,
                    (Mathf.Abs(slidingV) < deadZone) ? 0f : slidingV);
         }
+        public KeyCode GetKeyCodeByKeyBind(KeyBindKey bind)
+        {
+            foreach (var key in keyBindList)
+                if (key.bind == bind)
+                    return key.key;
+            return KeyCode.None;
+        }
     }
     public enum KeyBindKey : short
     {
@@ -153,6 +165,8 @@ namespace InputManagement
         Down = 7,
         Left = 8,
         Right = 9,
+        Collect = 10,
+        OpenMap = 11,
     }
     [Serializable]
     public class KeyBind

@@ -41,6 +41,7 @@ namespace LangSystem
         public string archer;
 
         [Header("Game")]
+        public string chooseAttributeToLevelUp;
         public string level;
         public string currentLevel;
         public string availablePoints;
@@ -50,8 +51,16 @@ namespace LangSystem
         public string intelligence;
         public string defense;
         public string speed;
+
         public string chooseCard;
         public string habilityIsNotReloaded;
+
+        public string inventoryIsFull;
+        public string pressToCollectItem;
+
+        public string roomCompleted;
+        public string karmaEarned;
+        public string youReDead;
 
         [Header("Options")]
         public string options;
@@ -64,6 +73,26 @@ namespace LangSystem
         public string soundEffectVolume;
         public string UIVolume;
 
+        public string showDamage;
+        public string orthographic;
+        public string showCoordinates;
+        public string showFPS;
+        public string reset;
+
+        public string enterKey;
+        public string[] keyNameList = 
+        {
+            "none",
+            "escape",
+            "attack",
+            "pause",
+            "inventory",
+            "itemHotbar",
+            "up",
+            "down",
+            "left",
+            "right",
+        };
         public string keybind;
         public string exitOptionsMenu;
         public string returnToMainMenu;

@@ -31,6 +31,7 @@ MonoBehaviour:
   wizard: Wizard
   warrior: Warrior
   archer: Archer
+  chooseAttributeToLevelUp: Choose a attribute to level ul
   level: Level
   currentLevel: Current level
   availablePoints: Available points
@@ -42,6 +43,11 @@ MonoBehaviour:
   speed: Speed
   chooseCard: Choose a Card
   habilityIsNotReloaded: The \ hability is not reloaded.
+  inventoryIsFull: Inventory is full
+  pressToCollectItem: Press \ to collect the item
+  roomCompleted: Room completed!
+  karmaEarned: Karma earned
+  youReDead: You died
   options: Options
   configurations: Configurations
   volume: Volume
@@ -49,6 +55,25 @@ MonoBehaviour:
   musicVolume: Music volume
   soundEffectVolume: Sound effect volume
   UIVolume: User interface volume
+  showDamage: Show damage
+  orthographic: Orthographic
+  showCoordinates: Show coordinates
+  showFPS: Show FPS
+  reset: Reset configurations to default
+  enterKey: Enter key
+  keyNameList:
+  - None
+  - Escape
+  - Attack
+  - Pause
+  - Inventory
+  - Equipment hot key
+  - Up
+  - Down
+  - Left
+  - Right
+  - Collect item
+  - Open/close map
   keybind: Keybind
   exitOptionsMenu: Exit options menu
   returnToMainMenu: Return to main menu

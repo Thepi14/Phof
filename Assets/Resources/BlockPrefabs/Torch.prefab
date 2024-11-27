@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 349703960710570918}
   - component: {fileID: 954969795371191820}
   - component: {fileID: 8606777689275533742}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -122,7 +122,7 @@ GameObject:
   - component: {fileID: 5159764149869387617}
   - component: {fileID: 1117712342355575343}
   - component: {fileID: 682331114186514257}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LightC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -156,7 +156,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.58820754, b: 0.10849059, a: 1}
-  m_Intensity: 8
+  m_Intensity: 2.5
   m_Range: 50
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -275,7 +275,7 @@ GameObject:
   - component: {fileID: 7445026791576392632}
   - component: {fileID: 5836058180767079453}
   - component: {fileID: 8581926536543906007}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Torch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -358,7 +358,7 @@ GameObject:
   - component: {fileID: 1157723912804191689}
   - component: {fileID: 7758451630455061232}
   - component: {fileID: 8657499780847518182}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Light1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -392,7 +392,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.58820754, b: 0.10849059, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0.3
   m_Range: 5
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208

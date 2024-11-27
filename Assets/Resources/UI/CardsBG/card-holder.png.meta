@@ -361,6 +361,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: card_mask
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 36
+        width: 30
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cdb7ef2005e1def4b96e2cd4a4116649
+      internalID: 1579069473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -372,7 +393,6 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      card-holder_0: 919501981
       card-holder_1: 1003905942
       card-holder_10: 617727806
       card-holder_11: 1523092597
@@ -385,6 +405,7 @@ TextureImporter:
       card-holder_7: 2093421268
       card-holder_8: -908435480
       card-holder_9: -38680180
+      card_mask: 919501981
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

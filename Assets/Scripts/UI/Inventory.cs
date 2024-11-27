@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using ObjectUtils;
 using static ObjectUtils.GameObjectGeneral;
+using static LangSystem.Language;
 
 public class Inventory : MonoBehaviour
 {
@@ -28,7 +29,7 @@ public class Inventory : MonoBehaviour
 
     private void Start()
     {
-        giveItemBtn.onClick.AddListener(delegate { SpawnInventoryItem(); });
+        giveItemBtn.onClick.AddListener(delegate { if (!SpawnInventoryItem()) WarningTextManager.ShowWarning(currentLanguage.inventoryIsFull, 1f, 0.5f); });
         lixeiraBtn.onClick.AddListener(delegate { DestroyItem(); });
     }
 
@@ -59,7 +60,6 @@ public class Inventory : MonoBehaviour
        carriedItem = item;
        carriedItem.canvasGroup.blocksRaycasts = false;
        item.transform.SetParent(draggablesTransform);
-
     } 
 
     public void EquipEquipment(ItemType type, InventoryItem item = null)
@@ -79,22 +79,41 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void SpawnInventoryItem(Item item = null)
+    public bool SpawnInventoryItem(Item item = null)
     {
         Item _item = item;
-        if(_item == null)
+        if(item == null)
         {
             _item = PickRandomItem();
         }
-
+        bool placedOne = false;
         for (int i = 0; i < inventorySlots.Length; i++)
         {
             if (inventorySlots[i].myItem == null)
             {
                 Instantiate(itemPrefab, inventorySlots[i].transform).Initialize(inventorySlots[i], _item);
+                placedOne = true;
                 break;
             }
         }
+
+        return placedOne;
+    }
+    public bool SpawnInventoryItem(string ID)
+    {
+        Item _item = PickItemByID(ID);
+        bool placedOne = false;
+        for (int i = 0; i < inventorySlots.Length; i++)
+        {
+            if (inventorySlots[i].myItem == null)
+            {
+                Instantiate(itemPrefab, inventorySlots[i].transform).Initialize(inventorySlots[i], _item);
+                placedOne = true;
+                break;
+            }
+        }
+
+        return placedOne;
     }
 
     public void DestroyItem()
@@ -110,5 +129,13 @@ public class Inventory : MonoBehaviour
     {
         int random = Random.Range(0, items.Length);
         return items[random];
+    }
+    Item PickItemByID(string ID)
+    {
+        foreach (Item item in items)
+        {
+            if (item.ID == ID) return item;
+        }
+        throw new System.Exception($"There's no item with ID {ID}");
     }
 }
