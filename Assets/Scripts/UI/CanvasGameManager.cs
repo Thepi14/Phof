@@ -18,6 +18,7 @@ using InputManagement;
 using Unity.VisualScripting;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using static UnityEditor.Progress;
 
 public class CanvasGameManager : MonoBehaviour
 {
@@ -25,7 +26,7 @@ public class CanvasGameManager : MonoBehaviour
     public bool espada = false;
     public bool seeingMap = false, seeingInventory = false, seeingAttributes = false;
 
-    public GameObject Inventory => gameObject.GetGameObject("Mainpanel/Inventory");
+    public GameObject InventoryGame => gameObject.GetGameObject("Mainpanel/Inventory");
     public Inventory Slots => gameObject.GetGameObjectComponent<Inventory>("Mainpanel/Inventory");
     public GameObject MainPanel => gameObject.GetGameObject("Mainpanel");
     public Slider LifeBar => gameObject.GetGameObjectComponent<Slider>("Mainpanel/LifeBar/Bar");
@@ -52,9 +53,9 @@ public class CanvasGameManager : MonoBehaviour
     public Image iconSword;
     public Image iconStaff;
 
-    public Item staffItem;
-    public Item swordItem;
-    public Item bowItem;
+    public ItemSystem.Item staffItem;
+    public ItemSystem.Item swordItem;
+    public ItemSystem.Item bowItem;
 
     public GameObject cardPrefab;
     public GameObject cardGamePrefab;
@@ -178,6 +179,25 @@ public class CanvasGameManager : MonoBehaviour
                 {
                     seeingMap = false;
                 }
+                else
+                {
+                    if (Slots.draggablesTransform.childCount > 0)
+                    {
+                        if(Slots.draggablesTransform.transform.GetComponentInChildren<InventoryItem>().activeSlot.myItem == (Slots.draggablesTransform.transform.GetComponentInChildren<InventoryItem>()))
+                            Slots.draggablesTransform.transform.GetComponentInChildren<InventoryItem>().activeSlot.SetItem(Inventory.carriedItem);
+                        else
+                        {
+                            for (int i = 0; i < Slots.inventorySlots.Length; i++)
+                            {
+                                if (Slots.inventorySlots[i].myItem == null)
+                                {
+                                    Slots.inventorySlots[i].SetItem(Inventory.carriedItem);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
             }
             else if (InputManager.GetKeyDown(KeyBindKey.ItemHotbar))
             {
@@ -254,7 +274,7 @@ public class CanvasGameManager : MonoBehaviour
                     player.SetItem(staffItem);
                     break;
             }
-            Inventory.SetActive(seeingInventory);
+            InventoryGame.SetActive(seeingInventory);
         }
         BlockCards();
         if (player != null)

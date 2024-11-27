@@ -13,7 +13,7 @@ public class Inventory : MonoBehaviour
      public inventorySlot[] inventorySlots;
      public inventorySlot[] equipmentSlots;
 
-    [SerializeField] Transform draggablesTransform => GameObject.Find("DraggablesTransform").GetComponent<Transform>();
+    public Transform draggablesTransform => GameObject.Find("DraggablesTransform").GetComponent<Transform>();
     public InventoryItem itemPrefab;
 
     public Item[] items => Resources.LoadAll<Item>("ItemsObj");
