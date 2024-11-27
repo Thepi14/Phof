@@ -2,16 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Credits : MonoBehaviour
 {
     public bool telaRin = false;
     public AudioSource audioSource;
     public Button rinButton;
+    public Button voltarMenu;
     void Start()
     {
         audioSource.volume = PlayerPreferences.MusicVolumeScaled;
         rinButton.onClick.AddListener(() => { telaRin = true; });
+        voltarMenu.onClick.AddListener(delegate { BackToMenu(); });
     }
     void Update()
     {
@@ -19,5 +22,10 @@ public class Credits : MonoBehaviour
         {
             Debug.Log("Tezuka Rin");
         }
+    }
+
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene(0);
     }
 }
