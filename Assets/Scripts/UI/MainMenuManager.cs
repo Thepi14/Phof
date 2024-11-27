@@ -68,7 +68,7 @@ public class MainMenuManager : MonoBehaviour
         LanguagePanel = 2,
     }
     private Panel _currentPanel;
-    public Panel currentPanel
+    public Panel CurrentPanel
     {
         get
         {
@@ -89,6 +89,11 @@ public class MainMenuManager : MonoBehaviour
 
     void Start()
     {
+        if (PlayerPreferences.FirstTimeOpened)
+        {
+            PlayerPreferences.Reset();
+            PlayerPrefs.SetInt("FIRST_OPENED", 0);
+        }
         LoadPanel.SetActive(false);
         gameObject.GetGameObjectComponent<Animator>("Black").Play("FadeOut");
 
@@ -120,11 +125,11 @@ public class MainMenuManager : MonoBehaviour
 
         PlayButton.onClick.AddListener(() => { OpenMenu(Panel.Newgamepanel); });
         ContinueGameButton.onClick.AddListener(() => 
-        { 
+        {
             if (PlayerPreferences.GameSaved)
             {
                 Debug.Log("Loading game...");
-                PlayerPrefs.SetInt("NEW_GAME", 0);
+                PlayerPreferences.NewGame = false;
                 PlayerPrefs.Save();
                 LoadAsyncGame(2);
             }
@@ -167,10 +172,6 @@ public class MainMenuManager : MonoBehaviour
         selectedClass = "Warrior";
         OpenMenu(Panel.Mainpanel);
     }
-    void Update()
-    {
-        
-    }
     public void DeactivateClassPanelHighlights()
     {
         ClassPanel.GetGameObject("Subpanel/Wizardmask/Wizardbutton/Highlight").SetActive(false);
@@ -212,12 +213,14 @@ public class MainMenuManager : MonoBehaviour
     }
     public void OpenMenu(Panel panel)
     {
-        currentPanel = panel;
+        CurrentPanel = panel;
     }
     public void OpenMenu(int panel) => OpenMenu((Panel)panel);
     private void GenerateNewWorld()
     {
-        PlayerPrefs.SetInt("NEW_GAME", 1);
+        PlayerPreferences.NewGame = true;
+        PlayerPreferences.Died = false;
+        PlayerPreferences.GameSaved = false;
         PlayerPrefs.SetInt("CURRENT_SEED", int.Parse(SeedInput.text));
         PlayerPrefs.SetInt("MAP_WIDTH", selectedMapWidth);
         PlayerPrefs.SetInt("MAP_HEIGHT", selectedMapHeight);
@@ -226,6 +229,7 @@ public class MainMenuManager : MonoBehaviour
         PlayerPrefs.SetString("DIFFICULTY", selectedDifficulty);
         PlayerPrefs.SetString("CLASS", selectedClass);
         PlayerPrefs.Save();
+        Debug.Log($"DIED = {PlayerPreferences.Died}, GAME_SAVED = {PlayerPreferences.GameSaved}, NEW_GAME = {PlayerPreferences.NewGame}");
         LoadAsyncGame(1);
     }
     public void LoadAsyncGame(int index)

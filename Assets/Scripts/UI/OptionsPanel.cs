@@ -7,6 +7,7 @@ using TMPro;
 using static LangSystem.Language;
 using UnityEngine.SceneManagement;
 using static GamePlayer;
+using InputManagement;
 
 public class OptionsPanel : MonoBehaviour
 {
@@ -28,6 +29,7 @@ public class OptionsPanel : MonoBehaviour
 
     public Button QuitGameButton;
     public Button ReturnToMainMenuButton;
+    public static bool keyBinding = false;
 
     public enum Panel : byte
     {
@@ -41,6 +43,8 @@ public class OptionsPanel : MonoBehaviour
     {
         currentPanel = panel;
         CloseAllPanels();
+        if (panel == Panel.KeybindPanel)
+            keyBinding = true;
         gameObject.GetGameObjectChildren()[(byte)panel].SetActive(true);
     }
     public void CloseAllPanels()
@@ -49,6 +53,7 @@ public class OptionsPanel : MonoBehaviour
         ConfigPanel.SetActive(false);
         VolumePanel.SetActive(false);
         KeybindPanel.SetActive(false);
+        keyBinding = false;
     }
     public void ExitMenu()
     {
@@ -66,36 +71,69 @@ public class OptionsPanel : MonoBehaviour
         MusicVolume.onValueChanged.AddListener((value) => { PlayerPrefs.SetFloat("MUSIC_VOLUME", value); PlayerPrefs.Save(); });
         SoundEffectsVolume.onValueChanged.AddListener((value) => { PlayerPrefs.SetFloat("SOUND_EFFECTS_VOLUME", value); PlayerPrefs.Save(); });
         UIVolume.onValueChanged.AddListener((value) => { PlayerPrefs.SetFloat("UI_VOLUME", value); PlayerPrefs.Save(); });
+
         VolumeExitButton.onClick.AddListener(() => { OpenPanel(0); });
+        ConfigPanel.GetGameObjectComponent<Button>("Exitbutton").onClick.AddListener(() => { OpenPanel(0); });
+        KeybindPanel.GetGameObjectComponent<Button>("Exitbutton").onClick.AddListener(() => { OpenPanel(0); });
 
         MasterVolume.value = PlayerPrefs.GetFloat("MASTER_VOLUME", 0.8f);
         MusicVolume.value = PlayerPrefs.GetFloat("MUSIC_VOLUME", 1f);
         SoundEffectsVolume.value = PlayerPrefs.GetFloat("SOUND_EFFECTS_VOLUME", 1f);
         UIVolume.value = PlayerPrefs.GetFloat("UI_VOLUME", 1f);
 
+        ConfigPanel.GetGameObjectComponent<Toggle>("Toggleshowdamagemsg").onValueChanged.AddListener((a) => { PlayerPreferences.ShowDamage = a; PlayerPrefs.Save(); });
+        ConfigPanel.GetGameObjectComponent<Toggle>("Toggleorthographic").onValueChanged.AddListener((a) => { PlayerPreferences.Orthographic = a; PlayerPrefs.Save(); });
+        ConfigPanel.GetGameObjectComponent<Toggle>("Toggleshowcoord").onValueChanged.AddListener((a) => { PlayerPreferences.ShowCoordinates = a; PlayerPrefs.Save(); });
+        ConfigPanel.GetGameObjectComponent<Toggle>("Toggleshowfps").onValueChanged.AddListener((a) => { PlayerPreferences.ShowFPS = a; PlayerPrefs.Save(); });
+        ConfigPanel.GetGameObjectComponent<Button>("Resetbutton").onClick.AddListener(() => { PlayerPreferences.Reset(); SetConfigAll(); });
+
+        void SetConfigAll()
+        {
+            ConfigPanel.transform.Find("Toggleshowdamagemsg").GetComponent<Toggle>().SetIsOnWithoutNotify(PlayerPreferences.ShowDamage);
+            ConfigPanel.transform.Find("Toggleorthographic").GetComponent<Toggle>().SetIsOnWithoutNotify(PlayerPreferences.Orthographic);
+            ConfigPanel.transform.Find("Toggleshowcoord").GetComponent<Toggle>().SetIsOnWithoutNotify(PlayerPreferences.ShowCoordinates);
+            ConfigPanel.transform.Find("Toggleshowfps").GetComponent<Toggle>().SetIsOnWithoutNotify(PlayerPreferences.ShowFPS);
+        }
+        SetConfigAll();
+
+        VolumeExitButton.onClick.AddListener(() => { OpenPanel(0); });
+
         SetAllLang();
 
-        if (QuitGameButton != null)
-        {
-            QuitGameButton.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = currentLanguage.exitGame;
-            QuitGameButton.onClick.AddListener(() => {  Application.Quit(); });
-        }
         if (ReturnToMainMenuButton != null)
         {
             ReturnToMainMenuButton.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = currentLanguage.returnToMainMenu;
             ReturnToMainMenuButton.onClick.AddListener(() => 
             { 
-                if (!PlayerPreferences.Died)
-                {
+                if (player != null && !PlayerPreferences.Died)
                     PlayerPreferences.SavePlayerData(player.EntityData);
-                }
                 else
-                {
-                    PlayerPrefs.SetInt("SAVED_GAME", 0);
-                }
+                    PlayerPreferences.GameSaved = false;
+
+                PlayerPreferences.Died = false;
                 PlayerPrefs.Save();
                 DontDestroyOnLoadManager.DestroyAll();
                 SceneManager.LoadSceneAsync(0);
+            });
+        }
+        if (QuitGameButton != null)
+        {
+            QuitGameButton.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = currentLanguage.exitGame;
+            QuitGameButton.onClick.AddListener(() =>
+            {
+                if (player != null && !PlayerPreferences.Died)
+                    PlayerPreferences.SavePlayerData(player.EntityData);
+                else
+                    PlayerPreferences.GameSaved = false;
+
+                PlayerPreferences.Died = false;
+                PlayerPrefs.Save();
+                DontDestroyOnLoadManager.DestroyAll();
+#if UNITY_EDITOR
+                SceneManager.LoadSceneAsync(0);
+#else
+                Application.Quit();
+#endif
             });
         }
 
@@ -115,10 +153,27 @@ public class OptionsPanel : MonoBehaviour
         MusicVolume.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = currentLanguage.musicVolume;
         SoundEffectsVolume.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = currentLanguage.soundEffectVolume;
         UIVolume.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = currentLanguage.UIVolume;
+        VolumePanel.GetGameObjectComponent<TextMeshProUGUI>("Exitbutton/Text").text = currentLanguage.exit;
+
+        //configurations panel
+        ConfigPanel.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = currentLanguage.configurations;
+        ConfigPanel.GetGameObjectComponent<TextMeshProUGUI>("Toggleshowdamagemsg/Label").text = currentLanguage.showDamage;
+        ConfigPanel.GetGameObjectComponent<TextMeshProUGUI>("Toggleorthographic/Label").text = currentLanguage.orthographic;
+        ConfigPanel.GetGameObjectComponent<TextMeshProUGUI>("Toggleshowcoord/Label").text = currentLanguage.showCoordinates;
+        ConfigPanel.GetGameObjectComponent<TextMeshProUGUI>("Toggleshowfps/Label").text = currentLanguage.showFPS;
+        ConfigPanel.GetGameObjectComponent<TextMeshProUGUI>("Resetbutton/Text").text = currentLanguage.reset;
+        ConfigPanel.GetGameObjectComponent<TextMeshProUGUI>("Exitbutton/Text").text = currentLanguage.exit;
+
+        //keybind panel
+        KeybindPanel.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = currentLanguage.keybind;
+
+        KeybindPanel.GetGameObjectComponent<TextMeshProUGUI>("Exitbutton/Text").text = currentLanguage.exit;
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (keyBinding)
+            return;
+        if (InputManager.GetKeyDown(KeyBindKey.Escape))
         {
             if (currentPanel != 0)
                 OpenPanel(0);

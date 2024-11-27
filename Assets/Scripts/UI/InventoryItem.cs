@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class InventoryItem : MonoBehaviour, IPointerClickHandler
 {
-    public Image itemIcon;
+    public Image itemIcon => GetComponent<Image>();
     public CanvasGroup canvasGroup {  get; private set; }
     public Item myItem { get; set; }
     public inventorySlot activeSlot { get; set; }
@@ -13,7 +13,6 @@ public class InventoryItem : MonoBehaviour, IPointerClickHandler
     void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
-        itemIcon = GetComponent<Image>();
     }
 
     public void Initialize(inventorySlot parent, Item item = null)
@@ -25,8 +24,7 @@ public class InventoryItem : MonoBehaviour, IPointerClickHandler
             myItem = item;
             if (item.itemSprite == null)
                 throw new System.Exception($"Item with ID {item.ID} has no sprite.");
-            if (itemIcon != null)
-                itemIcon.sprite = item.itemSprite;
+            itemIcon.sprite = item.itemSprite;
         }
         else
         {

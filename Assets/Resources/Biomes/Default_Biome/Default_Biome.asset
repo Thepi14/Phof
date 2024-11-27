@@ -27,6 +27,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2937238f7934d36428f4bcff0191ef44, type: 2}
   - {fileID: 11400000, guid: bcfc4810f8691754eb05527663be3199, type: 2}
   - {fileID: 11400000, guid: bf68ea8303f248745afc19b0456df7de, type: 2}
+  - {fileID: 11400000, guid: a2d0b2bb7e51e524f82a98a66f1a9c8e, type: 2}
+  - {fileID: 11400000, guid: 2e073656559742c46aa2c76f58e6e428, type: 2}
+  - {fileID: 11400000, guid: 085543f7587505540bfd28f84a19d4e4, type: 2}
   defaultRoom: {fileID: 11400000, guid: cc7699f8c13314f4d9a47b834edb2b83, type: 2}
   rooms:
   - {fileID: 11400000, guid: 380834f3e14660143a535900f41f6d8a, type: 2}

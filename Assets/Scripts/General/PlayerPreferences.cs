@@ -23,12 +23,14 @@ public static class PlayerPreferences
     #endregion
 
     #region Configurations
-    public static bool ShowDamage => PlayerPrefs.GetInt("SHOW_DAMAGE", 1) == 1;
-    public static bool Orthographic => PlayerPrefs.GetInt("ORTHOGRAPHIC", 0) == 1;
-    public static bool ShowCoordinates => PlayerPrefs.GetInt("SHOW_COORD", 0) == 1;
-    public static bool GameSaved => PlayerPrefs.GetInt("SAVED_GAME", 0) == 1;
-    public static bool NewGame => PlayerPrefs.GetInt("NEW_GAME", 1) == 1;
-    public static bool Died => PlayerPrefs.GetInt("DIED", 1) == 0;
+    public static bool ShowDamage { get => PlayerPrefs.GetInt("SHOW_DAMAGE", 1) == 1; set => PlayerPrefs.SetInt("SHOW_DAMAGE", value ? 1 : 0); }
+    public static bool Orthographic { get => PlayerPrefs.GetInt("ORTHOGRAPHIC", 1) == 1; set => PlayerPrefs.SetInt("ORTHOGRAPHIC", value ? 1 : 0); }
+    public static bool ShowCoordinates { get => PlayerPrefs.GetInt("SHOW_COORD", 1) == 1; set => PlayerPrefs.SetInt("SHOW_COORD", value ? 1 : 0); }
+    public static bool ShowFPS { get => PlayerPrefs.GetInt("SHOW_FPS", 1) == 1; set => PlayerPrefs.SetInt("SHOW_FPS", value ? 1 : 0); }
+    public static bool GameSaved { get => PlayerPrefs.GetInt("SAVED_GAME", 1) == 1; set => PlayerPrefs.SetInt("SAVED_GAME", value ? 1 : 0); }
+    public static bool NewGame { get => PlayerPrefs.GetInt("NEW_GAME", 1) == 1; set => PlayerPrefs.SetInt("NEW_GAME", value ? 1 : 0); }
+    public static bool Died { get => PlayerPrefs.GetInt("DIED", 1) == 1; set => PlayerPrefs.SetInt("DIED", value ? 1 : 0); }
+    public static bool FirstTimeOpened => PlayerPrefs.GetInt("FIRST_OPENED", 1) == 1;
     #endregion
     public static void SavePlayerData(this EntityData data)
     {
@@ -42,7 +44,6 @@ public static class PlayerPreferences
 
         var index = 0;
         Debug.Log($"SAVING");
-        Debug.Log($"INVENTORY_ITEMS NOW");
         foreach (var slot in Inventory.Singleton.inventorySlots)
         {
             Debug.Log(slot.gameObject.name);
@@ -55,15 +56,9 @@ public static class PlayerPreferences
             }
             else
                 PlayerPrefs.SetString($"INVENTORY_ITEM_{index}", "NULL");
-            Debug.Log($"INVENTORY_ITEM_{index}");
             index++;
         }
         index = 0;
-        Debug.Log($"EQUIPMENT_ITEMS NOW");
-        foreach (var slot in Inventory.Singleton.equipmentSlots)
-        {
-            Debug.Log(slot.gameObject.name);
-        }
         foreach (var slot in Inventory.Singleton.equipmentSlots)
         {
             if (slot.myItem != null)
@@ -72,7 +67,6 @@ public static class PlayerPreferences
             }
             else
                 PlayerPrefs.SetString($"EQUIPMENT_ITEM_{index}", "NULL");
-            Debug.Log($"EQUIPMENT_ITEM_{index}");
             index++;
         }
         for (int i = 0; i < 4; i++)
@@ -86,7 +80,7 @@ public static class PlayerPreferences
             index++;
         }
 
-        PlayerPrefs.SetInt("SAVED_GAME", 1);
+        GameSaved = true;
         PlayerPrefs.Save();
     }
     public static void LoadPlayerData()
@@ -106,7 +100,6 @@ public static class PlayerPreferences
 
         var index = 0;
         Debug.Log($"LOADING");
-        Debug.Log($"INVENTORY_ITEMS NOW");
         foreach (var slot in Inventory.Singleton.inventorySlots)
         {
             Item item = null;
@@ -126,11 +119,9 @@ public static class PlayerPreferences
                 //Inventory.Singleton.SpawnInventoryItem(item);
                 slot.SetItem(slot.myItem);
             }
-            Debug.Log($"INVENTORY_ITEM_{index}");
             index++;
         }
         index = 0;
-        Debug.Log($"EQUIPMENT_ITEMS NOW");
         foreach (var slot in Inventory.Singleton.equipmentSlots)
         {
             Item item = null;
@@ -150,7 +141,6 @@ public static class PlayerPreferences
                 //Inventory.Singleton.SpawnInventoryItem(item);
                 slot.SetItem(slot.myItem);
             }
-            Debug.Log($"EQUIPMENT_ITEM_{index}");
             index++;
         }
         index = 0;
@@ -171,14 +161,17 @@ public static class PlayerPreferences
         PlayerPrefs.SetFloat("MUSIC_VOLUME", 1f);
         PlayerPrefs.SetFloat("SOUND_EFFECTS_VOLUME", 1f);
         PlayerPrefs.SetFloat("UI_VOLUME", 1f);
-        PlayerPrefs.SetInt("MAP_WIDTH", 100);
+        /*PlayerPrefs.SetInt("MAP_WIDTH", 100);
         PlayerPrefs.SetInt("MAP_HEIGHT", 100);
-        PlayerPrefs.SetString("CLASS", "Warrior");
-        PlayerPrefs.SetInt("SHOW_DAMAGE", 1);
-        PlayerPrefs.SetInt("ORTHOGRAPHIC", 0);
-        PlayerPrefs.SetInt("SHOW_COORD", 0);
+        PlayerPrefs.SetString("CLASS", "Warrior");*/
+        ShowDamage = true;
+        Orthographic = false;
+        ShowCoordinates = false;
+        ShowFPS = false;
+        PlayerPrefs.Save();
         InputManagement.InputManager.ResetKeyBindToDefault();
     }
+
     public static Difficulty Difficulty =>
         CurrentDifficulty == "Easy" ? Difficulty.easy :
         CurrentDifficulty == "Normal" ? Difficulty.normal :

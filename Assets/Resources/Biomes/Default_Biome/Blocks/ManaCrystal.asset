@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60fdbe94cbbbb984fa5c31fd526039bf, type: 3}
+  m_Name: ManaCrystal
+  m_EditorClassIdentifier: 
+  blockName: Mana Crystal
+  blockPrefab: {fileID: 1065585494121167376, guid: 270d68e88c84c29418c83da9bc1cde61, type: 3}
+  isDoor: 0

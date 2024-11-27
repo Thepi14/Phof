@@ -15,6 +15,8 @@ using ProjectileSystem;
 using UnityEngine.Events;
 using UnityEngine.AI;
 using System.Linq;
+using System.Security.Cryptography;
+using UnityEngine.UIElements;
 
 namespace EntityDataSystem
 {
@@ -36,7 +38,7 @@ namespace EntityDataSystem
         public float attackSpeedMultipliyer = 1f;
 
         [SerializeReference]
-        public Dictionary<string, HabilityBehaviour> habilities = new Dictionary<string, HabilityBehaviour>();
+        public Dictionary<string, HabilityBehaviour> habilities = new();
 
         [Header("Valores máximos")]
         public int maxKarma;
@@ -60,7 +62,7 @@ namespace EntityDataSystem
 
         public Vector2 currentImpulse;
 
-        public List<Effect> currentEffects = new List<Effect>();
+        public List<Effect> currentEffects = new();
 
         public Item currentAttackItem;
 
@@ -363,27 +365,25 @@ namespace EntityDataSystem
     }
     public abstract class EntityBehaviour : MonoBehaviour
     {
-        public Vector3 gizmoPos { get; set; }
+        public Vector3 GizmoPos { get; set; }
         public bool RayCastTargetIsBehindWall(GameObject target)
         {
             if (target == null) return false;
-            RaycastHit hit;
             Vector3 direction = MathEx.AngleVectors(target.transform.position, transform.position);
             direction = new Vector3(direction.x, 0, direction.y);
             Ray ray = new(transform.position, direction);
-            Physics.Raycast(ray, out hit, 1000f, LayerMask.GetMask("Wall"), QueryTriggerInteraction.Ignore);
-            gizmoPos = hit.point;
+            Physics.Raycast(ray, out RaycastHit hit, 1000f, LayerMask.GetMask("Wall"), QueryTriggerInteraction.Ignore);
+            GizmoPos = hit.point;
             return Vector3.Distance(hit.point, transform.position) < Vector3.Distance(transform.position, target.transform.position);
         }
         public Vector3 RayCastWall(GameObject target)
         {
             if (target == null) return Vector3.zero;
             else if (target.layer != 6) return Vector3.zero;
-            RaycastHit hit;
             Vector3 direction = MathEx.AngleVectors(target.transform.position, transform.position);
             direction = new Vector3(direction.x, 0, direction.y);
             Ray ray = new(transform.position, direction);
-            Physics.Raycast(ray, out hit, 1000f, LayerMask.GetMask("Wall"), QueryTriggerInteraction.Ignore);
+            Physics.Raycast(ray, out RaycastHit hit, 1000f, LayerMask.GetMask("Wall"), QueryTriggerInteraction.Ignore);
             return hit.point;
         }
     }
@@ -415,6 +415,7 @@ namespace EntityDataSystem
         public abstract void Die(GameObject killer);
         public abstract void SetItem(Item item = null);
         public abstract void CalculateStatusRegen();
+        public virtual void DropItem(Item item) { }
     }
     public abstract class BasicEntityBehaviour : BaseEntityBehaviour, IEntity
     {
@@ -438,7 +439,7 @@ namespace EntityDataSystem
             EntityData.ResetStatus();
 
             SetItem(EntityData.currentAttackItem);
-            AttackTimer();
+            StartCoroutine(AttackTimer());
         }
         public override void SetItem(Item item = null)
         {
@@ -641,6 +642,8 @@ namespace EntityDataSystem
         }
         public void FieldOfView()
         {
+            if (player == null)
+                return;
             Agent.speed = EntityData.currentSpeed;
 
             if (!gameObject.activeSelf)
@@ -688,7 +691,7 @@ namespace EntityDataSystem
             EntityData.canMove = false;
             GetComponent<Collider>().enabled = false;
             //gameObject.SetActive(false);
-
+            DropItem(this.EntityData.currentAttackItem);
             DieAnim();
         }
         public void DieAnim()
@@ -731,17 +734,28 @@ namespace EntityDataSystem
                 EntityData.WasteStamina(-EntityData.currentStrength);
             }
         }
+        public override void DropItem(Item item)
+        {
+            if (item == null) return;
+            Debug.Log(item.ID);
+            RNGCryptoServiceProvider provider = new();
+            byte[] box = new byte[1];
+            provider.GetBytes(box);
+            var chance = box[0];
+            if (chance >= (int)PlayerPreferences.Difficulty * 51)
+                gameManagerInstance.DropItem(transform.position, item);
+        }
     }
     public interface IBullet
     {
-        public GameObject sender { get; set; }
-        public IEntity senderEntity => sender.GetComponent<IEntity>();
-        public GameObject explosionPrefab { get; set; }
-        public bool started { get; set; }
+        public GameObject Sender { get; set; }
+        public IEntity SenderEntity => Sender.GetComponent<IEntity>();
+        public GameObject ExplosionPrefab { get; set; }
+        public bool Started { get; set; }
         public void SetBullet(GameObject sender, float? radAngles = null);
         public void DeathEffect();
-        public DamageData damageData { get; set; }
-        public bool entityDamageAdd { get; set; }
+        public DamageData DamageData { get; set; }
+        public bool EntityDamageAdd { get; set; }
     }
     public abstract class BaseBulletBehaviour : EntityBehaviour, IBullet
     {
@@ -749,7 +763,7 @@ namespace EntityDataSystem
         private GameObject _sender;
         [SerializeField]
         private GameObject _explosionPrefab;
-        public IEntity senderEntity => sender.GetComponent<IEntity>();
+        public IEntity SenderEntity => Sender.GetComponent<IEntity>();
 
         private bool _started = false;
 
@@ -757,29 +771,29 @@ namespace EntityDataSystem
         public int maxDamage = 1;
         public float speed = 10f;
         public float impulseForce;
-        public List<Effect> effects = new List<Effect>();
+        public List<Effect> effects = new();
         [SerializeField]
         private bool _entityDamageAdd;
-        public bool entityDamageAdd { get => _entityDamageAdd; set => _entityDamageAdd = value; }
+        public bool EntityDamageAdd { get => _entityDamageAdd; set => _entityDamageAdd = value; }
 
-        public GameObject sender { get => _sender; set => _sender = value; }
-        public GameObject explosionPrefab { get => _explosionPrefab; set => _explosionPrefab = value; }
-        public bool started { get => _started; set => _started = value; }
-        public DamageData damageData { get; set; }
+        public GameObject Sender { get => _sender; set => _sender = value; }
+        public GameObject ExplosionPrefab { get => _explosionPrefab; set => _explosionPrefab = value; }
+        public bool Started { get => _started; set => _started = value; }
+        public DamageData DamageData { get; set; }
         public bool destroyingProcess = false;
 
         public virtual void SetBullet(GameObject sender, float? radAngles = null)
         {
             //Debug.Log((float)radAngles);
-            this.sender = sender;
+            this.Sender = sender;
             gameObject.layer = sender.layer == 8 ? 12 : sender.layer == 10 ? 11 : 0;
             if (radAngles != null)
                 transform.rotation = Quaternion.Euler(0, (float)radAngles * Mathf.Rad2Deg, 0);
-            started = true;
+            Started = true;
         }
         public virtual void DeathEffect()
         {
-            var expObj = Instantiate(explosionPrefab);
+            var expObj = Instantiate(ExplosionPrefab);
             expObj.transform.position = transform.position;
         }
         protected virtual IEnumerator AutoDestructionCoroutine(float timer = 0)

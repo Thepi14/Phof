@@ -78,7 +78,7 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
     }
     public void FixedUpdate()
     {
-        if (EntityData.dead || !Instance.mapLoaded)
+        if (EntityData.dead || !Instance.mapLoaded || OptionsPanel.keyBinding || CanvasGameManager.canvasInstance.seeingMap)
             return;
         CalculateStatusRegen();
 
@@ -99,6 +99,8 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
     private bool canAttackByHeld = true;
     public void Update()
     {
+        if (CanvasGameManager.canvasInstance.GamePaused || OptionsPanel.keyBinding || CanvasGameManager.canvasInstance.seeingMap)
+            return;
         if (EntityData.dead || !Instance.mapLoaded)
             return;
 
@@ -134,14 +136,13 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
             canAttackByHeld = true;
             Attack();
         }
-        else if (InputManager.GetKeyDown(KeyBindKey.Attack) && EntityData.canAttack && canAttackByHeld)
+        else if (InputManager.GetKey(KeyBindKey.Attack) && EntityData.canAttack && canAttackByHeld)
         {
             Attack();
         }
 
-        RaycastHit hit;
         Ray ray = MainCameraControl.cam.ScreenPointToRay(Input.mousePosition);
-        Physics.Raycast(ray, out hit, Vector3.Distance(MainCameraControl.gameObject.transform.position, transform.position) + 10f, LayerMask.GetMask("RaycastHit"), QueryTriggerInteraction.Ignore);
+        Physics.Raycast(ray, out RaycastHit hit, Vector3.Distance(MainCameraControl.gameObject.transform.position, transform.position) + 10f, LayerMask.GetMask("RaycastHit"), QueryTriggerInteraction.Ignore);
         playerTarget = hit.point;
 
         if(EntityData.currentAttackItem != null)

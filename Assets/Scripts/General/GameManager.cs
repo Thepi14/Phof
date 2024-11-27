@@ -14,6 +14,7 @@ using UnityEngine.SceneManagement;
 using LangSystem;
 using System.Threading.Tasks;
 using TMPro;
+using ItemSystem;
 
 namespace GameManagerSystem
 {
@@ -33,6 +34,7 @@ namespace GameManagerSystem
         public GameObject playerPrefab;
         public GameObject targetObject;
         public GameObject damageTextPrefab;
+        public GameObject itemDropPrefab;
 
         [Header("Current Status", order = 1)]
         public RoomNode currentRoom;
@@ -79,9 +81,12 @@ namespace GameManagerSystem
                     break;
             }
 
-            PlayerPrefs.SetInt("SAVED_GAME", 1);
-            PlayerPrefs.Save();
             gameObject.DontDestroyOnLoad();
+        }
+        public void ExcludePlayerDataOnDeath()
+        {
+            PlayerPreferences.Died = true;
+            PlayerPrefs.Save();
         }
         private void Update()
         {
@@ -272,7 +277,8 @@ namespace GameManagerSystem
         private void ChangeEntityColor(IEntity entity, Color color, float time = 0f)
         {
             StartCoroutine(_ChangeEntityColor(entity, color, time));
-            IEnumerator _ChangeEntityColor(IEntity entity, Color color, float time)
+
+            static IEnumerator _ChangeEntityColor(IEntity entity, Color color, float time)
             {
                 float timePassed = 0f;
                 if (!entity.EntityData.damaged)
@@ -307,6 +313,7 @@ namespace GameManagerSystem
         }
         public void NextStage()
         {
+            PlayerPreferences.SavePlayerData(player.EntityData);
             PlayerPrefs.SetInt("CURRENT_STAGE", PlayerPrefs.GetInt("CURRENT_STAGE", 1) + 1);
             PlayerPrefs.Save();
             StartCoroutine(LoadAsyncGame(2));
@@ -331,12 +338,18 @@ namespace GameManagerSystem
         {
             targetObject.transform.position = new Vector3(pos.x, 1, pos.y);
         }
+        public void DropItem(Vector3 position, Item item)
+        {
+            var obj = Instantiate(itemDropPrefab, position, Quaternion.identity);
+            var itemObj = obj.GetGameObjectComponent<ItemDrop>("Item");
+            itemObj.StartItem(item);
+        }
     }
 }
 
 public static class DontDestroyOnLoadManager
 {
-    static List<GameObject> _ddolObjects = new List<GameObject>();
+    public static readonly List<GameObject> _ddolObjects = new();
 
     /// <summary>
     /// Método alternativo para o DontDestroyOnLoad() convencional.

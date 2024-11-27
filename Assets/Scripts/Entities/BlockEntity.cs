@@ -52,6 +52,7 @@ public class BlockEntity : MonoBehaviour, IEntity
             currentDefense = 1,
             currentResistence = 1,
         };*/
+        EntityData.currentHealth = EntityData.maxHealth;
     }
 
     public void Attack()
@@ -76,6 +77,7 @@ public class BlockEntity : MonoBehaviour, IEntity
         if (destructionPrefabVFX != null)
         {
             var vfx = Instantiate(destructionPrefabVFX, transform.position, transform.rotation);
+            vfx.transform.localScale = transform.lossyScale;
             foreach (var piece in ObjectUtils.GameObjectGeneral.GetGameObjectChildren(vfx))
             {
                 if (piece.GetComponent<Rigidbody>() == null) return;

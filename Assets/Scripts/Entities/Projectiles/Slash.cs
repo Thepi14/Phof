@@ -20,11 +20,11 @@ public class Slash : BaseBulletBehaviour
     private void Start()
     {
         initialPos = transform.position;
-        started = true;
+        Started = true;
     }
     private void Update()
     {
-        if (!started && !destroyingProcess)
+        if (!Started && !destroyingProcess)
             return;
         RB.velocity = new Vector3((transform.forward * speed).x, RB.velocity.y, (transform.forward * speed).z);
         //transform.rotation = Quaternion.LookRotation(RB.velocity.normalized);
@@ -43,7 +43,7 @@ public class Slash : BaseBulletBehaviour
             (collider.gameObject.layer == 6))//WALL
         {
             entitiesAffected.Add(collider.gameObject);
-            collider.gameObject.GetComponent<IEntity>().Damage(new DamageData(sender, Random.Range(minDamage + (senderEntity.EntityData.currentStrength * 3), maxDamage + (senderEntity.EntityData.currentStrength * 3)), MathEx.AngleVectors(initialPos, transform.position) * impulseForce, effects, true));
+            collider.gameObject.GetComponent<IEntity>().Damage(new DamageData(Sender, Random.Range(minDamage + (SenderEntity.EntityData.currentStrength * 3), maxDamage + (SenderEntity.EntityData.currentStrength * 3)), MathEx.AngleVectors(initialPos, transform.position) * impulseForce, effects, true));
         }
     }
     private void FixedUpdate()

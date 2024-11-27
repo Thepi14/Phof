@@ -55,8 +55,6 @@ namespace RoomSystem
         public bool roomCompleted = false;
         #endregion
 
-
-
         #region Room config
         public void NewRoomNode(byte id, Vector2Int position, int size)
         {
@@ -226,6 +224,7 @@ namespace RoomSystem
                 door.doorBlock.GetComponent<Animator>().Play("DoorOpen");
             }
             SoundManager.StopMusic();
+            CanvasGameManager.PlayRoomCompletionAnimation(usedPoints);
             GameManager.UpdatePlayerMaxKarma(usedPoints);
             Instance.RoomOcclusion(-1);
         }

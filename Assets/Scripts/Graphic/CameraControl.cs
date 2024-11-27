@@ -102,6 +102,7 @@ public class CameraControl : MonoBehaviour
             case 1 or 2 or 3 or 4 or 5 or 6 or 7:
                 foreach (GameObject spriteObj in spriteRenderers.ToList())
                 {
+                    if (spriteObj == null) { spriteRenderers.Remove(spriteObj); continue; };
                     spriteObj.transform.localRotation = Quaternion.Euler((Mathf.Atan2( //X
                         transform.position.z - spriteObj.transform.position.z,
                         transform.position.y - spriteObj.transform.position.y) * (180 / Mathf.PI)) + 90,
@@ -110,12 +111,15 @@ public class CameraControl : MonoBehaviour
                 }
                 break;
             case 8:
+
                 foreach (GameObject spriteObj in spriteRenderers.ToList())
                 {
+                    if (spriteObj == null) { spriteRenderers.Remove(spriteObj); continue; };
                     spriteObj.transform.localRotation = Quaternion.Euler((Mathf.Atan2( //X
                         transform.position.z - spriteObj.transform.position.z,
                         transform.position.y - spriteObj.transform.position.y) * (180 / Mathf.PI)) + 90, 0, 0);
                 }
+
                 break;
             default:
                 break;

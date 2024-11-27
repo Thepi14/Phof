@@ -43,7 +43,7 @@ namespace ProjectileSystem
         }
         void Update()
         {
-            if (!started)
+            if (!Started)
                 return;
 
             switch (bulletExclusionType)
@@ -71,22 +71,22 @@ namespace ProjectileSystem
             foreach (var col in colliders.ToList())
             {
                 var obj = col.gameObject;
-                damageData = new DamageData(sender, Random.Range(minDamage, maxDamage), MathEx.AngleVectors(transform.position, obj.transform.position) * impulseForce, effects, false);
+                DamageData = new DamageData(Sender, Random.Range(minDamage, maxDamage), MathEx.AngleVectors(transform.position, obj.transform.position) * impulseForce, effects, false);
                 switch (obj.layer)
                 {
                     case 6 or 7:
                         if (obj.GetComponent<IEntity>() != null)
-                            obj.GetComponent<IEntity>().Damage(damageData);
+                            obj.GetComponent<IEntity>().Damage(DamageData);
                         break;
                     //PLAYER
                     case 8 when gameObject.layer == 11:
                         if (!RayCastTargetIsBehindWall(obj))
-                            obj.GetComponent<IEntity>().Damage(damageData);
+                            obj.GetComponent<IEntity>().Damage(DamageData);
                         break;
                     //ENEMY
                     case 10 when gameObject.layer == 12:
                         if (!RayCastTargetIsBehindWall(obj))
-                            obj.GetComponent<IEntity>().Damage(damageData);
+                            obj.GetComponent<IEntity>().Damage(DamageData);
                         break;
                     default:
                         break;
@@ -97,7 +97,7 @@ namespace ProjectileSystem
         }
         private void OnTriggerEnter(Collider collider)
         {
-            damageData = new DamageData(sender, Random.Range(minDamage, maxDamage), MathEx.AngleVectors(transform.position, collider.transform.position) * impulseForce, effects, false);
+            DamageData = new DamageData(Sender, Random.Range(minDamage, maxDamage), MathEx.AngleVectors(transform.position, collider.transform.position) * impulseForce, effects, false);
             switch (collider.gameObject.layer)
             {
                 case 0:
@@ -105,17 +105,17 @@ namespace ProjectileSystem
                 case 6 or 7:
                     if (collider.GetComponent<IEntity>() != null)
                         if (!explosive)
-                            collider.GetComponent<IEntity>().Damage(damageData);
+                            collider.GetComponent<IEntity>().Damage(DamageData);
                     break;
                     //PLAYER
                 case 8 when gameObject.layer == 11:
                     if (!explosive)
-                        collider.GetComponent<IEntity>().Damage(damageData);
+                        collider.GetComponent<IEntity>().Damage(DamageData);
                     break;
                     //ENEMY
                 case 10 when gameObject.layer == 12:
                     if (!explosive)
-                        collider.GetComponent<IEntity>().Damage(damageData);
+                        collider.GetComponent<IEntity>().Damage(DamageData);
                     break;
                 default:
                     EndBullet();

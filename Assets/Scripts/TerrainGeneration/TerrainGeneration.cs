@@ -111,8 +111,8 @@ public class TerrainGeneration : MonoBehaviour
     {
         await _GenerateLevel();
     }
-    public float generationProgress { get; private set; } = 0;
-    public async void RoomOcclusion(int roomIndex)
+    public float GenerationProgress { get; private set; } = 0;
+    public void RoomOcclusion(int roomIndex)
     {
         if (roomIndex > -1)
         {
@@ -155,7 +155,7 @@ public class TerrainGeneration : MonoBehaviour
             GamePlayer.player.transform.position = new Vector3(0, 1f, 0);
 
         mapLoaded = false;
-        generationProgress = 0;
+        GenerationProgress = 0;
 
         noiseMap = GenerateNoiseTexture(MapWidth, MapHeight, seed, frequency, limit, scattering, true, StageOffSet * CurrentStage, StageOffSet * CurrentStage);
 
@@ -188,7 +188,7 @@ public class TerrainGeneration : MonoBehaviour
         Color[,] colors = new Color[MapWidth, MapHeight];
 
         var genOffset = 0.1f;
-        generationProgress = genOffset;
+        GenerationProgress = genOffset;
         var GenOffset2 = 0f;
 
         bool DetectCorner(int x, int y, int ex, int ey) => 
@@ -212,7 +212,7 @@ public class TerrainGeneration : MonoBehaviour
                 }
             }
             GenOffset2 += 0.1f / rooms.Count;
-            generationProgress = genOffset + GenOffset2;
+            GenerationProgress = genOffset + GenOffset2;
 
             foreach (Door door in room.doors)
             {
@@ -286,7 +286,7 @@ public class TerrainGeneration : MonoBehaviour
                 }
             }
             GenOffset2 += 0.1f / MapWidth;
-            generationProgress = genOffset + GenOffset2;
+            GenerationProgress = genOffset + GenOffset2;
             await Task.Delay(1);
         }
         genOffset = 0.3f;
@@ -349,7 +349,7 @@ public class TerrainGeneration : MonoBehaviour
             }
 
             GenOffset2 += 0.6f / MapWidth;
-            generationProgress = genOffset + GenOffset2;
+            GenerationProgress = genOffset + GenOffset2;
             await Task.Delay(1);
         }
         genOffset = 0.9f;
@@ -374,7 +374,7 @@ public class TerrainGeneration : MonoBehaviour
                         if (IsInside2DArray(x, z, roomGrid.GetArray()))
                         {
                             if (walls[x + ex, z + ez] != null)
-                                if (walls[x + ex, z + ez].gameObject.name.Contains(biome.torchBlock.blockPrefab.name) || walls[x + ex, z + ez].gameObject.name.Contains(biome.doorBlock.blockPrefab.name))
+                                if (walls[x + ex, z + ez].name.Contains(biome.torchBlock.blockPrefab.name) || walls[x + ex, z + ez].name.Contains(biome.doorBlock.blockPrefab.name))
                                     goto exitTorch;
                         }
                         else
@@ -402,7 +402,7 @@ public class TerrainGeneration : MonoBehaviour
             }
 
             GenOffset2 += 0.1f / MapWidth;
-            generationProgress = genOffset + GenOffset2;
+            GenerationProgress = genOffset + GenOffset2;
 
             await Task.Delay(1);
         }
@@ -429,32 +429,46 @@ public class TerrainGeneration : MonoBehaviour
         if (GameManager.gameManagerInstance.playerPrefab == null)
             throw new System.Exception("Manager player prefab is null");
 
+        Debug.Log($"DIED = {PlayerPreferences.Died}, GAME_SAVED = {PlayerPreferences.GameSaved}, NEW_GAME = {PlayerPreferences.NewGame}");
         await Task.Delay(20);
         if (GamePlayer.player == null)
         {
             var entityPlayer = Instantiate(GameManager.gameManagerInstance.playerPrefab, new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z), Quaternion.identity, null);
             if (PlayerPreferences.NewGame)
             {
-                //PlayerPreferences.SavePlayerData(entityPlayer.GetComponent<GamePlayer>().EntityData);
+                PlayerPreferences.SavePlayerData(entityPlayer.GetComponent<GamePlayer>().EntityData);
             }
             else
             {
                 PlayerPreferences.LoadPlayerData();
+                PlayerPreferences.SavePlayerData(GamePlayer.player.EntityData);
             }
         }
         else
             GamePlayer.player.transform.position = new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z);
 
+        GamePlayer.player.OnDeathEvent.AddListener(delegate { GameManager.gameManagerInstance.ExcludePlayerDataOnDeath(); });
+        var mapTexture = GetTexture(physicalMap);
+        for (int x = 0; x < mapTexture.width; x++)
+        {
+            for (int y = 0; y < mapTexture.height; y++)
+            {
+                if (mapTexture.GetPixel(x, y) == Color.white)
+                {
+                    mapTexture.SetPixel(x, y, Color.gray);
+                }
+            }
+        }
+        mapTexture.Apply();
+        mapTexture.filterMode = FilterMode.Point;
+        mapTexture.Compress(false);
+        MapMove.MapMoveInstance.map.sprite = Sprite.Create(mapTexture, new Rect(0, 0, mapTexture.width, mapTexture.height), new Vector2(0.5f, 0.5f), 64);
+
+        GamePlayer.player.OnDeathEvent.AddListener((a, b) => { PlayDeathScene(); });
+
         mapLoaded = true;
         return;
     }
-    public
-    #region medo
-    void Update()
-    {
-        
-    }
-    #endregion
     public GameObject PlaceBlock(int x, float y, int z, BlockClass type, bool wall = false, Vector3? rotation = null, Vector3? scale = null)
     {
         if (floors[x, z] != null && !wall)
@@ -534,12 +548,13 @@ public class TerrainGeneration : MonoBehaviour
     {
         Texture2D dotMap = GetTexture(texture);
 
-        Pathfinding pathfinding = new Pathfinding(texture.width, texture.height);
-
-        pathfinding.MOVE_DIAGONAL_COST = 25;
-        List<Vector2> pointsFound = new List<Vector2>();
-        List<Vector2> pointsReached = new List<Vector2>();
-        List<Vector2> pointsAnalyzed = new List<Vector2>();
+        Pathfinding pathfinding = new Pathfinding(texture.width, texture.height)
+        {
+            MOVE_DIAGONAL_COST = 25
+        };
+        List<Vector2> pointsFound = new();
+        List<Vector2> pointsReached = new();
+        List<Vector2> pointsAnalyzed = new();
 
         for (int x = 0; x < texture.width; x++)
         {
@@ -557,8 +572,8 @@ public class TerrainGeneration : MonoBehaviour
         for (int i = 0; i < pointsFound.Count - 1; i++)
         {
             int range = 10;
-            bool Rx = UnityEngine.Random.Range(0, range) < range / 2 ? false : true;
-            bool Ry = UnityEngine.Random.Range(0, range) < range / 2 ? false : true;
+            bool Rx = UnityEngine.Random.Range(0, range) >= range / 2;
+            bool Ry = UnityEngine.Random.Range(0, range) >= range / 2;
 
             //Debug.Log("The interaction " + i + " has the parameters: X = " + Rx + " Y = " + Ry);
 

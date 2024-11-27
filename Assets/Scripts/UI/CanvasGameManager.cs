@@ -12,15 +12,21 @@ using static ObjectUtils.GameObjectGeneral;
 using HabilitySystem;
 using EntityDataSystem;
 using static GameManagerSystem.GameManager;
+using static CameraControl;
 using System.Threading.Tasks;
+using InputManagement;
+using Unity.VisualScripting;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class CanvasGameManager : MonoBehaviour
 {
     public static CanvasGameManager canvasInstance;
     public bool espada = false;
-    public bool seeingMap = false, seeingInventory = false;
-    public GameObject inventory => gameObject.GetGameObject("Mainpanel/Inventory");
-    public Inventory slots => gameObject.GetGameObjectComponent<Inventory>("Mainpanel/Inventory");
+    public bool seeingMap = false, seeingInventory = false, seeingAttributes = false;
+
+    public GameObject Inventory => gameObject.GetGameObject("Mainpanel/Inventory");
+    public Inventory Slots => gameObject.GetGameObjectComponent<Inventory>("Mainpanel/Inventory");
     public GameObject MainPanel => gameObject.GetGameObject("Mainpanel");
     public Slider LifeBar => gameObject.GetGameObjectComponent<Slider>("Mainpanel/LifeBar/Bar");
     public Slider StaminaBar => gameObject.GetGameObjectComponent<Slider>("Mainpanel/StaminaBar/Bar");
@@ -35,6 +41,10 @@ public class CanvasGameManager : MonoBehaviour
     public Slider LoadBar => LoadPanel.GetGameObjectComponent<Slider>("Loadbar");
     public GameObject AttributesPanel => gameObject.GetGameObject("Attributespanel");
     public GameObject AttributesPanelExibition => AttributesPanel.GetGameObject("Subpanel");
+    public GameObject CollectItemSpam => gameObject.GetGameObject("Collectitemspam");
+    public GameObject SubOverlay => gameObject.GetGameObject("Suboverlay");
+    public GameObject RoomCompletionText => SubOverlay.GetGameObject("Roomcompletiontext");
+    public GameObject Death => SubOverlay.GetGameObject("Death");
 
     public Button sword;
     public Button staff;
@@ -42,16 +52,17 @@ public class CanvasGameManager : MonoBehaviour
     public Image iconSword;
     public Image iconStaff;
 
-    public Item swordItem;
     public Item staffItem;
+    public Item swordItem;
+    public Item bowItem;
 
     public GameObject cardPrefab;
     public GameObject cardGamePrefab;
 
-    public List<GameObject> currentCards = new List<GameObject>();
-    public List<string> cardsAlreadyGotList = new List<string>();
+    public List<GameObject> currentCards = new();
+    public List<string> cardsAlreadyGotList = new();
 
-    public List<string> currentPlayerCards
+    public List<string> CurrentPlayerCards
     {
         get
         {
@@ -74,22 +85,78 @@ public class CanvasGameManager : MonoBehaviour
         sword.onClick.AddListener(() => { espada = false; });
         staff.onClick.AddListener(() => { espada = true; });
 
-        //Instantiate(slots.itemPrefab, slots.equipmentSlots[0].transform).Initialize(slots.equipmentSlots[0], swordItem);
-        //Instantiate(slots.itemPrefab, slots.equipmentSlots[1].transform).Initialize(slots.equipmentSlots[1], staffItem);
+        if (PlayerPreferences.NewGame)
+        {
+            switch (PlayerPrefs.GetString("CLASS", "Warrior"))
+            {
+                case "Warrior":
+                    Instantiate(Slots.itemPrefab, Slots.equipmentSlots[0].transform).Initialize(Slots.equipmentSlots[0], swordItem);
+                    break;
+                case "Wizard":
+                    Instantiate(Slots.itemPrefab, Slots.equipmentSlots[1].transform).Initialize(Slots.equipmentSlots[1], staffItem);
+                    break;
+                case "Archer":
+                    Instantiate(Slots.itemPrefab, Slots.equipmentSlots[1].transform).Initialize(Slots.equipmentSlots[1], bowItem);
+                    break;
+            }
+        }
+
+        Death.GetGameObjectComponent<Button>("Exitbutton").onClick.AddListener(delegate
+        {
+            if (player != null && !PlayerPreferences.Died)
+                PlayerPreferences.SavePlayerData(player.EntityData);
+            else
+                PlayerPreferences.GameSaved = false;
+
+            PlayerPreferences.Died = false;
+            PlayerPrefs.Save();
+            DontDestroyOnLoadManager.DestroyAll();
+            SceneManager.LoadSceneAsync(0);
+        });
     }
     public void SetLang()
     {
-        LoadPanel.transform.Find("Title").GetComponent<TextMeshProUGUI>().text = currentLanguage.loading;
+        LoadPanel.GetGameObjectComponent<TextMeshProUGUI>("Title").text = currentLanguage.loading;
+        AttributesPanel.GetGameObjectComponent<TextMeshProUGUI>("Title").text = currentLanguage.chooseAttributeToLevelUp;
+        AttributesPanel.GetGameObjectComponent<TextMeshProUGUI>("Subpanel\\Strength\\Name").text = currentLanguage.strength;
+        AttributesPanel.GetGameObjectComponent<TextMeshProUGUI>("Subpanel\\Resistance\\Name").text = currentLanguage.resistance;
+        AttributesPanel.GetGameObjectComponent<TextMeshProUGUI>("Subpanel\\Intelligence\\Name").text = currentLanguage.intelligence;
+        AttributesPanel.GetGameObjectComponent<TextMeshProUGUI>("Subpanel\\Defense\\Name").text = currentLanguage.defense;
+        AttributesPanel.GetGameObjectComponent<TextMeshProUGUI>("Subpanel\\Speed\\Name").text = currentLanguage.speed;
+        AttributesPanel.GetGameObjectComponent<TextMeshProUGUI>("Exitbutton\\Text").text = currentLanguage.exit;
+        Death.GetGameObjectComponent<TextMeshProUGUI>("Exitbutton\\Text").text = currentLanguage.exit;
+        Death.GetGameObjectComponent<TextMeshProUGUI>("Title").text = currentLanguage.youReDead;
+        SetCollectLang();
+    }
+    public static void SetCollectLang()
+    {
+        canvasInstance.CollectItemSpam.GetGameObjectComponent<TextMeshProUGUI>("Text").text = currentLanguage.pressToCollectItem.Replace("\\", InputManager.Instance.GetKeyCodeByKeyBind(KeyBindKey.Collect).ToString());
+    }
+    public static void PlayRoomCompletionAnimation(int karma)
+    {
+        canvasInstance.RoomCompletionText.GetComponent<Animator>().Play("Play");
+        canvasInstance.RoomCompletionText.GetComponent<TextMeshProUGUI>().text = currentLanguage.roomCompleted;
+        canvasInstance.RoomCompletionText.GetGameObjectComponent<TextMeshProUGUI>("Karmaadded").text = $"{currentLanguage.karmaEarned}: {karma}";
+    }
+    public static void PlayDeathScene()
+    {
+        canvasInstance.Death.SetActive(true);
+        canvasInstance.Death.GetComponent<Animator>().Play("Play");
     }
     private void Update()
     {
+        if (GamePaused || OptionsPanel.keyBinding)
+            return;
         LoadPanel.SetActive(!TerrainGeneration.Instance.mapLoaded);
+
         if (!TerrainGeneration.Instance.mapLoaded)
         {
-            LoadBar.value = TerrainGeneration.Instance.generationProgress;
+            LoadBar.value = TerrainGeneration.Instance.GenerationProgress;
         }
         if (player != null)
         {
+            if (player.EntityData.dead)
+                return;
             LifeBar.maxValue = player.EntityData.maxHealth;
             StaminaBar.maxValue = player.EntityData.maxStamina;
             ManaBar.maxValue = player.EntityData.maxMana;
@@ -100,31 +167,43 @@ public class CanvasGameManager : MonoBehaviour
             ManaBar.value = player.EntityData.currentMana;
             KarmaBar.value = Mathf.Abs(player.EntityData.currentKarma);
 
-            KarmaBarRect.rotation = Quaternion.Euler(0, player.EntityData.currentKarma < 0 ? 180 : 0, 0);
-            Bar.color = player.EntityData.currentKarma >= 0 ? Color.gray : Color.white;
+            //KarmaBarRect.rotation = Quaternion.Euler(0, player.EntityData.currentKarma < 0 ? 180 : 0, 0);
+            //Bar.color = player.EntityData.currentKarma >= 0 ? Color.gray : Color.white;
+            Bar.color = Color.cyan;
 
-            if (Input.GetKeyDown(KeyCode.E))
+            if (InputManager.GetKeyDown(KeyBindKey.Inventory) && !seeingAttributes)
             {
                 seeingInventory = !seeingInventory;
+                if (seeingInventory)
+                {
+                    seeingMap = false;
+                }
             }
-            else if (Input.GetKeyDown(KeyCode.Q))
+            else if (InputManager.GetKeyDown(KeyBindKey.ItemHotbar))
             {
                 espada = !espada;
             }
-
-            if (slots.equipmentSlots[0].myItem == null)
+            else if (!seeingAttributes && InputManager.GetKeyDown(KeyBindKey.OpenMap))
+            {
+                seeingMap = !seeingMap;
+                if (seeingMap)
+                {
+                    seeingInventory = false;
+                }
+            }
+            if (Slots.equipmentSlots[0].myItem == null)
             {
                 swordItem = null;
                 iconSword.color= new Color(1f, 1f, 1f, 0f);
             }
             else
             {
-                swordItem = slots.equipmentSlots[0].myItem.myItem;
+                swordItem = Slots.equipmentSlots[0].myItem.myItem;
                 iconSword.sprite = swordItem.itemSprite;
                 iconSword.color = new Color(1f, 1f, 1f, 1f);
             }
 
-            if (slots.equipmentSlots[1].myItem == null)
+            if (Slots.equipmentSlots[1].myItem == null)
             {
                 staffItem = null;
                 gameManagerInstance.targetObject.SetActive(false);
@@ -132,9 +211,37 @@ public class CanvasGameManager : MonoBehaviour
             }
             else
             {
-                staffItem = slots.equipmentSlots[1].myItem.myItem;
+                staffItem = Slots.equipmentSlots[1].myItem.myItem;
                 iconStaff.sprite = staffItem.itemSprite;
                 iconStaff.color = new Color(1f, 1f, 1f, 1f);
+            }
+
+            //Item collectment
+            Ray ray = MainCameraControl.cam.ScreenPointToRay(Input.mousePosition);
+            Physics.Raycast(ray, out RaycastHit hit, Vector3.Distance(MainCameraControl.gameObject.transform.position, player.transform.position) + 250f, LayerMask.GetMask("Item"), QueryTriggerInteraction.Collide);
+
+            if (hit.collider != null && !seeingMap && !seeingInventory && !seeingAttributes && Vector3.Distance(hit.point, player.transform.position) < 1.25f)
+            {
+                CollectItemSpam.SetActive(true);
+                CollectItemSpam.transform.position = Input.mousePosition;
+                if (InputManager.GetKeyDown(KeyBindKey.Collect))
+                {
+                    var drop = hit.collider.GetComponent<ItemDrop>().item;
+                    Debug.Log(drop == null);
+                    var collected = global::Inventory.Singleton.SpawnInventoryItem(drop);
+                    if (collected)
+                    {
+                        Destroy(hit.collider.gameObject);
+                    }
+                    else
+                    {
+                        WarningTextManager.ShowWarning(currentLanguage.inventoryIsFull, 2f, 0.5f);
+                    }
+                }
+            }
+            else
+            {
+                CollectItemSpam.SetActive(false);
             }
 
             //kkkkkkk
@@ -147,7 +254,7 @@ public class CanvasGameManager : MonoBehaviour
                     player.SetItem(staffItem);
                     break;
             }
-            inventory.SetActive(seeingInventory);
+            Inventory.SetActive(seeingInventory);
         }
         BlockCards();
         if (player != null)
@@ -157,8 +264,16 @@ public class CanvasGameManager : MonoBehaviour
     {
         AttributesPanel.SetActive(open);
         UpdateAllAttributes();
-        Time.timeScale = open ? 0f : 1f;
+        seeingAttributes = open;
+        PauseGame(open);
     }
+    public bool GamePaused { get; private set; } = false;
+    public void PauseGame(bool pause)
+    {
+        Time.timeScale = pause ? 0f : 1f;
+        GamePaused = pause;
+    }
+    public void TickPause() => PauseGame(!GamePaused);
     public void SetActiveInventory() => seeingInventory = !seeingInventory;
     public void UpdateAllAttributes()
     {
@@ -270,11 +385,11 @@ public class CanvasGameManager : MonoBehaviour
         player.EntityData.habilities.Remove(hability.habilityID);
     }
     [Obsolete("Precisa de correção.")]
-    public async void RandomizeCards()
+    public void RandomizeCards()
     {
         cardsAlreadyGotList.Clear();
         //Debug.Log($"{cardsAlreadyGotList.Count}, {CardChoice.habilitiesIDs.Count - 2}, {CardPanelExibition.transform.childCount}");
-        if (currentPlayerCards.Count >= CardChoice.habilitiesIDs.Count - 2 && CardPanelExibition.transform.childCount > 1)
+        if (CurrentPlayerCards.Count >= CardChoice.habilitiesIDs.Count - 2 && CardPanelExibition.transform.childCount > 1)
         {
             Destroy(CardPanelExibition.transform.GetChild(1).gameObject);
         }
@@ -292,7 +407,7 @@ public class CanvasGameManager : MonoBehaviour
         {
         remakeCard: string id = CardChoice.habilitiesIDs[UnityEngine.Random.Range(0, CardChoice.habilitiesIDs.Count)];
             //await Task.Delay(1);
-            if (currentPlayerCards.Contains(id) || cardsAlreadyGotList.Contains(id))
+            if (CurrentPlayerCards.Contains(id) || cardsAlreadyGotList.Contains(id))
             {
                 strin += id + " // ";
                 Debug.Log(id);
