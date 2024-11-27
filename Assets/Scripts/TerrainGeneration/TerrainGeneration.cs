@@ -462,7 +462,8 @@ public class TerrainGeneration : MonoBehaviour
         mapTexture.Apply();
         mapTexture.filterMode = FilterMode.Point;
         mapTexture.Compress(false);
-        MapMove.MapMoveInstance.map.sprite = Sprite.Create(mapTexture, new Rect(0, 0, mapTexture.width, mapTexture.height), new Vector2(0.5f, 0.5f), 64);
+        if (MapMove.MapMoveInstance != null)
+            MapMove.MapMoveInstance.map.sprite = Sprite.Create(mapTexture, new Rect(0, 0, mapTexture.width, mapTexture.height), new Vector2(0.5f, 0.5f), 64);
 
         GamePlayer.player.OnDeathEvent.AddListener((a, b) => { PlayDeathScene(); });
 

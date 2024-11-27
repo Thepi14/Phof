@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 7013882927472563652}
   - component: {fileID: 6267192955612879457}
   - component: {fileID: 8150808889994129067}
-  - component: {fileID: 7970633149182439883}
   - component: {fileID: -3980513729328395395}
+  - component: {fileID: 6279300338967385536}
   m_Layer: 6
   m_Name: Mesa
   m_TagString: Untagged
@@ -28,13 +28,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7646410610650746750}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7067511, y: -0, z: -0, w: 0.7074623}
-  m_LocalPosition: {x: 0, y: -0.5749995, z: -0.5744207}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 89.944, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!33 &6267192955612879457
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -85,28 +85,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &7970633149182439883
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7646410610650746750}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -6692290496178104961, guid: 6df1d5fbcac0714439d8aec71d9caa95, type: 3}
 --- !u!114 &-3980513729328395395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,7 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _entityData:
     gameObject: {fileID: 0}
-    name: 
+    name: Table
     level: 1
     strength: 1
     resistance: 1
@@ -130,7 +108,7 @@ MonoBehaviour:
     speed: 2.5
     attackSpeedMultipliyer: 1
     maxKarma: 0
-    maxHealth: 20
+    maxHealth: 10
     maxStamina: 0
     maxMana: 0
     currentKarma: 0
@@ -165,3 +143,24 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   destructionPrefabVFX: {fileID: 3393821915751174010, guid: b41fcadcc4fc07f4ea9ab2f25c9c3a3b, type: 3}
+--- !u!65 &6279300338967385536
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7646410610650746750}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 2, y: 1, z: 1.15}
+  m_Center: {x: -0.5, y: 0, z: -0.57499987}

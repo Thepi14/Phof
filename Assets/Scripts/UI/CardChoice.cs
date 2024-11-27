@@ -15,7 +15,7 @@ public class CardChoice : MonoBehaviour
 {
     public TextMeshProUGUI Title => GameObjectGeneral.GetGameObjectComponent<TextMeshProUGUI>(gameObject, "Name");
     public TextMeshProUGUI Description => GameObjectGeneral.GetGameObjectComponent<TextMeshProUGUI>(gameObject, "Desc");
-    public Image Image => GameObjectGeneral.GetGameObjectComponent<Image>(gameObject, "Image");
+    public Image Image => GameObjectGeneral.GetGameObjectComponent<Image>(gameObject, "Mask\\Image");
 
     public static List<string> habilitiesIDs = new()
     {
