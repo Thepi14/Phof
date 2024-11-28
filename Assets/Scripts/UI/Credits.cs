@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using InputManagement;
+using ObjectUtils;
+using TMPro;
+using LangSystem;
 
 public class Credits : MonoBehaviour
 {
@@ -16,12 +20,17 @@ public class Credits : MonoBehaviour
         audioSource.volume = PlayerPreferences.MusicVolumeScaled;
         rinButton.onClick.AddListener(() => { telaRin = true; });
         voltarMenu.onClick.AddListener(delegate { BackToMenu(); });
+        voltarMenu.GetGameObjectComponent<TextMeshProUGUI>("Text").text = Language.currentLanguage.returnToMainMenu;
     }
     void Update()
     {
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.R) && telaRin)
         {
             Debug.Log("Tezuka Rin");
+        }
+        if (InputManager.GetKeyDown(KeyBindKey.Escape))
+        {
+            BackToMenu();
         }
     }
 

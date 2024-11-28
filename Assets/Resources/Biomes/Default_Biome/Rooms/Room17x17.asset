@@ -76,7 +76,7 @@ MonoBehaviour:
   - name: x 0, y 7
     x: 0
     y: 7
-    id: 5
+    id: 0
     height: 0
     rotation: {x: 0, y: -90, z: 0}
     scale: {x: 1, y: 1, z: 1}
@@ -1108,7 +1108,7 @@ MonoBehaviour:
   - name: x 8, y 0
     x: 8
     y: 0
-    id: 5
+    id: 0
     height: 0
     rotation: {x: 0, y: 180, z: 0}
     scale: {x: 1, y: 1, z: 1}
@@ -1172,7 +1172,7 @@ MonoBehaviour:
   - name: x 8, y 8
     x: 8
     y: 8
-    id: 4
+    id: 0
     height: 1
     rotation: {x: 0, y: 26.52, z: 0}
     scale: {x: 1, y: 1, z: 1}
@@ -1236,7 +1236,7 @@ MonoBehaviour:
   - name: x 8, y 16
     x: 8
     y: 16
-    id: 5
+    id: 0
     height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
@@ -2197,7 +2197,7 @@ MonoBehaviour:
     x: 16
     y: 0
     id: 4
-    height: 1
+    height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
     entityCanSpawn: 0
@@ -2252,7 +2252,7 @@ MonoBehaviour:
   - name: x 16, y 7
     x: 16
     y: 7
-    id: 5
+    id: 0
     height: 0
     rotation: {x: 0, y: 90, z: 0}
     scale: {x: 1, y: 1, z: 1}
@@ -2329,5 +2329,5 @@ MonoBehaviour:
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
     entityCanSpawn: 1
-  changed: 1
+  changed: 0
   resetRoom: 0

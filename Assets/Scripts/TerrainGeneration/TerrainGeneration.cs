@@ -431,9 +431,17 @@ public class TerrainGeneration : MonoBehaviour
 
         Debug.Log($"DIED = {PlayerPreferences.Died}, GAME_SAVED = {PlayerPreferences.GameSaved}, NEW_GAME = {PlayerPreferences.NewGame}");
         await Task.Delay(20);
+
+        redoPlayerPos:
+        var xP = Random.Range(rooms[0].LeftDownCornerPositionInternal.x, rooms[0].RightUpCornerPositionInternal.x);
+        var yP = Random.Range(rooms[0].LeftDownCornerPositionInternal.y, rooms[0].RightUpCornerPositionInternal.y);
+        if (spawnTiles[xP, yP] == false)
+            goto redoPlayerPos;
+        Vector3 PlayerPos = new Vector3 (xP + 0.5f, 1f, yP + 0.5f);
+
         if (GamePlayer.player == null)
         {
-            var entityPlayer = Instantiate(GameManager.gameManagerInstance.playerPrefab, new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z), Quaternion.identity, null);
+            var entityPlayer = Instantiate(GameManager.gameManagerInstance.playerPrefab, PlayerPos, Quaternion.identity, null);
             if (PlayerPreferences.NewGame)
             {
                 PlayerPreferences.SavePlayerData(entityPlayer.GetComponent<GamePlayer>().EntityData);
@@ -445,7 +453,7 @@ public class TerrainGeneration : MonoBehaviour
             }
         }
         else
-            GamePlayer.player.transform.position = new Vector3(rooms[0].transform.position.x, 1f, rooms[0].transform.position.z);
+            GamePlayer.player.transform.position = PlayerPos;
 
         GamePlayer.player.OnDeathEvent.AddListener(delegate { GameManager.gameManagerInstance.ExcludePlayerDataOnDeath(); });
         var mapTexture = GetTexture(physicalMap);

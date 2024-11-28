@@ -116,7 +116,6 @@ namespace InputManagement
         }
         public static void ResetKeyBindToDefault()
         {
-            Debug.Log($"{Instance == null}");
             Instance.keyBindList = defaultList;
             SaveKeyBinds();
         }
@@ -139,9 +138,9 @@ namespace InputManagement
 
             slidingH = Mathf.Lerp(slidingH,
                           targetH, Instance.axisChangeSpeed * Time.deltaTime);
-
             slidingV = Mathf.Lerp(slidingV,
                           targetV, Instance.axisChangeSpeed * Time.deltaTime);
+
             return new Vector2(
                    (Mathf.Abs(slidingH) < deadZone) ? 0f : slidingH,
                    (Mathf.Abs(slidingV) < deadZone) ? 0f : slidingV);

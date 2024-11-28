@@ -73,7 +73,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1729390523752108716}
-  m_Mesh: {fileID: 4493585093827132993, guid: 6112b5f15f51d0444b1d58bdfabe8532, type: 3}
+  m_Mesh: {fileID: 1127168246706004398, guid: 28ecd50a9894d254ea31a7116f7e8b0b, type: 3}
 --- !u!23 &5638560192344637811
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -156,7 +156,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4164678036516317387}
-  m_Mesh: {fileID: -5495902117074765545, guid: 6112b5f15f51d0444b1d58bdfabe8532, type: 3}
+  m_Mesh: {fileID: 7202019439985978107, guid: 28ecd50a9894d254ea31a7116f7e8b0b, type: 3}
 --- !u!23 &6664112870200058521
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -241,6 +241,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 29063582206294878}
+  - component: {fileID: 8604683710770838463}
   m_Layer: 0
   m_Name: Prota-feira
   m_TagString: Untagged
@@ -265,6 +266,27 @@ Transform:
   - {fileID: 4222634856367081982}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &8604683710770838463
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8529659447640901934}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a1d8ceac84b7d374094b7d68995b5b0a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8618765547929438892
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,7 +327,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8618765547929438892}
-  m_Mesh: {fileID: -5495902117074765545, guid: 6112b5f15f51d0444b1d58bdfabe8532, type: 3}
+  m_Mesh: {fileID: 7202019439985978107, guid: 28ecd50a9894d254ea31a7116f7e8b0b, type: 3}
 --- !u!23 &3821549544650714309
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -388,7 +410,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8639413051232183194}
-  m_Mesh: {fileID: 4493585093827132993, guid: 6112b5f15f51d0444b1d58bdfabe8532, type: 3}
+  m_Mesh: {fileID: 1127168246706004398, guid: 28ecd50a9894d254ea31a7116f7e8b0b, type: 3}
 --- !u!23 &4480883497894459286
 MeshRenderer:
   m_ObjectHideFlags: 0

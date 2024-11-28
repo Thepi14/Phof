@@ -141,7 +141,7 @@ MonoBehaviour:
     x: 0
     y: 15
     id: 4
-    height: 1
+    height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
     entityCanSpawn: 0
@@ -1941,7 +1941,7 @@ MonoBehaviour:
     x: 15
     y: 0
     id: 4
-    height: 1
+    height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
     entityCanSpawn: 0

@@ -692,7 +692,7 @@ MonoBehaviour:
   - name: x 6, y 6
     x: 6
     y: 6
-    id: 4
+    id: 0
     height: 1
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}

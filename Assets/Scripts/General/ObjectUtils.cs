@@ -61,6 +61,16 @@ namespace ObjectUtils
             return go;
         }
         /// <summary>
+        /// Acha um GameObject por hierarquia nos transforms como se fosse um arquivo em pastas.
+        /// </summary>
+        /// <param name="start">Gameobject de referência.</param>
+        /// <param name="path">Caminho do GameObject separados por '\' ou '/'.</param>
+        /// <returns>O GameObject no caminho inserido.</returns>
+        public static GameObject GetGameObject(this Component start, string path)
+        {
+            return GetGameObject(start.gameObject, path);
+        }
+        /// <summary>
         /// Acha o componente designado de um GameObject por hierarquia nos transforms como se fosse um arquivo em pastas.
         /// </summary>
         /// <typeparam name="T">O componente.</typeparam>
@@ -76,6 +86,17 @@ namespace ObjectUtils
                 throw new System.Exception("Component has not been found on " + go.name);
             //retornar go
             return go.GetComponent<T>();
+        }
+        /// <summary>
+        /// Acha o componente designado de um GameObject por hierarquia nos transforms como se fosse um arquivo em pastas.
+        /// </summary>
+        /// <typeparam name="T">O componente.</typeparam>
+        /// <param name="start">Gameobject de referência.</param>
+        /// <param name="path">Caminho do GameObject separados por '\' ou '/'.</param>
+        /// <returns>O componente do GameObject no caminho inserido.</returns>
+        public static T GetGameObjectComponent<T>(this Component start, string path)
+        {
+            return GetGameObjectComponent<T>(start.gameObject, path);
         }
         /// <summary>
         /// Acha um componente em um filho de um GameObject parente.
@@ -95,6 +116,18 @@ namespace ObjectUtils
                 throw new System.ArgumentNullException("Component was not been found in child of name \'" + childName + "\' of parent \'" + parent.name + "\'");
             return parent.transform.Find(childName).GetComponent<T>();
         }
+        /// <summary>
+        /// Acha um componente em um filho de um GameObject parente.
+        /// </summary>
+        /// <typeparam name="T">O componente.</typeparam>
+        /// <param name="parent">O GameObject parente.</param>
+        /// <param name="childName">Nome do filho.</param>
+        /// <returns>O componente do GameObject filho do parent escolhido com o nome inserido.</returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        public static T FindComponentInChild<T>(this Component parent, string childName)
+        {
+            return FindComponentInChild<T>(parent.gameObject, childName);
+        }
         public static GameObject[] GetGameObjectChildren(this GameObject gameObject)
         {
             var list = new List<GameObject>();
@@ -103,6 +136,10 @@ namespace ObjectUtils
                 list.Add(gameObject.transform.GetChild(i).gameObject);
             }
             return list.ToArray();
+        }
+        public static GameObject[] GetGameObjectChildren(this Component gameObject)
+        {
+            return GetGameObjectChildren(gameObject.gameObject);
         }
     }
     public static class UIGeneral

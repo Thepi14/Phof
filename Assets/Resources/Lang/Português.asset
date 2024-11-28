@@ -48,6 +48,8 @@ MonoBehaviour:
   roomCompleted: Sala completada!
   karmaEarned: Karma ganho
   youReDead: "Voc\xEA morreu"
+  goToNextStage: "Ir para o pr\xF3ximo est\xE1gio"
+  paused: Pausado
   options: "Op\xE7\xF5es"
   configurations: "Configura\xE7\xF5es"
   volume: Volume

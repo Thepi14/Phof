@@ -121,6 +121,11 @@ namespace RoomSystem
             maxPoints = maxPoints;
             OnRoomCompletion.AddListener(() => RoomCompletionFunction());
             OnRoomStart.AddListener(() => RoomStartFunction());
+            if (isLastRoom)
+            {
+                OnRoomCompletion.AddListener(() => { CanvasGameManager.canvasInstance.NextRoomButton.gameObject.SetActive(true); });
+                return;
+            }
         }
         public void OnTriggerEnter(Collider other)
         {
@@ -140,7 +145,14 @@ namespace RoomSystem
                         {
                             OnRoomStart.Invoke();
                         }
-                        GameManager.gameManagerInstance.currentRoom = this;
+                    }
+                    else
+                    {
+                        if (isLastRoom)
+                        {
+                            CanvasGameManager.canvasInstance.NextRoomButton.gameObject.SetActive(true);
+                            return;
+                        }
                     }
                     break;
             }
@@ -151,6 +163,19 @@ namespace RoomSystem
             {
                 case 8:
                     roomEntered = false;
+                    GameManager.gameManagerInstance.currentRoom = null;
+                    if (!roomCompleted)
+                    {
+
+                    }
+                    else
+                    {
+                        if (isLastRoom)
+                        {
+                            CanvasGameManager.canvasInstance.NextRoomButton.gameObject.SetActive(false);
+                            return;
+                        }
+                    }
                     break;
             }
         }
@@ -205,7 +230,14 @@ namespace RoomSystem
             }
             StartCoroutine(SpawnEntitiesDelayed());
 
-            SoundManager.PlayMusic("No_Mercy");
+            if (!isLastRoom)
+            {
+                SoundManager.PlayMusic("No_Mercy");
+            }
+            else
+            {
+                SoundManager.PlayMusic("Scarlet_Princess");
+            }
             Instance.RoomOcclusion(id);
         }
         public const float timer = 3f;
