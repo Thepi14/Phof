@@ -10,7 +10,7 @@ using LangSystem;
 
 public class Credits : MonoBehaviour
 {
-    public bool telaRin = false;
+    public static bool telaRin = false;
     public AudioSource audioSource;
     public Button rinButton;
     public Button voltarMenu;

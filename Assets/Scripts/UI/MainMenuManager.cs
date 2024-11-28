@@ -12,6 +12,7 @@ using LangSystem;
 using static LangSystem.Language;
 using UnityEditor;
 using EasterEggs;
+using static Credits;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -54,6 +55,11 @@ public class MainMenuManager : MonoBehaviour
     #endregion
 
     private GameObject[] PanelList = new GameObject[3];
+    public GameObject[] MuitoLoucos;
+    public AudioSource musicaAtual => GameObject.Find("Music").GetComponent<AudioSource>();
+    public AudioClip atual;
+    public AudioClip LiarDancer;
+    private int a;
     private int selectedMapWidth;
     private int selectedMapHeight;
     private string selectedDifficulty;
@@ -89,6 +95,7 @@ public class MainMenuManager : MonoBehaviour
 
     void Start()
     {
+        a = 0;
         if (PlayerPreferences.FirstTimeOpened)
         {
             PlayerPreferences.Reset();
@@ -171,6 +178,32 @@ public class MainMenuManager : MonoBehaviour
         ClassPanel.GetGameObject("Subpanel/Warriormask/Warriorbutton/Highlight").SetActive(true);
         selectedClass = "Warrior";
         OpenMenu(Panel.Mainpanel);
+    }
+
+    void Update()
+    {
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.R) && telaRin && a < MuitoLoucos.Length)
+        {
+            MuitoLoucos[a].SetActive(true);
+            a++;
+        }
+        else if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.R) && telaRin && a == MuitoLoucos.Length)
+        {
+            atual = musicaAtual.clip;
+            musicaAtual.clip = LiarDancer;
+            musicaAtual.Play();
+            a++;
+        }
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.R) && Input.GetKeyDown(KeyCode.Minus) && telaRin)
+        {
+            a = 0;
+            musicaAtual.clip = atual;
+            musicaAtual.Play();
+            for (int i = MuitoLoucos.Length - 1; i >= 0; i--)
+            {
+                MuitoLoucos[i].SetActive(false);
+            }
+        }
     }
     public void DeactivateClassPanelHighlights()
     {
