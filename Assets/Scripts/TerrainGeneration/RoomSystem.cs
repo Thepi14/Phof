@@ -10,6 +10,8 @@ using static NavMeshUpdate;
 using System.Linq;
 using System.Threading.Tasks;
 using static UnityEngine.EventSystems.EventTrigger;
+using static GamePlayer;
+using static CanvasGameManager;
 
 namespace RoomSystem
 {
@@ -128,7 +130,8 @@ namespace RoomSystem
                     roomEntered = true;
                     if (isLastRoom)
                     {
-                        GameManager.gameManagerInstance.NextStage();
+                        player.EntityData.currentHealth = player.EntityData.maxHealth;
+                        canvasInstance.seeingNext = true;
                         return;
                     }
                     if (!roomCompleted)
@@ -227,6 +230,7 @@ namespace RoomSystem
             var poitsTotal = usedPoints + (usedPoints / (int)PlayerPreferences.Difficulty);
             CanvasGameManager.PlayRoomCompletionAnimation(poitsTotal);
             GameManager.UpdatePlayerMaxKarma(poitsTotal);
+            player.EntityData.currentHealth = player.EntityData.maxHealth;
             Instance.RoomOcclusion(-1);
         }
         public void CompleteRoom()

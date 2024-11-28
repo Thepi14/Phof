@@ -19,12 +19,13 @@ using Unity.VisualScripting;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using static UnityEditor.Progress;
+using GameManagerSystem;
 
 public class CanvasGameManager : MonoBehaviour
 {
     public static CanvasGameManager canvasInstance;
     public bool espada = false;
-    public bool seeingMap = false, seeingInventory = false, seeingAttributes = false;
+    public bool seeingMap = false, seeingInventory = false, seeingAttributes = false, seeingNext = false;
 
     public GameObject InventoryGame => gameObject.GetGameObject("Mainpanel/Inventory");
     public Inventory Slots => gameObject.GetGameObjectComponent<Inventory>("Mainpanel/Inventory");
@@ -40,6 +41,7 @@ public class CanvasGameManager : MonoBehaviour
     public GameObject CardPanel => gameObject.GetGameObject("Cardpanel");
     public GameObject CardPanelExibition => CardPanel.GetGameObject("Subpanel");
     public Slider LoadBar => LoadPanel.GetGameObjectComponent<Slider>("Loadbar");
+    public GameObject NextLevelPanel => gameObject.GetGameObject("NextLevelpanel");
     public GameObject AttributesPanel => gameObject.GetGameObject("Attributespanel");
     public GameObject AttributesPanelExibition => AttributesPanel.GetGameObject("Subpanel");
     public GameObject CollectItemSpam => gameObject.GetGameObject("Collectitemspam");
@@ -85,6 +87,8 @@ public class CanvasGameManager : MonoBehaviour
         SetLang();
         sword.onClick.AddListener(() => { espada = false; });
         staff.onClick.AddListener(() => { espada = true; });
+        NextLevelPanel.GetGameObjectComponent<Button>("Sim").onClick.AddListener(delegate { GameManager.gameManagerInstance.NextStage(); seeingNext = false;});
+        NextLevelPanel.GetGameObjectComponent<Button>("Nao").onClick.AddListener(() => seeingNext = false);
 
         if (PlayerPreferences.NewGame)
         {
@@ -170,9 +174,23 @@ public class CanvasGameManager : MonoBehaviour
             ManaBar.value = player.EntityData.currentMana;
             KarmaBar.value = Mathf.Abs(player.EntityData.currentKarma);
 
+            if(Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.Equals))
+            {
+                player.EntityData.currentHealth += 10;
+                if(player.EntityData.currentHealth >= player.EntityData.maxHealth)
+                    player.EntityData.currentHealth = player.EntityData.maxHealth;
+            }
+
+            if(Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.Minus))
+            {
+                player.EntityData.currentHealth -= 10;
+                if(player.EntityData.currentHealth <= 0)
+                    player.EntityData.currentHealth = 0;   
+            }
+
             //KarmaBarRect.rotation = Quaternion.Euler(0, player.EntityData.currentKarma < 0 ? 180 : 0, 0);
             //Bar.color = player.EntityData.currentKarma >= 0 ? Color.gray : Color.white;
-            Bar.color = Color.cyan;
+            Bar.color = Color.gray;
 
             if (InputManager.GetKeyDown(KeyBindKey.Inventory) && !seeingAttributes)
             {
@@ -278,6 +296,7 @@ public class CanvasGameManager : MonoBehaviour
                     break;
             }
             InventoryGame.SetActive(seeingInventory);
+            NextLevelPanel.SetActive(seeingNext);
         }
         BlockCards();
         if (player != null)
