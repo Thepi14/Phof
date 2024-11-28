@@ -18,7 +18,6 @@ using InputManagement;
 using Unity.VisualScripting;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using static UnityEditor.Progress;
 
 public class CanvasGameManager : MonoBehaviour
 {
