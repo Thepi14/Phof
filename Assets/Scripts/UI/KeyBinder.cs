@@ -48,6 +48,7 @@ public class KeyBinder : MonoBehaviour
         InputManager.SaveKeyBinds();
         keySelected = false;
         gameObject.GetGameObjectComponent<TextMeshProUGUI>("Button\\Text").text = selectedKey.ToString();
-        CanvasGameManager.SetCollectLang();
+        if (CanvasGameManager.canvasInstance != null)
+            CanvasGameManager.SetCollectLang();
     }
 }

@@ -48,6 +48,8 @@ MonoBehaviour:
   roomCompleted: Room completed!
   karmaEarned: Karma earned
   youReDead: You died
+  goToNextStage: Go to next stage
+  paused: Paused
   options: Options
   configurations: Configurations
   volume: Volume

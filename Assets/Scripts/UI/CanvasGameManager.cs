@@ -46,6 +46,8 @@ public class CanvasGameManager : MonoBehaviour
     public GameObject SubOverlay => gameObject.GetGameObject("Suboverlay");
     public GameObject RoomCompletionText => SubOverlay.GetGameObject("Roomcompletiontext");
     public GameObject Death => SubOverlay.GetGameObject("Death");
+    public GameObject PauseText => SubOverlay.GetGameObject("Paused");
+    public Button NextRoomButton => MainPanel.GetGameObjectComponent<Button>("Nextroombutton");
 
     public Button sword;
     public Button staff;
@@ -85,6 +87,8 @@ public class CanvasGameManager : MonoBehaviour
         SetLang();
         sword.onClick.AddListener(() => { espada = false; });
         staff.onClick.AddListener(() => { espada = true; });
+        NextRoomButton.onClick.AddListener(delegate { gameManagerInstance.NextStage(); });
+        NextRoomButton.gameObject.SetActive(false);
 
         if (PlayerPreferences.NewGame)
         {
@@ -129,6 +133,8 @@ public class CanvasGameManager : MonoBehaviour
         AttributesPanel.GetGameObjectComponent<TextMeshProUGUI>("Exitbutton\\Text").text = currentLanguage.exit;
         Death.GetGameObjectComponent<TextMeshProUGUI>("Exitbutton\\Text").text = currentLanguage.exit;
         Death.GetGameObjectComponent<TextMeshProUGUI>("Title").text = currentLanguage.youReDead;
+        NextRoomButton.GetGameObjectComponent<TextMeshProUGUI>("Text").text = currentLanguage.goToNextStage;
+        PauseText.GetComponent<TextMeshProUGUI>().text = currentLanguage.paused;
         SetCollectLang();
     }
     public static void SetCollectLang()
@@ -292,6 +298,7 @@ public class CanvasGameManager : MonoBehaviour
             {
                 TickPause();
             }
+            PauseText.SetActive(GamePaused);
         }
     }
     public void OpenAttributesMenu(bool open)

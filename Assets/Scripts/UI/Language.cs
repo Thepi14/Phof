@@ -61,6 +61,8 @@ namespace LangSystem
         public string roomCompleted;
         public string karmaEarned;
         public string youReDead;
+        public string goToNextStage;
+        public string paused;
 
         [Header("Options")]
         public string options;

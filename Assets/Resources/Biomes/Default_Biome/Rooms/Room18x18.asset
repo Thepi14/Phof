@@ -544,7 +544,7 @@ MonoBehaviour:
     height: 0
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
-    entityCanSpawn: 1
+    entityCanSpawn: 0
   - name: x 3, y 12
     x: 3
     y: 12
@@ -976,7 +976,7 @@ MonoBehaviour:
     height: -0.5
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 0.5, y: 0.5, z: 0.5}
-    entityCanSpawn: 1
+    entityCanSpawn: 0
   - name: x 6, y 12
     x: 6
     y: 12

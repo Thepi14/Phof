@@ -73,6 +73,7 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
         SetItem(EntityData.currentAttackItem);
         gameManagerInstance.allies.Add(gameObject);
         CanvasGameManager.canvasInstance.UpdateAllAttributes();
+        timer = attackTime;
 
         gameObject.DontDestroyOnLoad();
     }
@@ -283,6 +284,7 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
             case ItemType.MeleeWeapon:
                 foreach (var entity in AttackArea.GetComponent<ColliderNutshell>().triggerList.ToList())
                 {
+                    if (entity == null) continue;
                     if ((entity.layer == 6 || entity.layer == 10) && entity.GetComponent<IEntity>() != null)
                         entity.GetComponent<IEntity>().Damage(EntityData.AttackWithItem(MathEx.AngleRadian(transform.position, entity.transform.position)));
                 }
@@ -307,13 +309,18 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
             ItemSpriteAnimator.Play("Default");
         }
     }
+    public float attackTime => (EntityData.currentAttackItem.reloadTime + EntityData.attackDelay) * EntityData.currentAttackSpeedMultipliyer;
+    public float timer = 0f;
     private IEnumerator AttackTimer()
     {
         EntityData.attackReloaded = false;
-        if (EntityData.currentAttackItem != null)
-            yield return new WaitForSeconds(EntityData.currentAttackItem.reloadTime + EntityData.attackDelay);
-        else
-            yield return new WaitForSeconds(EntityData.attackDelay);
+        timer = 0f;
+        while (timer < attackTime)
+        {
+            yield return new WaitForEndOfFrame();
+            timer += Time.deltaTime;
+        }
+        timer = 0f;
         EntityData.attackReloaded = true;
     }
     public void OnDestroy()

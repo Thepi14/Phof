@@ -17,7 +17,7 @@ MonoBehaviour:
   animatorController: {fileID: 0}
   positionOffSet: {x: 0.3, y: 0}
   manaUse: 0
-  staminaUse: 0
+  staminaUse: 1
   type: 2
   reloadTime: 0.6
   attackDistance: 8
