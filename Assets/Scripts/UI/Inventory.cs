@@ -18,7 +18,6 @@ public class Inventory : MonoBehaviour
 
     public Item[] items => Resources.LoadAll<Item>("ItemsObj");
 
-    [SerializeField] Button giveItemBtn;
     [SerializeField] Button lixeiraBtn;
 
     private void Awake()
@@ -29,12 +28,16 @@ public class Inventory : MonoBehaviour
 
     private void Start()
     {
-        giveItemBtn.onClick.AddListener(delegate { if (!SpawnInventoryItem()) WarningTextManager.ShowWarning(currentLanguage.inventoryIsFull, 1f, 0.5f); });
         lixeiraBtn.onClick.AddListener(delegate { DestroyItem(); });
     }
 
     private void Update()
     {
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.T))
+        {
+            if(!SpawnInventoryItem())
+                WarningTextManager.ShowWarning(currentLanguage.inventoryIsFull, 1f, 0.5f);
+        }
         if (carriedItem == null)
             return;
 
