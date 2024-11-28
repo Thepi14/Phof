@@ -86,7 +86,7 @@ public class CanvasGameManager : MonoBehaviour
         SetLang();
         sword.onClick.AddListener(() => { espada = false; });
         staff.onClick.AddListener(() => { espada = true; });
-        NextRoomButton.onClick.AddListener(delegate { gameManagerInstance.NextStage(); });
+        NextRoomButton.onClick.AddListener(delegate { gameManagerInstance.NextStage(); NextRoomButton.gameObject.SetActive(false); });
         NextRoomButton.gameObject.SetActive(false);
 
         if (PlayerPreferences.NewGame)
