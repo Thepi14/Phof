@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------------------------------------
+/// <copyright file="EntityData.cs">
+///   Copyright (c) 2024, Pi14 & Marcos Henrique, All rights reserved.
+/// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -407,6 +412,8 @@ namespace EntityDataSystem
         public GameObject SpriteObj => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject");
         public GameObject ItemSpriteOffset => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject\\ItemOffset");
         public GameObject ItemSpriteObj => GameObjectGeneral.GetGameObject(gameObject, "SpriteObject\\ItemOffset\\Item");
+        public SpriteMask DamageMask => SpriteObj.GetComponent<SpriteMask>();
+        public Animator DamageSprite => SpriteObj.GetGameObjectComponent<Animator>("DamageSprite");
         public SpriteRenderer SpriteRenderer => SpriteObj.GetComponent<SpriteRenderer>();
         public SpriteRenderer ItemSpriteRenderer => ItemSpriteObj.GetComponent<SpriteRenderer>();
         public Animator ItemSpriteAnimator => ItemSpriteObj.GetComponent<Animator>();
@@ -416,6 +423,13 @@ namespace EntityDataSystem
         public abstract void SetItem(Item item = null);
         public abstract void CalculateStatusRegen();
         public virtual void DropItem(Item item) { }
+        public virtual void UpdateMaskSprite()
+        {
+            DamageMask.sprite = SpriteRenderer.sprite;
+            Texture2D texture = TextureFunction.TurnWhite(SpriteRenderer.sprite.texture);
+            //Debug.Log($"{SpriteRenderer.sprite.rect}, {SpriteRenderer.sprite.pivot}, {SpriteRenderer.sprite.pixelsPerUnit}");
+            DamageSprite.GetComponent<SpriteRenderer>().sprite = Sprite.Create(texture, SpriteRenderer.sprite.rect, new Vector2(0.5f, 0.5f), SpriteRenderer.sprite.pixelsPerUnit);
+        }
     }
     public abstract class BasicEntityBehaviour : BaseEntityBehaviour, IEntity
     {
@@ -466,7 +480,7 @@ namespace EntityDataSystem
         {
             Agent.isStopped = !EntityData.dead;
             Agent.speed = 0;
-
+            UpdateMaskSprite();
             if (EntityData.dead)
                 return;
             AttackArea.transform.localScale = new Vector3(EntityData.currentAttackItem.attackwidth, EntityData.currentAttackItem.attackDistance, 1);
@@ -537,9 +551,10 @@ namespace EntityDataSystem
 
             EntityData.GiveEffects(damageData.effects);
 
-            StopCoroutine(SetDamageColor());
-            StartCoroutine(SetDamageColor());
+            StopCoroutine(DamagedTick());
+            StartCoroutine(DamagedTick());
             OnDamageEvent.Invoke(EntityData, damageData.sender, damageData, total);
+            DamageSprite.Play("Damage");
 
             if (EntityData.currentHealth <= 0)
             {
@@ -547,13 +562,11 @@ namespace EntityDataSystem
             }
         }
 
-        private IEnumerator SetDamageColor()
+        private IEnumerator DamagedTick()
         {
             EntityData.damaged = true;
-            SpriteRenderer.color = Color.red;
             yield return new WaitForSeconds(0.3f);
             EntityData.damaged = false;
-            SpriteRenderer.color = Color.white;
         }
 
         public override void Attack()
@@ -617,9 +630,7 @@ namespace EntityDataSystem
                 if (ItemSpriteAnimator == null || ItemSpriteAnimator.runtimeAnimatorController == null)
                     yield break;
                 ItemSpriteAnimator.Play("Attack");
-                yield return new WaitForSeconds(ItemSpriteAnimator.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.length);
-                ItemSpriteAnimator.Play("Default");
-            }
+    }
         }
         private IEnumerator AttackTimer()
         {

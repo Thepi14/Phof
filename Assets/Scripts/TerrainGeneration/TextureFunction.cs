@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------------------------------------
+/// <copyright file="TextureFunction.cs">
+///   Copyright (c) 2024, Pi14, All rights reserved.
+/// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 using UnityEngine;
 using System.IO;
 using System;
@@ -6,7 +11,7 @@ using UnityEngine.Rendering;
 /// <summary>
 /// Classe que lida com operações envolvendo texturas.
 /// </summary>
-public class TextureFunction
+public static class TextureFunction
 {
     /// <summary>
     /// Define a cor de uma textura, o padrão é branco.
@@ -321,10 +326,13 @@ public class TextureFunction
         }
         tex.Apply();
         tex.filterMode = FilterMode.Point;
-        //tex.Compress(false);
+        if (texture.width % 4 == 0 && texture.height % 4 == 0)
+        {
+            tex.Compress(false);
+        }
         tex.name = texture.name + "_Sub";
-        Resources.UnloadUnusedAssets();
-        GC.Collect();
+        //Resources.UnloadUnusedAssets();
+        //GC.Collect();
         return tex;
     }
     /// <summary>

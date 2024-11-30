@@ -5070,5 +5070,5 @@ MonoBehaviour:
     stackable: 0
     effectVFX: {fileID: 0}
     frameAdded: 0
-  _damageAdd: 6
+  _entityDamageAdd: 1
   destroyingProcess: 0

@@ -19715,8 +19715,8 @@ MonoBehaviour:
   _sender: {fileID: 0}
   _explosionPrefab: {fileID: 3403416188412860455, guid: 1c0c929c648c23f4bb82be80202ada6e, type: 3}
   minDamage: 15
-  maxDamage: 30
-  speed: 5
+  maxDamage: 20
+  speed: 6
   impulseForce: 6
   effects:
   - name: Fire
@@ -19727,7 +19727,7 @@ MonoBehaviour:
     stackable: 0
     effectVFX: {fileID: 0}
     frameAdded: 0
-  _damageAdd: 0
+  _entityDamageAdd: 0
   destroyingProcess: 0
   bulletExclusionType: 1
   maxTimeAlive: 8

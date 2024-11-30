@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------------------------------------
+/// <copyright file="Credits.cs">
+///   Copyright (c) 2024, Marcos Henrique, All rights reserved.
+/// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

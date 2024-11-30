@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------------------------------------
+/// <copyright file="OptionPanel.cs">
+///   Copyright (c) 2024, Pi14, All rights reserved.
+/// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

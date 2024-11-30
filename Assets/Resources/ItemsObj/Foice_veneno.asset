@@ -26,7 +26,7 @@ MonoBehaviour:
   minDamage: 15
   maxDamage: 20
   manaDamage: 3
-  staminaDamage: 0
+  staminaDamage: 3
   impulse: -8
   effects: []
   bulletPrefab: {fileID: 0}

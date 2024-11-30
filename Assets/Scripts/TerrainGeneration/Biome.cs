@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------------------------------------
+/// <copyright file="Biome.cs">
+///   Copyright (c) 2024, Pi14 & Marcos Henrique, All rights reserved.
+/// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 using System;
 using System.Collections;
 using System.Collections.Generic;

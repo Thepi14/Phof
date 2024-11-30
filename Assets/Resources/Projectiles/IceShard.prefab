@@ -14736,9 +14736,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sender: {fileID: 0}
   _explosionPrefab: {fileID: 6357096794607480889, guid: bc4c9ba394b9ac84d9e8a42f53262f32, type: 3}
-  minDamage: 1
-  maxDamage: 1
-  speed: 7
+  minDamage: 7
+  maxDamage: 14
+  speed: 8
   impulseForce: 5
   effects:
   - name: Coldness

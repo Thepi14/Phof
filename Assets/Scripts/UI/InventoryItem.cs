@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------------------------------------
+/// <copyright file="InventoryItem.cs">
+///   Copyright (c) 2024, Marcos Henrique, All rights reserved.
+/// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 using UnityEngine;
 using ItemSystem;
 using UnityEngine.EventSystems;

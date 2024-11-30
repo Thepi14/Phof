@@ -19,14 +19,14 @@ MonoBehaviour:
   manaUse: 0
   staminaUse: 5
   type: 1
-  reloadTime: 2
+  reloadTime: 0.6
   attackDistance: 1.5
   attackwidth: 0.6
   maxStack: 1
   minDamage: 5
   maxDamage: 10
   manaDamage: 0
-  staminaDamage: 0
+  staminaDamage: 1
   impulse: 30
   effects: []
   bulletPrefab: {fileID: 0}

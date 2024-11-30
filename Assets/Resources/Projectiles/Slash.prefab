@@ -39225,7 +39225,7 @@ MonoBehaviour:
   speed: 9
   impulseForce: 6.5
   effects: []
-  _damageAdd: 6
+  _entityDamageAdd: 1
   destroyingProcess: 0
 --- !u!1 &7935694947140365353
 GameObject:

@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------------------------------------
+/// <copyright file="GamePlayer.cs">
+///   Copyright (c) 2024, Pi14, All rights reserved.
+/// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,6 +38,7 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
     public GameObject GroundDetectorObj => transform.Find("GroundDetector").gameObject;
     public ColliderNutshell GroundDetector => GroundDetectorObj.GetComponent<ColliderNutshell>();
     public GameObject AttackArea => transform.Find("AttackArea").gameObject;
+    public GameObject ReloadSprite => SpriteObj.GetGameObject("ReloadSpriteOffset/ReloadSprite");
 
     #endregion
     public string[] GetCards()
@@ -68,13 +74,13 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
 
         MainCameraControl.focusObject = gameObject;
 
-        ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
-
-        SetItem(EntityData.currentAttackItem);
+        //ItemSpriteRenderer.sprite = EntityData.currentAttackItem.itemSprite;
+        //SetItem(EntityData.currentAttackItem);
         gameManagerInstance.allies.Add(gameObject);
         CanvasGameManager.canvasInstance.UpdateAllAttributes();
-        timer = attackTime;
+        //timer = attackTime;
 
+        CanvasGameManager.canvasInstance.SelectPlayerEquipment();
         gameObject.DontDestroyOnLoad();
     }
     public void FixedUpdate()
@@ -82,6 +88,7 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
         if (EntityData.dead || !Instance.mapLoaded || OptionsPanel.keyBinding || CanvasGameManager.canvasInstance.seeingMap)
             return;
         CalculateStatusRegen();
+        ReloadSprite.transform.localScale = new Vector3((timer / attackTime), 1f, 1);
 
         //XZInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * new Vector2(Mathf.Abs(Input.GetAxis("Horizontal")), Mathf.Abs(Input.GetAxis("Vertical")));
         XZInput = InputManager.GetAxis().normalized * new Vector2(Mathf.Abs(InputManager.GetAxis().x), Mathf.Abs(InputManager.GetAxis().y));
@@ -100,6 +107,7 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
     private bool canAttackByHeld = true;
     public void Update()
     {
+        UpdateMaskSprite();
         if (CanvasGameManager.canvasInstance.GamePaused || OptionsPanel.keyBinding || CanvasGameManager.canvasInstance.seeingMap)
             return;
         if (EntityData.dead || !Instance.mapLoaded)
@@ -166,7 +174,11 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
                     break;
             }
         }
-
+        else
+        {
+            AttackArea.SetActive(false);
+            gameManagerInstance.targetObject.SetActive(false);
+        }
     }
     public override void Damage(DamageData damageData)
     {
@@ -178,15 +190,23 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
         EntityData.WasteStamina(damageData.staminaDamage);
         EntityData.currentImpulse += damageData.impulse;
 
-        StopCoroutine(SetDamageColor());
-        StartCoroutine(SetDamageColor());
-
         EntityData.GiveEffects(damageData.effects);
+
+        StopCoroutine(DamagedTick());
+        StartCoroutine(DamagedTick());
+        OnDamageEvent.Invoke(EntityData, damageData.sender, damageData, total);
+        DamageSprite.Play("Damage");
 
         if (EntityData.currentHealth <= 0)
         {
             Die(damageData.sender);
         }
+    }
+    private IEnumerator DamagedTick()
+    {
+        EntityData.damaged = true;
+        yield return new WaitForSeconds(0.3f);
+        EntityData.damaged = false;
     }
     public override void SetItem(Item item = null)
     {
@@ -204,16 +224,11 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
             ItemSpriteAnimator.runtimeAnimatorController = item.animatorController;
             ItemSpriteOffset.transform.localPosition = (Vector3)item.positionOffSet + new Vector3(0, 0, -0.01f);
         }
+        if (attackTimerCoroutine != null)
+            StopCoroutine(attackTimerCoroutine);
+        attackTimerCoroutine = StartCoroutine(AttackTimer());
     }
-    private IEnumerator SetDamageColor()
-    {
-        EntityData.damaged = true;
-        SpriteRenderer.color = Color.red;
-        yield return new WaitForSeconds(0.3f);
-        EntityData.damaged = false;
-        SpriteRenderer.color = Color.white;
-    }
-
+    public Coroutine attackTimerCoroutine;
     public override void Die(GameObject killer)
     {
         if (EntityData.dead)
@@ -274,7 +289,9 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
         EntityData.WasteMana(EntityData.currentAttackItem.manaUse);
         EntityData.WasteStamina(EntityData.currentAttackItem.staminaUse);
 
-        StartCoroutine(AttackTimer());
+        if (attackTimerCoroutine != null)
+            StopCoroutine(attackTimerCoroutine);
+        attackTimerCoroutine = StartCoroutine(AttackTimer());
         StartCoroutine(AttackAnimC());
 
         yield return new WaitForEndOfFrame();
@@ -305,13 +322,11 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
             if (ItemSpriteAnimator == null || ItemSpriteAnimator.runtimeAnimatorController == null)
                 yield break;
             ItemSpriteAnimator.Play("Attack");
-            yield return new WaitForSeconds(ItemSpriteAnimator.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.length);
-            ItemSpriteAnimator.Play("Default");
         }
     }
-    public float attackTime => (EntityData.currentAttackItem.reloadTime + EntityData.attackDelay) * EntityData.currentAttackSpeedMultipliyer;
+    public float attackTime => EntityData.currentAttackItem != null ? (EntityData.currentAttackItem.reloadTime + EntityData.attackDelay) * EntityData.currentAttackSpeedMultipliyer : 1000f;
     public float timer = 0f;
-    private IEnumerator AttackTimer()
+    public IEnumerator AttackTimer()
     {
         EntityData.attackReloaded = false;
         timer = 0f;

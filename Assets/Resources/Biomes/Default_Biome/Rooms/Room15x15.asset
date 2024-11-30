@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Room15x15
   m_EditorClassIdentifier: 
   entities: []
-  entityDensity: 0.1
+  entityDensity: 0.075
   size: 15
   universal: 0
   blocks:
@@ -1817,5 +1817,5 @@ MonoBehaviour:
     rotation: {x: 0, y: 0, z: 0}
     scale: {x: 1, y: 1, z: 1}
     entityCanSpawn: 1
-  changed: 0
+  changed: 1
   resetRoom: 0

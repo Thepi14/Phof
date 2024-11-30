@@ -56,7 +56,7 @@ namespace ProjectileSystem
         }
         private void OnTriggerEnter(Collider collider)
         {
-            DamageData = new DamageData(Sender, Random.Range(minDamage, maxDamage), MathEx.AngleVectors(transform.position, collider.transform.position) * impulseForce, effects, false);
+            DamageData = new DamageData(Sender, EntityDamageAdd ? Sender.GetComponent<IEntity>().EntityData.CalculateDamage(Random.Range(minDamage, maxDamage)) : Random.Range(minDamage, maxDamage), MathEx.AngleVectors(startPosition, collider.transform.position) * impulseForce, effects, false);
             switch (collider.gameObject.layer)
             {
                 case 0:
@@ -64,6 +64,11 @@ namespace ProjectileSystem
                 case 6 or 7:
                     if (collider.GetComponent<IEntity>() != null)
                         collider.GetComponent<IEntity>().Damage(DamageData);
+                    else
+                    {
+                        EndBullet();
+                        return;
+                    }
                     break;
                 //PLAYER
                 case 8 when gameObject.layer == 11:

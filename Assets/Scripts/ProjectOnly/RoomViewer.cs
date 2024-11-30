@@ -1,4 +1,9 @@
-﻿#if UNITY_EDITOR
+﻿// --------------------------------------------------------------------------------------------------------------------
+/// <copyright file="RoomViewer.cs">
+///   Copyright (c) 2024, Pi14, All rights reserved.
+/// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+#if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;

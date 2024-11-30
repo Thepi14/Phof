@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------------------------------------
+/// <copyright file="NavMeshUpdate.cs">
+///   Copyright (c) 2024, Pi14 & Marcos Henrique, All rights reserved.
+/// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;

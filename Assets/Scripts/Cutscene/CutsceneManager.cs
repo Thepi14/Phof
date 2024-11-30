@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------------------------------------
+/// <copyright file="CutsceneManager.cs">
+///   Copyright (c) 2024, Marcos Henrique, All rights reserved.
+/// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -5,7 +10,6 @@ using InputManagement;
 public class CutsceneManager : MonoBehaviour
 {
     public Button startGame;
-    // Start is called before the first frame update
     void Start()
     {
         startGame.onClick.AddListener( delegate { StartGame(); });

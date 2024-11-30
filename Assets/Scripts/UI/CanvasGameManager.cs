@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------------------------------------
+/// <copyright file="CanvasGameManager.cs">
+///   Copyright (c) 2024, Pi14 & Marcos Henrique, All rights reserved.
+/// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,7 +27,7 @@ using UnityEngine.SceneManagement;
 public class CanvasGameManager : MonoBehaviour
 {
     public static CanvasGameManager canvasInstance;
-    public bool espada = false;
+    public bool equip1Selected = false;
     public bool seeingMap = false, seeingInventory = false, seeingAttributes = false;
 
     public GameObject InventoryGame => gameObject.GetGameObject("Mainpanel/Inventory");
@@ -48,15 +53,15 @@ public class CanvasGameManager : MonoBehaviour
     public GameObject PauseText => SubOverlay.GetGameObject("Paused");
     public Button NextRoomButton => MainPanel.GetGameObjectComponent<Button>("Nextroombutton");
 
-    public Button sword;
-    public Button staff;
+    public Button equip1;
+    public Button equip2;
 
     public Image iconSword;
     public Image iconStaff;
 
-    public ItemSystem.Item staffItem;
-    public ItemSystem.Item swordItem;
-    public ItemSystem.Item bowItem;
+    public Item staffItem;
+    public Item swordItem;
+    public Item bowItem;
 
     public GameObject cardPrefab;
     public GameObject cardGamePrefab;
@@ -76,6 +81,23 @@ public class CanvasGameManager : MonoBehaviour
             return newList;
         }
     }
+    public void SelectPlayerEquipment()
+    {
+        if (equip1Selected)
+        {
+            if (Inventory.Singleton.equipmentSlots[0].myItem != null)
+                player.SetItem(Inventory.Singleton.equipmentSlots[0].myItem.myItem);
+            else
+                player.SetItem();
+        }
+        else
+        {
+            if (Inventory.Singleton.equipmentSlots[1].myItem != null)
+                player.SetItem(Inventory.Singleton.equipmentSlots[1].myItem.myItem);
+            else
+                player.SetItem();
+        }
+    }
     private void Start()
     {
         if (canvasInstance == null)
@@ -84,8 +106,8 @@ public class CanvasGameManager : MonoBehaviour
             Destroy(gameObject);
         gameObject.DontDestroyOnLoad();
         SetLang();
-        sword.onClick.AddListener(() => { espada = false; });
-        staff.onClick.AddListener(() => { espada = true; });
+        equip1.onClick.AddListener(() => { equip1Selected = false; SelectPlayerEquipment(); });
+        equip2.onClick.AddListener(() => { equip1Selected = true; SelectPlayerEquipment(); });
         NextRoomButton.onClick.AddListener(delegate { gameManagerInstance.NextStage(); NextRoomButton.gameObject.SetActive(false); });
         NextRoomButton.gameObject.SetActive(false);
 
@@ -97,13 +119,14 @@ public class CanvasGameManager : MonoBehaviour
                     Instantiate(Slots.itemPrefab, Slots.equipmentSlots[0].transform).Initialize(Slots.equipmentSlots[0], swordItem);
                     break;
                 case "Wizard":
-                    Instantiate(Slots.itemPrefab, Slots.equipmentSlots[1].transform).Initialize(Slots.equipmentSlots[1], staffItem);
+                    Instantiate(Slots.itemPrefab, Slots.equipmentSlots[0].transform).Initialize(Slots.equipmentSlots[0], staffItem);
                     break;
                 case "Archer":
-                    Instantiate(Slots.itemPrefab, Slots.equipmentSlots[1].transform).Initialize(Slots.equipmentSlots[1], bowItem);
+                    Instantiate(Slots.itemPrefab, Slots.equipmentSlots[0].transform).Initialize(Slots.equipmentSlots[0], bowItem);
                     break;
             }
         }
+        equip1Selected = true;
 
         Death.GetGameObjectComponent<Button>("Exitbutton").onClick.AddListener(delegate
         {
@@ -163,8 +186,6 @@ public class CanvasGameManager : MonoBehaviour
         }
         if (player != null)
         {
-            if (player.EntityData.dead)
-                return;
             LifeBar.maxValue = player.EntityData.maxHealth;
             StaminaBar.maxValue = player.EntityData.maxStamina;
             ManaBar.maxValue = player.EntityData.maxMana;
@@ -178,6 +199,8 @@ public class CanvasGameManager : MonoBehaviour
             //KarmaBarRect.rotation = Quaternion.Euler(0, player.EntityData.currentKarma < 0 ? 180 : 0, 0);
             //Bar.color = player.EntityData.currentKarma >= 0 ? Color.gray : Color.white;
             Bar.color = Color.cyan;
+            if (player.EntityData.dead)
+                return;
 
             if (InputManager.GetKeyDown(KeyBindKey.Inventory) && !seeingAttributes)
             {
@@ -208,7 +231,8 @@ public class CanvasGameManager : MonoBehaviour
             }
             else if (InputManager.GetKeyDown(KeyBindKey.ItemHotbar))
             {
-                espada = !espada;
+                equip1Selected = !equip1Selected;
+                SelectPlayerEquipment();
             }
             else if (!seeingAttributes && InputManager.GetKeyDown(KeyBindKey.OpenMap))
             {
@@ -270,17 +294,6 @@ public class CanvasGameManager : MonoBehaviour
             else
             {
                 CollectItemSpam.SetActive(false);
-            }
-
-            //kkkkkkk
-            switch (espada)
-            {
-                case false:
-                    player.SetItem(swordItem);
-                    break;
-                case true:
-                    player.SetItem(staffItem);
-                    break;
             }
             InventoryGame.SetActive(seeingInventory);
         }

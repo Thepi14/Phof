@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------------------------------------
+/// <copyright file="GameManager.cs">
+///   Copyright (c) 2024, Pi14 & Marcos Henrique, All rights reserved.
+/// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -169,11 +174,7 @@ namespace GameManagerSystem
         public void VerifyEffects(IEntity entity)
         {
             entity.EntityData.ResetAttributesStatus();
-
-            if (!entity.EntityData.damaged)
-                GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color = Color.white;
-            else
-                GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color = Color.red;
+            GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color = Color.white;
             foreach (Effect effect in entity.EntityData.currentEffects.ToList())
             {
                 bool ticked = false;
@@ -227,16 +228,16 @@ namespace GameManagerSystem
                     case "coldness":
                         RemoveEffectByName(entity, "on fire", effect.frameAdded);
                         entity.EntityData.currentSpeed = entity.EntityData.currentSpeed * (EFFECT_CHANGER / effect.level);
-                        if (ticked)
-                            entity.Damage(new DamageData((effect.level * 8) + (entity.EntityData.resistance)));
+                        if (ticked) ;
+                            //entity.Damage(new DamageData((effect.level * 8) + (entity.EntityData.resistance)));
                         if (!entity.EntityData.damaged)
                             ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 2) + (Color.blue / 2));
                         break;
                     case "freeze":
                         RemoveEffectByName(entity, "on fire", effect.frameAdded);
                         entity.EntityData.currentSpeed = 0;
-                        if (ticked)
-                            entity.Damage(new DamageData((effect.level * 12) + (entity.EntityData.resistance)));
+                        if (ticked) ;
+                            //entity.Damage(new DamageData((effect.level * 12) + (entity.EntityData.resistance)));
                         if (!entity.EntityData.damaged)
                             ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 3) + (Color.blue / 1.5f));
                         break;

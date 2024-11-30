@@ -19,12 +19,12 @@ MonoBehaviour:
   manaUse: 0
   staminaUse: 2
   type: 1
-  reloadTime: 0.3
+  reloadTime: 0.45
   attackDistance: 1
   attackwidth: 1
   maxStack: 1
-  minDamage: 5
-  maxDamage: 8
+  minDamage: 7
+  maxDamage: 10
   manaDamage: 0
   staminaDamage: 0
   impulse: 5.5

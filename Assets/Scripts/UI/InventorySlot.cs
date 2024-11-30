@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------------------------------------
+/// <copyright file="InventorySlot.cs">
+///   Copyright (c) 2024, Marcos Henrique, All rights reserved.
+/// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 using UnityEngine;
 using UnityEngine.EventSystems;
 using ItemSystem;
@@ -14,8 +19,8 @@ public class inventorySlot : MonoBehaviour, IPointerClickHandler
             if (Inventory.carriedItem == null)
                 return;
 
-            if (myType != ItemType.None && Inventory.carriedItem.myItem.type != myType)
-                return;
+            /*if (myType != ItemType.None && Inventory.carriedItem.myItem.type != myType)
+                return;*/
 
             SetItem(Inventory.carriedItem);
         }

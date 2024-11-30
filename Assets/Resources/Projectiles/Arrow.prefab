@@ -97,16 +97,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sender: {fileID: 0}
   _explosionPrefab: {fileID: 0}
-  minDamage: 20
-  maxDamage: 30
-  speed: 8.5
+  minDamage: 3
+  maxDamage: 7
+  speed: 9
   impulseForce: 6
   effects: []
-  _damageAdd: 5
+  _entityDamageAdd: 1
   destroyingProcess: 0
   bulletExclusionType: 1
   maxTimeAlive: 20
-  maxDistance: 10
+  maxDistance: 9
   startPosition: {x: 0, y: 0, z: 0}
   condition: 0
   penetration: 1
@@ -169,7 +169,10 @@ VisualEffect:
     m_Vector3f:
       m_Array: []
     m_Vector4f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 4, y: 2.1176472, z: 0, w: 1}
+        m_Name: Color
+        m_Overridden: 1
     m_Uint:
       m_Array: []
     m_Int:

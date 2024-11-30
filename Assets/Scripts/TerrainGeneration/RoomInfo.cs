@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------------------------------------
+/// <copyright file="RoomInfo.cs">
+///   Copyright (c) 2024, Pi14 & Marcos Henrique, All rights reserved.
+/// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,7 +17,7 @@ public class RoomInfo : ScriptableObject
     /// <summary>
     /// Calcula a densidade de entidades inimigas por quadrado.
     /// </summary>
-    public float entityDensity = 0.1f;
+    public float entityDensity = 0.075f;
     public int size;
     public bool universal = false;
     [SerializeField]

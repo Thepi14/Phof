@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Room19x19
   m_EditorClassIdentifier: 
   entities: []
-  entityDensity: 0.1
+  entityDensity: 0.5
   size: 19
   universal: 0
   blocks:

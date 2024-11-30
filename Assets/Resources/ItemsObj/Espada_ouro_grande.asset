@@ -17,16 +17,16 @@ MonoBehaviour:
   animatorController: {fileID: 9100000, guid: 1512f04d6b6cdfc4692ca95a5c476c53, type: 2}
   positionOffSet: {x: 0.3, y: 0}
   manaUse: 0
-  staminaUse: 6
+  staminaUse: 5
   type: 1
-  reloadTime: 1.25
+  reloadTime: 0.8
   attackDistance: 1.1
   attackwidth: 1.25
   maxStack: 1
   minDamage: 10
   maxDamage: 20
   manaDamage: 0
-  staminaDamage: 0
+  staminaDamage: 3
   impulse: 10
   effects: []
   bulletPrefab: {fileID: 0}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Cajado_de_fogo
   m_EditorClassIdentifier: 
   itemName: Cajado de fogo
-  itemSprite: {fileID: 21300000, guid: b3234954c0debf84cbadc346c708028a, type: 3}
+  itemSprite: {fileID: 21300000, guid: 5974c7c93e7a4e9499a53562c8c9ebec, type: 3}
   animatorController: {fileID: 9100000, guid: 6d04b7b3269a3aa4a864a361ecfbb9d6, type: 2}
   positionOffSet: {x: 0.3, y: 0}
   manaUse: 7

@@ -1,9 +1,15 @@
+// --------------------------------------------------------------------------------------------------------------------
+/// <copyright file="Inventory.cs">
+///   Copyright (c) 2024, Marcos Henrique, All rights reserved.
+/// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
 using ItemSystem;
 using UnityEngine;
 using UnityEngine.UI;
 using ObjectUtils;
 using static ObjectUtils.GameObjectGeneral;
 using static LangSystem.Language;
+using static GamePlayer;
 
 public class Inventory : MonoBehaviour
 {
@@ -48,10 +54,10 @@ public class Inventory : MonoBehaviour
     {
        if(carriedItem != null)
         {
-            if(item.activeSlot.myType != ItemType.None && item.activeSlot.myType != carriedItem.myItem.type)
+            /*if(item.activeSlot.myType != ItemType.None && item.activeSlot.myType != carriedItem.myItem.type)
             {
                 return;
-            }
+            }*/
 
             item.activeSlot.SetItem(carriedItem);
         }
@@ -67,17 +73,11 @@ public class Inventory : MonoBehaviour
 
     public void EquipEquipment(ItemType type, InventoryItem item = null)
     {
+        player.StartCoroutine(player.AttackTimer());
         switch (type)
         {
             case ItemType.MeleeWeapon:
-                if(item == null)
-                {
-                    Debug.Log("Removeu um item do tipo MeleeWeapon");
-                }
-                else
-                {
-                    Debug.Log("Equipou um item do tipo MeleeWeapon");
-                }
+
                 break;
         }
     }
