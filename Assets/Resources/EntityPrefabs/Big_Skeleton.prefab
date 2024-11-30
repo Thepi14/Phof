@@ -698,7 +698,7 @@ MonoBehaviour:
     maxHealth: 0
     maxStamina: 0
     maxMana: 0
-    currentKarma: 45
+    currentKarma: 60
     currentHealth: 0
     currentStamina: 0
     currentMana: 0

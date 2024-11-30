@@ -258,7 +258,7 @@ public class CanvasGameManager : MonoBehaviour
             if (Slots.equipmentSlots[1].myItem == null)
             {
                 staffItem = null;
-                gameManagerInstance.targetObject.SetActive(false);
+                //gameManagerInstance.targetObject.SetActive(false);
                 iconStaff.color = new Color(1f, 1f, 1f, 0f);
             }
             else

@@ -16,6 +16,7 @@ MonoBehaviour:
   - {fileID: 9115972594183510498, guid: b671a3d571a624b4a9839fd397935f4f, type: 3}
   - {fileID: 7373959907178826108, guid: c18b4c207ebb5d1479332dbddd4431b2, type: 3}
   - {fileID: 7373959907178826108, guid: 815dcec7315378248b4e6eecf2feee68, type: 3}
+  - {fileID: 7373959907178826108, guid: e05070038d678584f9d23bb74b3bdf8c, type: 3}
   entityDensity: 0.1
   size: 0
   universal: 1

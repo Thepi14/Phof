@@ -19714,8 +19714,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sender: {fileID: 0}
   _explosionPrefab: {fileID: 3403416188412860455, guid: 1c0c929c648c23f4bb82be80202ada6e, type: 3}
-  minDamage: 15
-  maxDamage: 20
+  minDamage: 35
+  maxDamage: 50
   speed: 6
   impulseForce: 6
   effects:
@@ -19730,8 +19730,8 @@ MonoBehaviour:
   _entityDamageAdd: 0
   destroyingProcess: 0
   bulletExclusionType: 1
-  maxTimeAlive: 8
-  maxDistance: 20
+  maxTimeAlive: 18
+  maxDistance: 22
   startPosition: {x: 0, y: 0, z: 0}
   condition: 0
   explodeWithoutHitting: 0

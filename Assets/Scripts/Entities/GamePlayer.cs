@@ -88,7 +88,6 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
         if (EntityData.dead || !Instance.mapLoaded || OptionsPanel.keyBinding || CanvasGameManager.canvasInstance.seeingMap)
             return;
         CalculateStatusRegen();
-        ReloadSprite.transform.localScale = new Vector3((timer / attackTime), 1f, 1);
 
         //XZInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * new Vector2(Mathf.Abs(Input.GetAxis("Horizontal")), Mathf.Abs(Input.GetAxis("Vertical")));
         XZInput = InputManager.GetAxis().normalized * new Vector2(Mathf.Abs(InputManager.GetAxis().x), Mathf.Abs(InputManager.GetAxis().y));
@@ -115,6 +114,8 @@ public class GamePlayer : BaseEntityBehaviour, IEntity
 
         if (Mathf.Abs(XZInput.x) > 0.1f)
             SpriteObj.transform.localScale = XZInput.x < 0 ? new Vector3(-1, 1, 1) : Vector3.one;
+        ReloadSprite.transform.parent.localScale = new Vector3(SpriteObj.transform.localScale.x * 0.5f, 0.08f, 1);
+        ReloadSprite.transform.localScale = new Vector3((timer / attackTime), 1f, 1);
 
         if ((Mathf.Abs(XZInput.x) > 0.1f || Mathf.Abs(XZInput.y) > 0.1f))
         {

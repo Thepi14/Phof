@@ -38,7 +38,7 @@ namespace GameManagerSystem
         public GameObject archerPrefab;
         [HideInInspector]
         public GameObject playerPrefab;
-        public GameObject targetObject;
+        public GameObject targetObject => gameObject.GetGameObject("Target");
         public GameObject damageTextPrefab;
         public GameObject itemDropPrefab;
 
@@ -214,15 +214,13 @@ namespace GameManagerSystem
                             else
                                 entity.Damage(new DamageData(effect.level * 2, true));
                         }
-                        if (!entity.EntityData.damaged)
                             ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 2) + (Color.green / 2));
                         break;
                     case "on fire" or "fire":
                         RemoveEffectByName(entity, "freezed", effect.frameAdded);
                         RemoveEffectByName(entity, "coldness", effect.frameAdded);
                         if (ticked)
-                            entity.Damage(new DamageData((effect.level * 9 + UnityEngine.Random.Range(0, 12)) - (entity.EntityData.currentResistence * 2)));
-                        if (!entity.EntityData.damaged)
+                            entity.Damage(new DamageData((effect.level * 12 + UnityEngine.Random.Range(0, 5 * effect.level)) - (entity.EntityData.currentResistence * 2)));
                             ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 2) + (new Color(1, 0.5f, 0) / 2));
                         break;
                     case "coldness":
@@ -230,7 +228,6 @@ namespace GameManagerSystem
                         entity.EntityData.currentSpeed = entity.EntityData.currentSpeed * (EFFECT_CHANGER / effect.level);
                         if (ticked) ;
                             //entity.Damage(new DamageData((effect.level * 8) + (entity.EntityData.resistance)));
-                        if (!entity.EntityData.damaged)
                             ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 2) + (Color.blue / 2));
                         break;
                     case "freeze":
@@ -238,14 +235,12 @@ namespace GameManagerSystem
                         entity.EntityData.currentSpeed = 0;
                         if (ticked) ;
                             //entity.Damage(new DamageData((effect.level * 12) + (entity.EntityData.resistance)));
-                        if (!entity.EntityData.damaged)
                             ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 3) + (Color.blue / 1.5f));
                         break;
                     case "stun":
                         effect.currentTick = 0;
                         entity.EntityData.currentSpeed = 0;
                         entity.EntityData.attackSpeedMultipliyer = 0;
-                        if (!entity.EntityData.damaged)
                             ChangeEntityColor(entity, (GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color / 2) + (Color.gray / 2));
                         break;
                     case "vulnerable":
@@ -283,12 +278,10 @@ namespace GameManagerSystem
             static IEnumerator _ChangeEntityColor(IEntity entity, Color color, float time)
             {
                 float timePassed = 0f;
-                if (!entity.EntityData.damaged)
-                    GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color = color;
+                GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color = color;
                 while (timePassed <= time)
                 {
-                    if (!entity.EntityData.damaged)
-                        GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color = color;
+                    GameObjectGeneral.GetGameObjectComponent<SpriteRenderer>(entity.EntityData.gameObject, "SpriteObject").color = color;
                     timePassed += Time.deltaTime;
                     yield return new WaitForEndOfFrame();
                 }
