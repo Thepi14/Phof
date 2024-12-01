@@ -321,12 +321,12 @@ public class CanvasGameManager : MonoBehaviour
         PauseGame(open);
     }
     public bool GamePaused { get; private set; } = false;
-    public void PauseGame(bool pause)
+    public static void PauseGame(bool pause)
     {
         Time.timeScale = pause ? 0f : 1f;
-        GamePaused = pause;
+        canvasInstance.GamePaused = pause;
     }
-    public void TickPause() => PauseGame(!GamePaused);
+    public static void TickPause() => PauseGame(!canvasInstance.GamePaused);
     public void SetActiveInventory() => seeingInventory = !seeingInventory;
     public void UpdateAllAttributes()
     {

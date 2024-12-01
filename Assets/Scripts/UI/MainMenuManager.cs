@@ -64,7 +64,6 @@ public class MainMenuManager : MonoBehaviour
     public AudioSource musicaAtual => GameObject.Find("Music").GetComponent<AudioSource>();
     public AudioClip atual;
     public AudioClip LiarDancer;
-    private int a;
     private int selectedMapWidth;
     private int selectedMapHeight;
     private string selectedDifficulty;
@@ -100,7 +99,7 @@ public class MainMenuManager : MonoBehaviour
 
     void Start()
     {
-        a = 0;
+        Time.timeScale = 1f;
         if (PlayerPreferences.FirstTimeOpened)
         {
             PlayerPreferences.Reset();
@@ -187,7 +186,7 @@ public class MainMenuManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.R) && telaRin && a < MuitoLoucos.Length)
+        /*if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.R) && telaRin && a < MuitoLoucos.Length)
         {
             MuitoLoucos[a].SetActive(true);
             a++;
@@ -208,7 +207,7 @@ public class MainMenuManager : MonoBehaviour
             {
                 MuitoLoucos[i].SetActive(false);
             }
-        }
+        }*/
     }
     public void DeactivateClassPanelHighlights()
     {
