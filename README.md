@@ -19,4 +19,4 @@ Um jogo onde você vai passando por níveis através de salas geradas procedural
 ### Agradecimentos especiais:
 <p>Lucas Nogueira</p>
 
-![alt text](https://media.discordapp.net/attachments/1061795815485616149/1307891633043411036/1669050859318430.jpg?ex=673f4040&is=673deec0&hm=429207bec573934dc2f8ca61734cb09785ef19ba409230469c69499e5f055f23&=&format=webp&width=636&height=675)
+![alt text](https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftsundora.com%2Fimage%2F2015%2F01%2Ftouhou_remilia_scarlet_568.jpg&f=1&nofb=1&ipt=24a2690226a3a7de93274bab4319290dd7ae0f9fbd1a85462009c246088ced21&ipo=images)
