@@ -10,6 +10,8 @@ using static NavMeshUpdate;
 using System.Linq;
 using System.Threading.Tasks;
 using static UnityEngine.EventSystems.EventTrigger;
+using Unity.VisualScripting;
+using B83.MeshHelper;
 
 namespace RoomSystem
 {
@@ -48,6 +50,7 @@ namespace RoomSystem
         public class RoomStartEvent : UnityEvent { }
         public RoomStartEvent OnRoomStart = new RoomStartEvent();
         public BoxCollider RoomArea => GetComponent<BoxCollider>();
+        public GameObject roomMeshChild;
         #endregion
 
         #region Status
@@ -99,6 +102,47 @@ namespace RoomSystem
         {
             this.size = size;
             doors = new List<Door>();
+        }
+        public void CombineRoomBlocksMesh()
+        {
+            List<CombineInstance> combine = new List<CombineInstance>();
+            List<GameObject> doorObjList = new List<GameObject>();
+            foreach (var door in doors)
+            {
+                if (door.doorBlock == null) continue;
+                doorObjList.Add(door.doorBlock);
+            }
+            foreach (var block in blocks)
+            {
+                if (block == null) continue;
+                if (doorObjList.Contains(block)) continue;
+                if (block.GetComponent<BlockEntity>() != null) continue;
+
+                MeshFilter filter = block.GetComponent<MeshFilter>();
+                if (filter == null) continue;
+
+                var b = new CombineInstance();
+                b.mesh = filter.sharedMesh;
+                b.transform = block.transform.localToWorldMatrix;
+                combine.Add(b);
+                //block.SetActive(false);
+                //blocks.Remove(block);
+            }
+
+            roomMeshChild = new GameObject("Mesh");
+            roomMeshChild.transform.parent = transform;
+            roomMeshChild.transform.position = Vector3.zero;
+            roomMeshChild.layer = 6;
+
+            Mesh mesh = new Mesh();
+            mesh.CombineMeshes(combine.ToArray());
+            var welder = new MeshWelder(mesh);
+            welder.mergeWithoutCheck = true;
+            welder.Weld();
+            roomMeshChild.AddComponent<MeshFilter>().sharedMesh = welder.GetMesh();
+            roomMeshChild.AddComponent<MeshCollider>();
+            //roomMeshChild.AddComponent<MeshRenderer>();
+            roomMeshChild.gameObject.SetActive(true);
         }
         #endregion
         public class SpawnPoint
@@ -171,6 +215,14 @@ namespace RoomSystem
                     }
                     break;
             }
+        }
+        public void SetRoomActive(bool active)
+        {
+            foreach (var block in blocks)
+            {
+                block.SetActive(active);
+            }
+            roomMeshChild.gameObject.SetActive(active);
         }
         private void RoomStartFunction()
         {

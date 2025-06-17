@@ -15,6 +15,8 @@ using static NavMeshUpdate;
 using System.Threading.Tasks;
 using EntityDataSystem;
 using UnityEditor;
+using static Unity.Collections.AllocatorManager;
+using B83.MeshHelper;
 
 public class TerrainGeneration : MonoBehaviour
 {
@@ -73,6 +75,9 @@ public class TerrainGeneration : MonoBehaviour
     public Grid<bool> spawnTiles;
     public Grid<int> roomGrid;
 
+    public GameObject corridorMesh;
+    public GameObject corridorFloorMesh;
+
     [SerializeField]
     private bool configSeed = false;
     public bool mapLoaded = false;
@@ -117,10 +122,13 @@ public class TerrainGeneration : MonoBehaviour
         await _GenerateLevel();
     }
     public float GenerationProgress { get; private set; } = 0;
+
     public void RoomOcclusion(int roomIndex)
     {
         if (roomIndex > -1)
         {
+            corridorMesh.SetActive(false);
+            corridorFloorMesh.SetActive(false);
             for (int x = 0; x < MapWidth; x++)
             {
                 for (int z = 0; z < MapHeight; z++)
@@ -129,30 +137,134 @@ public class TerrainGeneration : MonoBehaviour
                         continue;
                     if (GetWallObj(x, z) != null)
                         GetWallObj(x, z).SetActive(false);
-                    if (GetFloorObj(x, z) != null)
-                        GetFloorObj(x, z).SetActive(false);
+                    /*if (GetFloorObj(x, z) != null)
+                        GetFloorObj(x, z).SetActive(false);*/
                 }
             }
         }
         else
         {
+            corridorMesh.SetActive(true);
+            corridorFloorMesh.SetActive(true);
             for (int x = 0; x < MapWidth; x++)
             {
                 for (int z = 0; z < MapHeight; z++)
                 {
                     if (GetWallObj(x, z) != null)
                         GetWallObj(x, z).SetActive(true);
-                    if (GetFloorObj(x, z) != null)
-                        GetFloorObj(x, z).SetActive(true);
+                    /*if (GetFloorObj(x, z) != null)
+                        GetFloorObj(x, z).SetActive(true);*/
                 }
             }
         }
+
+        foreach (var room in rooms)
+        {
+            if (roomIndex > -1)
+                room.SetRoomActive(room.id == roomIndex);
+            else
+                room.SetRoomActive(true);
+        }
+
         BuildNavMesh();
     }
     public void OnValidate()
     {
         noiseMap = new Texture2D(MapWidth, MapHeight);
         noiseMap = GenerateNoiseTexture(MapWidth, MapHeight, seed, frequency, limit, scattering, true, StageOffSet * CurrentStage, StageOffSet * CurrentStage);
+    }
+    private void GenerateCorridorMesh()
+    {
+        List<CombineInstance> combine = new List<CombineInstance>();
+        //boring
+        List<GameObject> allBlocks = new List<GameObject>();
+        for (int x = 0; x < MapWidth; x++)
+        {
+            for (int z = 0; z < MapHeight; z++)
+            {
+                if (roomGrid.GetGridObject(x, z) != -1)
+                    continue;
+                if (GetWallObj(x, z) != null)
+                {
+                    allBlocks.Add(GetWallObj(x, z));
+                }
+            }
+        }
+
+        foreach (var block in allBlocks)
+        {
+            if (block == null) continue;
+            if (block.GetComponent<BlockEntity>() != null || block.GetComponent<Animator>() != null) continue;
+
+            MeshFilter filter = block.GetComponent<MeshFilter>();
+            if (filter == null) continue;
+
+            var b = new CombineInstance();
+            b.mesh = filter.sharedMesh;
+            b.transform = block.transform.localToWorldMatrix;
+            combine.Add(b);
+            //block.SetActive(false);
+        }
+
+        corridorMesh = new GameObject("CorridorMesh");
+        corridorMesh.transform.parent = transform;
+        corridorMesh.transform.position = Vector3.zero;
+        corridorMesh.layer = 6;
+
+        Mesh mesh = new Mesh();
+        mesh.CombineMeshes(combine.ToArray());
+        var welder = new MeshWelder(mesh);
+        welder.mergeWithoutCheck = true;
+        welder.Weld();
+        corridorMesh.AddComponent<MeshFilter>().sharedMesh = welder.GetMesh();
+        corridorMesh.AddComponent<MeshCollider>();
+        //roomMeshChild.AddComponent<MeshRenderer>();
+        corridorMesh.gameObject.SetActive(true);
+
+        //floors
+        allBlocks.Clear();
+        for (int x = 0; x < MapWidth; x++)
+        {
+            for (int z = 0; z < MapHeight; z++)
+            {
+                if (roomGrid.GetGridObject(x, z) != -1)
+                    continue;
+                if (GetFloorObj(x, z) != null)
+                {
+                    allBlocks.Add(GetFloorObj(x, z));
+                }
+            }
+        }
+
+        combine.Clear();
+        foreach (var floor in allBlocks)
+        {
+            if (floor == null) continue;
+            if (floor.GetComponent<BlockEntity>() != null || floor.GetComponent<Animator>() != null) continue;
+
+            MeshFilter filter = floor.GetComponent<MeshFilter>();
+            if (filter == null) continue;
+
+            var b = new CombineInstance();
+            b.mesh = filter.sharedMesh;
+            b.transform = floor.transform.localToWorldMatrix;
+            combine.Add(b);
+            floor.SetActive(false);
+        }
+        corridorFloorMesh = new GameObject("CorridorFloorMesh");
+        corridorFloorMesh.transform.parent = transform;
+        corridorFloorMesh.transform.position = Vector3.zero;
+        corridorFloorMesh.layer = 7;
+
+        mesh = new Mesh();
+        mesh.CombineMeshes(combine.ToArray());
+        welder = new MeshWelder(mesh);
+        welder.Weld();
+
+        corridorFloorMesh.AddComponent<MeshFilter>().sharedMesh = welder.GetMesh();
+        //MASSIVE HACK
+        corridorFloorMesh.AddComponent<MeshRenderer>().material = biome.groundBlocks[0].blockPrefab.GetComponent<MeshRenderer>().sharedMaterial;
+        corridorFloorMesh.gameObject.SetActive(true);
     }
     private async Task _GenerateLevel()
     {
@@ -421,10 +533,17 @@ public class TerrainGeneration : MonoBehaviour
                 var room = rooms[roomGrid.GetGridObject(x, z) - 1];
                 if (GetWallObj(x, z) != null && !room.blocks.Contains(GetWallObj(x, z)))
                     room.blocks.Add(GetWallObj(x, z));
-                if (GetFloorObj(x, z) != null && !room.blocks.Contains(GetFloorObj(x, z)))
-                    room.blocks.Add(GetFloorObj(x, z));
+                /*if (GetFloorObj(x, z) != null && !room.blocks.Contains(GetFloorObj(x, z)))
+                    room.blocks.Add(GetFloorObj(x, z));*/
             }
         }
+
+        //mesh gen
+        foreach (var room in rooms)
+        {
+            room.CombineRoomBlocksMesh();
+        }
+        GenerateCorridorMesh();
 
         await Task.Delay(1);
         BuildNavMesh(10);
@@ -711,6 +830,7 @@ public class TerrainGeneration : MonoBehaviour
                     roomObj.GetComponent<BoxCollider>().isTrigger = true;
 
                     rooms.Add(room);
+
                     //Debug.Log(room.ToString());
 
                     for (int xE = -Size1 + x; xE < Size2 + x; xE++)
